@@ -223,13 +223,13 @@ Run the DDL command below to create an auto-tuned ScaNN index optimized for **Co
 ```sql
 CREATE INDEX help_articles_scann_idx 
 ON help_articles 
-USING scann (embedding vector_cosine_ops)
+USING scann (embedding cosine)
 WITH (mode='AUTO',
-      auto_maintenance='AUTO_MAINTENANCE');
+      auto_maintenance=true);
 ```
 > [!NOTE]
 > `mode='AUTO'` - The optimal configuration for the ScaNN index is automatically chosen based on the number of rows in the table. 
-> `auto_maintenance='AUTO_MAINTENANCE'` - The index will be automatically maintained by AlloyDB, including periodic rebalancing and optimization.
+> `auto_maintenance=true` - The index will be automatically maintained by AlloyDB, including periodic rebalancing and optimization.
 
 ---
 
