@@ -110,9 +110,12 @@ SELECT count(*) FROM help_articles;
 
 ---
 
-## Phase 4: Zero-Loop "One-Shot" Vector Generation
+## Phase 4: Zero-Loop "One-Shot" Vector Generation 💥🔥
 
-Now, perform a bulk generation of embeddings for all 100,000 rows natively in the database. This process eliminates the need for Python loops or Kafka queues outside the database.
+Now, perform a bulk generation of embeddings for all 100,000 rows natively in the database. This process completely eliminates the need for complex, fragile external ETL loops, Kafka queues, or Python background workers!
+
+> [!IMPORTANT]
+> **The Operational Edge (Transactional Mode)**: By specifying `incremental_refresh_mode => 'transactional'`, AlloyDB automatically configures live database triggers. This transactional synchronization is exceptionally powerful for production-grade operational vector search applications, because any future DML writes are vectorized **automatically** inside the same transaction, guaranteeing your search index remains 100% synchronized with zero operational lag!
 
 By leveraging database-native automatic embedding generation, you eliminate external scheduler loops and background pipeline infrastructure, drastically reducing code maintenance debt. AlloyDB natively manages optimal batch sizes and automatically recovers from transient model quota limit errors, reducing API token overhead and guaranteeing transactional data remains continuously in sync.
 
