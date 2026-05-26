@@ -261,6 +261,17 @@ WITH (mode='AUTO',
 > ```
 > *In the output execution plan, look for the **`Index Scan`** (or custom **`scann`** scan) row referencing `help_articles_scann_idx`. This confirms AlloyDB is successfully utilizing ScaNN approximate nearest neighbor lookups.*
 
+---
 
+## 🎉 Congratulations!
 
+You have successfully completed **Lab 1: One Million Vectors, Zero Loops**! 
 
+### What you've achieved:
+- Automated bulk and transactional database-native vector embedding generation via AlloyDB AI and Vertex AI.
+- Set up and verified dynamic pre-filtering semantic search queries.
+- Built an automatically-tuned Google ScaNN index to authorize sub-millisecond high-scale approximate nearest neighbor searches.
+
+### Next Steps:
+You are now invited to continue with the second track:
+👉 **[Proceed to Lab 2: Spanner Disneyland Agentic Codelab](../02_spanner_disneyland/user_guide.md)**
