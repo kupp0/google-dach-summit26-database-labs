@@ -250,7 +250,29 @@ WITH (mode='AUTO',
 > ORDER BY relevance DESC
 > LIMIT 5;
 > ```
-> *In the output execution plan, look for the **`Index Scan`** row referencing `help_articles_scann_idx`. This confirms AlloyDB is successfully utilizing ScaNN approximate nearest neighbor lookups instead of performing a sequential scan.*
+> *In the output execution plan, look for the **`Index Scan`** (or custom **`scann`** scan) row referencing `help_articles_scann_idx`. This confirms AlloyDB is successfully utilizing ScaNN approximate nearest neighbor lookups.*
+> 
+> #### Troubleshooting: Planner choosing "Seq Scan" over ScaNN
+> If you see **`Parallel Seq Scan`** (or `Seq Scan`) in the query plan instead of an index scan, this is normal behavior for small or pre-filtered datasets. Because our query has highly restrictive filters (`WHERE category = 'Billing' AND product_version = '2.0'`), the PostgreSQL query planner estimates that performing a parallel sequential scan is faster than opening and loading index pages.
+> 
+> To force the query planner to use your ScaNN index for testing purposes, temporarily disable sequential scans in your active database session and re-run the query:
+> ```sql
+> -- Force the planner to choose index scans
+> SET enable_seqscan = off;
+> 
+> -- Re-run the EXPLAIN ANALYZE query
+> EXPLAIN ANALYZE
+> SELECT
+>   title,
+>   left(content_body, 100) AS content_snippet,
+>   1 - (embedding <=> embedding('text-embedding-005', 'Invoice did not go through')::vector) AS relevance
+> FROM help_articles
+> WHERE category = 'Billing'
+>   AND product_version = '2.0'
+> ORDER BY relevance DESC
+> LIMIT 5;
+> ```
+> *After setting `enable_seqscan = off`, you should immediately see **`Index Scan using help_articles_scann_idx`** (or custom **`scann`** scan) in the resulting query plan output! Once verified, you can restore defaults with `RESET enable_seqscan;`.*
 
 
 
