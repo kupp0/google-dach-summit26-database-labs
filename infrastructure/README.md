@@ -12,7 +12,8 @@ During the hackathon event, participants will receive empty, fresh GCP projects.
 infrastructure/
 ├── README.md                       # This overview and operations guide
 ├── gcp_setup/
-│   └── automations.sh              # Bootstrap script (APIs, Billing, IAM binding)
+│   ├── automations.sh              # Bootstrap script (APIs, Billing, IAM binding)
+│   └── setup_alloydb.tf            # Terraform script enabling APIs and Vertex AI bindings for Lab 1
 ├── networking/
 │   └── setup_vpc.tf                # VPC Network, Subnets, Cloud NAT, and IAP Firewalls
 └── cloud_workstations/

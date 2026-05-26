@@ -13,49 +13,31 @@ In this lab, you will build a scalable Knowledge Base search database applicatio
 
 ---
 
-## Phase 1: Enable AI Services & Extensions
+## Phase 1: Verify Database Flags
 
-First, ensure that you have the required Google Cloud APIs enabled and the correct roles assigned.
+AlloyDB AI integration requires specific database flags to be enabled on the primary instance. In this summit environment, these flags have been **pre-configured** via Terraform during the infrastructure deployment. 
 
-### 1. Enable APIs in Cloud Shell
-Run the following command in your Google Cloud Shell to enable Vertex AI and AlloyDB services:
-```bash
-gcloud services enable \
-  alloydb.googleapis.com \
-  compute.googleapis.com \
-  cloudresourcemanager.googleapis.com \
-  servicenetworking.googleapis.com \
-  aiplatform.googleapis.com
+Before proceeding, let's verify that the flags are active.
+
+### Verification via SQL (AlloyDB Studio)
+Connect to your database cluster inside the **AlloyDB Studio** and execute these commands to verify the configurations:
+
+```sql
+-- Check that Google ML Model support is active
+SHOW google_ml_integration.enable_model_support;
+-- Expected Output: 'on'
+
+-- Check that Faster Embedding Generation is active
+SHOW google_ml_integration.enable_faster_embedding_generation;
+-- Expected Output: 'on'
 ```
 
-### 2. Grant Vertex AI Access to AlloyDB
-AlloyDB needs permissions to query Vertex AI endpoints. Grant the `Vertex AI User` role to the AlloyDB service account by executing this command in Cloud Shell:
-```bash
-PROJECT_ID=$(gcloud config get-value project)
-
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-  --member="serviceAccount:service-$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")@gcp-sa-alloydb.iam.gserviceaccount.com" \
-  --role="roles/aiplatform.user"
-```
+> [!NOTE]
+> If either of these flags outputs `off`, please contact your lab facilitator immediately to run the VPC automation update.
 
 ---
 
-## Phase 2: Enable Database Flags
-
-AlloyDB AI integration requires specific database flags to be enabled on the primary instance.
-
-1. Navigate to the **AlloyDB Clusters** page in the Cloud Console.
-2. Click your cluster name.
-3. Scroll to **Instances**, select the primary instance, and click **Edit**.
-4. Go to **Advanced Configuration** and click **Add Database Flag**.
-5. Add the following flags and set them to `ON`:
-   - `google_ml_integration.enable_model_support`
-   - `google_ml_integration.enable_faster_embedding_generation`
-6. Click **Update Instance** to apply.
-
----
-
-## Phase 3: Schema Setup & Extension Activation
+## Phase 2: Schema Setup & Extension Activation
 
 Log into your **AlloyDB Studio** using the database credentials (default user: `postgres`). Run the following DDL commands to register the required PostgreSQL extensions:
 
@@ -76,7 +58,7 @@ SELECT extversion FROM pg_extension WHERE extname = 'google_ml_integration';
 
 ---
 
-## Phase 4: Generate Synthetic Data at Scale
+## Phase 3: Generate Synthetic Data at Scale
 
 Instead of loading a heavy CSV, generate 50,000 rows of synthetic customer support articles instantly using SQL:
 
@@ -121,7 +103,7 @@ SELECT count(*) FROM help_articles;
 
 ---
 
-## Phase 5: Zero-Loop "One-Shot" Vector Generation
+## Phase 4: Zero-Loop "One-Shot" Vector Generation
 
 Now, perform a bulk generation of embeddings for all 50,000 rows natively in the database. This process eliminates the need for Python loops or Kafka queues.
 
@@ -153,7 +135,7 @@ LIMIT 5;
 
 ---
 
-## Phase 6: Verify Real-Time Triggers
+## Phase 5: Verify Real-Time Triggers
 
 Because `incremental_refresh_mode` was set to `'transactional'`, AlloyDB automatically configures internal triggers to auto-embed new records immediately.
 
@@ -171,7 +153,7 @@ WHERE title = 'New Scaling Guide';
 
 ---
 
-## Phase 7: Flexing Context / Hybrid Search
+## Phase 6: Flexing Context / Hybrid Search
 
 We will perform a **Hybrid Search** that combines semantic context understanding (vector similarity) with structured relational logic (SQL filters).
 
@@ -191,7 +173,7 @@ LIMIT 5;
 
 ---
 
-## Phase 8: High-Scale Optimization with ScaNN Index (Cloud Next 2026)
+## Phase 7: High-Scale Optimization with ScaNN Index (Cloud Next 2026)
 
 While traditional indexes (like `HNSW` or `IVFFlat`) are standard, AlloyDB AI introduces native support for Google's state-of-the-art **ScaNN (Scalable Nearest Neighbors)** index. ScaNN is built specifically for ultra-fast vector search at massive scale (millions of rows), delivering up to **double the Queries Per Second (QPS)** and higher recall accuracy.
 
@@ -208,7 +190,7 @@ WITH (num_leaves = 500);
 
 ### 2. Leverage Next-Gen AlloyDB AI Search Features
 By using AlloyDB AI, you automatically inherit latest enhancements showcased at **Cloud Next 2026**:
-- **Dynamic Pre-Filtering & Pruning**: During hybrid queries (Phase 7), AlloyDB's optimizer performs standard relational query pruning (e.g., resolving `WHERE category = 'Billing'`) *before* scoring vector spaces, restricting ScaNN calculations only to matching rows.
+- **Dynamic Pre-Filtering & Pruning**: During hybrid queries (Phase 6), AlloyDB's optimizer performs standard relational query pruning (e.g., resolving `WHERE category = 'Billing'`) *before* scoring vector spaces, restricting ScaNN calculations only to matching rows.
 - **Hardware-Accelerated Real-time Inference**: The integration between `google_ml_integration` and Vertex AI leverages hardware-accelerated TPUs and GPUs on Google Cloud automatically, ensuring zero-overhead batch predictions and instant triggers.
 
 ---
