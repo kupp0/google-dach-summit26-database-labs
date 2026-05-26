@@ -237,8 +237,20 @@ WITH (mode='AUTO',
 
 > [!TIP]
 > **Confirming Index Usage**:
-> To verify that your queries are successfully using the ScaNN index instead of performing slow sequential scans, prefix your query with `EXPLAIN ANALYZE`:
-> `EXPLAIN ANALYZE SELECT ... ORDER BY relevance DESC;`
+> To verify that your queries are successfully using the ScaNN index instead of performing slow sequential scans, prefix your hybrid search query with `EXPLAIN ANALYZE`:
+> ```sql
+> EXPLAIN ANALYZE
+> SELECT
+>   title,
+>   left(content_body, 100) AS content_snippet,
+>   1 - (embedding <=> embedding('text-embedding-005', 'Invoice did not go through')::vector) AS relevance
+> FROM help_articles
+> WHERE category = 'Billing'
+>   AND product_version = '2.0'
+> ORDER BY relevance DESC
+> LIMIT 5;
+> ```
+> *In the output execution plan, look for the **`Index Scan`** row referencing `help_articles_scann_idx`. This confirms AlloyDB is successfully utilizing ScaNN approximate nearest neighbor lookups instead of performing a sequential scan.*
 
 
 
