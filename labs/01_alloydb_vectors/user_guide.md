@@ -49,9 +49,10 @@ SHOW google_ml_integration.enable_faster_embedding_generation;
 Log into your **AlloyDB Studio** using the database credentials (default user: `postgres`). Run the following DDL commands to register the required PostgreSQL extensions:
 
 ```sql
--- Enable pgvector and ML integration extensions
+-- Enable pgvector, ML integration, and ScaNN index extensions
 CREATE EXTENSION IF NOT EXISTS google_ml_integration CASCADE;
 CREATE EXTENSION IF NOT EXISTS vector;
+CREATE EXTENSION IF NOT EXISTS alloydb_scann CASCADE;
 ```
 
 ### Verify Extension Version
@@ -208,16 +209,27 @@ LIMIT 5;
 
 While traditional indexes (like `HNSW` or `IVFFlat`) are standard, AlloyDB AI introduces native support for Google's state-of-the-art **ScaNN (Scalable Nearest Neighbors)** index. ScaNN is built specifically for ultra-fast vector search at massive scale (millions of rows), delivering up to **double the Queries Per Second (QPS)** and higher recall accuracy.
 
-### 1. Create a ScaNN Index
-Run the following command to build a ScaNN index on the embedding vector column:
+### 1. Understand Distance Metrics
+Before creating an index, it is essential to understand the 3 core vector distance functions supported by pgvector and ScaNN:
+
+- **L2 Distance (`l2` / `<->`)**: Measures the straight physical distance between two vector coordinate points. *Best used when vector magnitude is significant (e.g., image pixel comparison).*
+- **Dot Product (`dot_product` / `<#>`)**: Measures the angle and direction of vectors. *Best used when vectors are pre-normalized to unit length, offering the fastest mathematical execution.*
+- **Cosine Distance (`cosine` / `<=>`)**: Measures solely the angle difference between vectors, completely ignoring vector length/magnitude. *The industry standard for text similarity and RAG, ensuring word repetition or document length differences do not skew the search results.*
+
+### 2. Create an Auto-Tuned ScaNN Index
+Instead of manually calculating leaves and quantization clusters (which is mathematically complex and hard to maintain as data scales), AlloyDB AI introduces **Automatically-Tuned ScaNN indexes** (MODE='AUTO').
+
+AlloyDB continuously analyzes the table row counts and vector dimensionality, dynamically re-tuning leaves and index trees behind the scenes to ensure optimal Queries Per Second (QPS) and recall performance.
+
+Run the DDL command below to create an auto-tuned ScaNN index optimized for **Cosine** distance:
 ```sql
 CREATE INDEX help_articles_scann_idx 
 ON help_articles 
-USING scann (embedding vector_cosine_ops)
-WITH (num_leaves = 500);
+USING scann (embedding cosine);
 ```
-> [!NOTE]
-> `num_leaves` controls the number of clusters built by the ScaNN quantization algorithm. For 50,000 to 1,000,000 rows, `500` to `1000` leaves is recommended for optimal indexing speed and query recall.
+
+> [!TIP]
+> By leveraging Auto-Tuned mode, you eliminate index maintenance overhead—saving you from manual re-indexing or re-calculating leaves as your support database grows from 100,000 to millions of rows!
 
 ### 2. Leverage Next-Gen AlloyDB AI Search Features
 By using AlloyDB AI, you automatically inherit latest enhancements showcased at **Cloud Next 2026**:
