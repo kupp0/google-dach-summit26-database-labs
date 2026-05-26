@@ -6,7 +6,7 @@ In this lab, you will build a scalable Knowledge Base search database applicatio
 
 ## Objective
 - Provision an AlloyDB Cluster and enable AI extensions.
-- Generate a high-scale synthetic dataset (50,000+ rows) instantly using SQL.
+- Generate a high-scale synthetic dataset (100,000+ rows) instantly using SQL.
 - Backfill vector embeddings for the entire dataset using **Batch Processing**.
 - Set up **Real-Time Incremental Triggers** to auto-embed new data as it is inserted.
 - Perform a **Hybrid Search** combining semantic vector lookups with SQL filters.
@@ -32,8 +32,15 @@ SHOW google_ml_integration.enable_faster_embedding_generation;
 -- Expected Output: 'on'
 ```
 
-> [!NOTE]
-> If either of these flags outputs `off`, please contact your lab facilitator immediately to run the VPC automation update.
+> [!TIP]
+> **Self-Service Fix**: If either of these flags outputs `off`, you can quickly enable them yourself using this command in your Google Cloud Shell:
+> ```bash
+> gcloud alloydb instances update search-primary \
+>   --cluster=search-cluster \
+>   --region=europe-west1 \
+>   --database-flags=google_ml_integration.enable_model_support=on,google_ml_integration.enable_faster_embedding_generation=on
+> ```
+
 
 ---
 
@@ -60,7 +67,7 @@ SELECT extversion FROM pg_extension WHERE extname = 'google_ml_integration';
 
 ## Phase 3: Generate Synthetic Data at Scale
 
-Instead of loading a heavy CSV, generate 50,000 rows of synthetic customer support articles instantly using SQL:
+Instead of loading a heavy CSV, generate 100,000 rows of synthetic customer support articles instantly using SQL:
 
 ```sql
 -- 1. Create the help_articles table
@@ -73,7 +80,7 @@ CREATE TABLE help_articles (
     embedding vector(768) -- 768 dimension for text-embedding-005
 );
 
--- 2. Generate 50,000 rows of synthetic data
+-- 2. Generate 100,000 rows of synthetic data
 INSERT INTO help_articles (title, category, product_version, content_body)
 SELECT
     'Help Article ' || i,
@@ -92,20 +99,22 @@ SELECT
         WHEN i % 3 = 1 THEN 'connection timeouts, latency issues, and API errors.'
         ELSE 'account profile settings, password resets, and user roles.' 
     END
-FROM generate_series(1, 50000) AS i;
+FROM generate_series(1, 100000) AS i;
 ```
 
 Verify the row count:
 ```sql
 SELECT count(*) FROM help_articles;
--- Output should be exactly 50000
+-- Output should be exactly 100000
 ```
 
 ---
 
 ## Phase 4: Zero-Loop "One-Shot" Vector Generation
 
-Now, perform a bulk generation of embeddings for all 50,000 rows natively in the database. This process eliminates the need for Python loops or Kafka queues.
+Now, perform a bulk generation of embeddings for all 100,000 rows natively in the database. This process eliminates the need for Python loops or Kafka queues outside the database. 
+
+By leveraging database-native automatic embedding generation, you eliminate external scheduler loops and background pipeline infrastructure, drastically reducing code maintenance debt. AlloyDB natively manages optimal batch sizes and automatically recovers from transient model quota limit errors, reducing API token overhead and guaranteeing transactional data remains continuously in sync.
 
 ### 1. Grant Progress Management Permissions
 ```sql
@@ -186,7 +195,7 @@ USING scann (embedding vector_cosine_ops)
 WITH (num_leaves = 500);
 ```
 > [!NOTE]
-> `num_leaves` controls the number of clusters built by the ScaNN quantization algorithm. For 50,000 to 1,000,000 rows, `500` to `1000` leaves is recommended for optimal indexing speed and query recall.
+> `num_leaves` controls the number of clusters built by the ScaNN quantization algorithm. For 100,000 to 1,000,000 rows, `500` to `1000` leaves is recommended for optimal indexing speed and query recall.
 
 ### 2. Leverage Next-Gen AlloyDB AI Search Features
 By using AlloyDB AI, you automatically inherit latest enhancements showcased at **Cloud Next 2026**:
