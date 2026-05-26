@@ -67,6 +67,7 @@ resource "google_alloydb_instance" "primary" {
   database_flags = {
     "google_ml_integration.enable_model_support"             = "on"
     "google_ml_integration.enable_faster_embedding_generation" = "on"
+    "scann.max_allowed_num_levels"                            = "3"
   }
 
   depends_on = [google_alloydb_cluster.default]

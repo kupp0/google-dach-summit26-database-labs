@@ -197,7 +197,7 @@ SELECT
 FROM help_articles
 WHERE category = 'Billing'        -- Structured business filter
   AND product_version = '2.0'     -- Structured version filter
-ORDER BY relevance DESC
+ORDER BY embedding <=> embedding('text-embedding-005', 'Invoice did not go through')::vector ASC
 LIMIT 5;
 ```
 
@@ -235,6 +235,15 @@ WITH (mode='AUTO',
 
 ## Verification & Troubleshooting
 
+> [!IMPORTANT]
+> **Prerequisite for ScaNN Index Queries**: 
+> To successfully query an AlloyDB ScaNN index, you **MUST** set the session parameter **`scann.max_allowed_num_levels = 3`** in your active Query Editor tab. If this flag is not set to 3 (or higher), the query planner will **never** choose the ScaNN index and will always fallback to a sequential scan.
+> 
+> Execute this command in your editor session before running the verification queries:
+> ```sql
+> SET scann.max_allowed_num_levels = 3;
+> ```
+
 > [!TIP]
 > **Confirming Index Usage**:
 > To verify that your queries are successfully using the ScaNN index instead of performing slow sequential scans, prefix your hybrid search query with `EXPLAIN ANALYZE`:
@@ -247,32 +256,11 @@ WITH (mode='AUTO',
 > FROM help_articles
 > WHERE category = 'Billing'
 >   AND product_version = '2.0'
-> ORDER BY relevance DESC
+> ORDER BY embedding <=> embedding('text-embedding-005', 'Invoice did not go through')::vector ASC
 > LIMIT 5;
 > ```
 > *In the output execution plan, look for the **`Index Scan`** (or custom **`scann`** scan) row referencing `help_articles_scann_idx`. This confirms AlloyDB is successfully utilizing ScaNN approximate nearest neighbor lookups.*
-> 
-> #### Troubleshooting: Planner choosing "Seq Scan" over ScaNN
-> If you see **`Parallel Seq Scan`** (or `Seq Scan`) in the query plan instead of an index scan, this is normal behavior for small or pre-filtered datasets. Because our query has highly restrictive filters (`WHERE category = 'Billing' AND product_version = '2.0'`), the PostgreSQL query planner estimates that performing a parallel sequential scan is faster than opening and loading index pages.
-> 
-> To force the query planner to use your ScaNN index for testing purposes, temporarily disable sequential scans in your active database session and re-run the query:
-> ```sql
-> -- Force the planner to choose index scans
-> SET enable_seqscan = off;
-> 
-> -- Re-run the EXPLAIN ANALYZE query
-> EXPLAIN ANALYZE
-> SELECT
->   title,
->   left(content_body, 100) AS content_snippet,
->   1 - (embedding <=> embedding('text-embedding-005', 'Invoice did not go through')::vector) AS relevance
-> FROM help_articles
-> WHERE category = 'Billing'
->   AND product_version = '2.0'
-> ORDER BY relevance DESC
-> LIMIT 5;
-> ```
-> *After setting `enable_seqscan = off`, you should immediately see **`Index Scan using help_articles_scann_idx`** (or custom **`scann`** scan) in the resulting query plan output! Once verified, you can restore defaults with `RESET enable_seqscan;`.*
+
 
 
 
