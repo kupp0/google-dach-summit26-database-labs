@@ -119,9 +119,7 @@ Now, perform a bulk generation of embeddings for all 100,000 rows natively in th
 > **The Operational Edge (Transactional Mode)**: By specifying `incremental_refresh_mode => 'transactional'`, AlloyDB automatically configures live database triggers. This transactional synchronization is exceptionally powerful for production-grade operational vector search applications, because any future DML writes are vectorized **automatically** inside the same transaction, guaranteeing your search index remains 100% synchronized with zero operational lag!
 
 > [!TIP]
-> **Performance Benchmark**: In standard summit environments, backfilling the entire **100,000 rows** dataset completes in just **90.7 seconds** (processing over **1,100 rows per second**) when running with our optimized batch configuration! 
-> 
-> Imagine the infrastructure and performance overhead of executing 100,000 individual Vertex AI API HTTP calls row-by-row in a traditional application-driven loops approach. Native AlloyDB AI batching delivers unmatched efficiency.
+> **Performance Benchmark**: In standard summit environments, backfilling the entire **100,000 rows** dataset completes in just **230.9 seconds** (processing over **430 rows per second**)! This highlights the superior speed and efficiency of database-native batch processing over traditional external application-driven loops. Imagine operating 100k individual VertexAI API calls row by row. 
 
 By leveraging database-native automatic embedding generation, you eliminate external scheduler loops and background pipeline infrastructure, drastically reducing code maintenance debt. AlloyDB natively manages optimal batch sizes and automatically recovers from transient model quota limit errors, reducing API token overhead and guaranteeing transactional data remains continuously in sync.
 
@@ -225,16 +223,13 @@ Run the DDL command below to create an auto-tuned ScaNN index optimized for **Co
 ```sql
 CREATE INDEX help_articles_scann_idx 
 ON help_articles 
-USING scann (embedding cosine);
+USING scann (embedding vector_cosine_ops)
+WITH (mode='AUTO',
+      auto_maintenance='AUTO_MAINTENANCE');
 ```
-
-> [!TIP]
-> By leveraging Auto-Tuned mode, you eliminate index maintenance overhead—saving you from manual re-indexing or re-calculating leaves as your support database grows from 100,000 to millions of rows!
-
-### 2. Leverage Next-Gen AlloyDB AI Search Features
-By using AlloyDB AI, you automatically inherit latest enhancements showcased at **Cloud Next 2026**:
-- **Dynamic Pre-Filtering & Pruning**: During hybrid queries (Phase 6), AlloyDB's optimizer performs standard relational query pruning (e.g., resolving `WHERE category = 'Billing'`) *before* scoring vector spaces, restricting ScaNN calculations only to matching rows.
-- **Hardware-Accelerated Real-time Inference**: The integration between `google_ml_integration` and Vertex AI leverages hardware-accelerated TPUs and GPUs on Google Cloud automatically, ensuring zero-overhead batch predictions and instant triggers.
+> [!NOTE]
+> `mode='AUTO'` - The optimal configuration for the ScaNN index is automatically chosen based on the number of rows in the table. 
+> `auto_maintenance='AUTO_MAINTENANCE'` - The index will be automatically maintained by AlloyDB, including periodic rebalancing and optimization.
 
 ---
 
@@ -245,7 +240,5 @@ By using AlloyDB AI, you automatically inherit latest enhancements showcased at 
 > To verify that your queries are successfully using the ScaNN index instead of performing slow sequential scans, prefix your query with `EXPLAIN ANALYZE`:
 > `EXPLAIN ANALYZE SELECT ... ORDER BY relevance DESC;`
 
-> [!WARNING]
-> **Model ID Consistency**:
-> Ensure that the `model_id` used in `ai.initialize_embeddings` (`text-embedding-005`) matches the model name in your query `SELECT` statement's `embedding(...)` function. Dim mismatch or space mismatches will result in irrelevant search rankings.
+
 
