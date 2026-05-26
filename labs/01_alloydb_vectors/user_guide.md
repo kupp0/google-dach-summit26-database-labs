@@ -67,7 +67,7 @@ SELECT extversion FROM pg_extension WHERE extname = 'google_ml_integration';
 
 ## Phase 3: Generate Synthetic Data at Scale
 
-Instead of loading a heavy CSV, generate 100,000 rows of synthetic customer support articles instantly using SQL:
+Instead of loading a heavy CSV, generate 50,000 rows of synthetic customer support articles instantly using SQL:
 
 ```sql
 -- 1. Create the help_articles table
@@ -80,7 +80,7 @@ CREATE TABLE help_articles (
     embedding vector(768) -- 768 dimension for text-embedding-005
 );
 
--- 2. Generate 100,000 rows of synthetic data
+-- 2. Generate 50,000 rows of synthetic data
 INSERT INTO help_articles (title, category, product_version, content_body)
 SELECT
     'Help Article ' || i,
@@ -112,7 +112,7 @@ SELECT count(*) FROM help_articles;
 
 ## Phase 4: Zero-Loop "One-Shot" Vector Generation
 
-Now, perform a bulk generation of embeddings for all 100,000 rows natively in the database. This process eliminates the need for Python loops or Kafka queues outside the database. 
+Now, perform a bulk generation of embeddings for all 100,000 rows natively in the database. This process eliminates the need for Python loops or Kafka queues outside the database.
 
 By leveraging database-native automatic embedding generation, you eliminate external scheduler loops and background pipeline infrastructure, drastically reducing code maintenance debt. AlloyDB natively manages optimal batch sizes and automatically recovers from transient model quota limit errors, reducing API token overhead and guaranteeing transactional data remains continuously in sync.
 
@@ -195,7 +195,7 @@ USING scann (embedding vector_cosine_ops)
 WITH (num_leaves = 500);
 ```
 > [!NOTE]
-> `num_leaves` controls the number of clusters built by the ScaNN quantization algorithm. For 100,000 to 1,000,000 rows, `500` to `1000` leaves is recommended for optimal indexing speed and query recall.
+> `num_leaves` controls the number of clusters built by the ScaNN quantization algorithm. For 50,000 to 1,000,000 rows, `500` to `1000` leaves is recommended for optimal indexing speed and query recall.
 
 ### 2. Leverage Next-Gen AlloyDB AI Search Features
 By using AlloyDB AI, you automatically inherit latest enhancements showcased at **Cloud Next 2026**:
