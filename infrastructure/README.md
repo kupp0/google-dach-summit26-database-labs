@@ -44,6 +44,17 @@ Provisioning files for **Google Cloud Workstations**, providing participants wit
 
 ---
 
+## Environment Setup for Gemini
+
+Before calling Gemini, make sure to set the following environment variables in your terminal:
+
+```bash
+export GOOGLE_CLOUD_PROJECT="your-project-id"
+export GOOGLE_CLOUD_LOCATION="global"
+```
+
+---
+
 > [!NOTE]
 > *Operational Status: Under Development.*  
 > Placeholder templates have been established. Automated scripts are currently being integrated by the core infrastructure team.
