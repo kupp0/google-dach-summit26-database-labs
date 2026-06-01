@@ -74,7 +74,19 @@ resource "google_bigquery_connection" "spanner_conn" {
   }
 }
 
-#--- 3. IAM Permissions ---
+#--- 3. External Table (The Bridge) ---
+resource "google_bigquery_table" "spanner_external_table" {
+  dataset_id = google_bigquery_dataset.disney_dataset.dataset_id
+  table_id   = "external_spanner_table"
+  external_data_configuration {
+    autodetect    = true
+    connection_id = google_bigquery_connection.spanner_conn.name
+    source_format = "GOOGLE_CLOUD_SPANNER"
+    source_uris   = ["projects/${var.project_id}/instances/${google_spanner_instance.disneyland.name}/databases/${google_spanner_database.agent_lab.name}/tables/Singers"]
+  }
+}
+
+#--- 4. IAM Permissions ---
 data "google_project" "project" {
   project_id = var.project_id
 }
@@ -132,14 +144,6 @@ gcloud spanner rows insert --instance=disneyland --database=agent-lab \
 
 gcloud spanner rows insert --instance=disneyland --database=agent-lab \
   --table=Singers --data=SingerId=2,Name="Donald Duck"
-
-# 4. Create the BigQuery External Table (Zero-Copy Bridge)
-bq query --use_legacy_sql=false \
-  "CREATE OR REPLACE EXTERNAL TABLE \`$(gcloud config get-value project).disney.external_spanner_table\`
-   WITH CONNECTION \`$(gcloud config get-value project).europe-west1.spanner_conn\`
-   OPTIONS (
-     uris=['projects/$(gcloud config get-value project)/instances/disneyland/databases/agent-lab/tables/Singers']
-   );"
 ```
 
 ---
