@@ -85,19 +85,6 @@ resource "google_bigquery_table" "spanner_external_table" {
     source_uris   = ["projects/${var.project_id}/instances/${google_spanner_instance.disneyland.name}/databases/${google_spanner_database.agent_lab.name}/tables/Singers"]
   }
 }
-
-#--- 4. IAM Permissions ---
-data "google_project" "project" {
-  project_id = var.project_id
-}
-
-resource "google_spanner_database_iam_member" "spanner_reader" {
-  project  = var.project_id
-  instance = google_spanner_instance.disneyland.name
-  database = google_spanner_database.agent_lab.name
-  role     = "roles/spanner.databaseReader"
-  member   = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-bigqueryconnection.iam.gserviceaccount.com"
-}
 ```
 
 ### 2. Populate `outputs.tf`
