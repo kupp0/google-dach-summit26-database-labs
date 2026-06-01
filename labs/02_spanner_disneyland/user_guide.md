@@ -44,18 +44,6 @@ variable "project_id" {
   type        = string
 }
 
-#--- 0. Enable Required APIs ---
-resource "google_project_service" "enabled_apis" {
-  for_each = toset([
-    "spanner.googleapis.com",
-    "bigquery.googleapis.com",
-    "bigqueryconnection.googleapis.com"
-  ])
-  project            = var.project_id
-  service            = each.key
-  disable_on_destroy = false
-}
-
 #--- 1. Cloud Spanner Setup ---
 resource "google_spanner_instance" "disneyland" {
   name             = "disneyland"
@@ -63,7 +51,6 @@ resource "google_spanner_instance" "disneyland" {
   display_name     = "Disneyland AI Agents"
   edition          = "ENTERPRISE"
   processing_units = 100
-  depends_on       = [google_project_service.enabled_apis]
 }
 
 resource "google_spanner_database" "agent_lab" {
@@ -76,7 +63,6 @@ resource "google_spanner_database" "agent_lab" {
 resource "google_bigquery_dataset" "disney_dataset" {
   dataset_id = "disney"
   location   = "europe-west1"
-  depends_on = [google_project_service.enabled_apis]
 }
 
 resource "google_bigquery_connection" "spanner_conn" {
