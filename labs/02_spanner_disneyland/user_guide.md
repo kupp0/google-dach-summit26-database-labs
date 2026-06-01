@@ -415,15 +415,12 @@ Once your Cloud Spanner database is successfully created and active, Spanner is 
 
 To verify that the Spanner MCP Server is registered and available in your region:
 
-1. **Install the `alpha` component** in your Cloud Shell if not already installed:
-   ```bash
-   gcloud components install alpha
-   ```
-2. **List the registered MCP Servers** in your project:
-   ```bash
-   gcloud alpha agent-registry mcp-servers list --location=europe-west1 --project=$(gcloud config get-value project)
-   ```
-   *(Look for an entry related to Spanner in the output to confirm availability).*
+Run this command directly in your Cloud Shell terminal (the `alpha` component group is pre-installed by default in Cloud Shell):
+
+```bash
+gcloud alpha agent-registry mcp-servers list --location=europe-west1 --project=$(gcloud config get-value project)
+```
+*(Look for an entry related to Spanner in the output to confirm availability).*
 
 ---
 
