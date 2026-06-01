@@ -13,19 +13,25 @@ To avoid resource conflicts and permission issues, you must use an assigned sand
 
 ---
 
-## 2. Enable the Cloud Resource Manager API
+## 2. Enable the Cloud Resource Manager API & Grant Spanner Permissions
 
-Terraform requires the Cloud Resource Manager API to dynamically look up project information and configure the Google Provider context.
+Terraform requires the Cloud Resource Manager API to dynamically look up project information, and requires explicit IAM permissions (`spanner.databases.setIamPolicy`) to authorize BigQuery access to Spanner.
 
-In your Google Cloud Shell (or active terminal), run this command:
+In your Google Cloud Shell (or active terminal), run these commands:
 
 ```bash
+# 1. Enable Cloud Resource Manager API
 gcloud services enable cloudresourcemanager.googleapis.com --project=$(gcloud config get-value project)
+
+# 2. Grant Spanner Admin permissions to your user account to allow IAM policy setup
+gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
+  --member="user:$(gcloud config get-value account)" \
+  --role="roles/spanner.admin"
 ```
 
 > [!IMPORTANT]
-> If you do not enable this API first, Terraform will fail to initialize data sources with the error:
-> `Error: Error when reading or editing Project: Cloud Resource Manager API has not been used in project before or it is disabled.`
+> If you do not enable the Cloud Resource Manager API first, Terraform will fail to initialize. 
+> If you do not grant the `roles/spanner.admin` role to your active account, Terraform will fail with a `403 Caller is missing IAM permission spanner.databases.setIamPolicy` when establishing the database IAM permissions.
 
 ---
 

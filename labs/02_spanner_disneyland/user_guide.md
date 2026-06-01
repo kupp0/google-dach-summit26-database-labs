@@ -19,11 +19,17 @@ In this lab, you will build a zero-copy federated analytical "bridge" linking **
 Before starting, make sure you have assigned yourself a sandbox account. 
 Refer to the [frictionless accounts sheet](https://docs.google.com/spreadsheets/d/1CU4at6i5aeGfFotrcKLFeytHcIqCKHDmzZMUT1EMCAg/edit?gid=1814460091#gid=1814460091) and mark the account you are using with your name in the "Printout" column.
 
-### 2. Enable Cloud Resource Manager
-In your Google Cloud Shell, run this command first to enable the Cloud Resource Manager API (this is required by Terraform to fetch project details):
+### 2. Enable APIs & Configure Cloud Spanner IAM Permissions
+In your Google Cloud Shell, run these commands to prepare your sandbox environment. This enables required resource metadata APIs and grants your account the necessary Spanner administration role to configure IAM database readers in Terraform:
 
 ```bash
+# 1. Enable Cloud Resource Manager API (required for dynamic project discovery)
 gcloud services enable cloudresourcemanager.googleapis.com --project=$(gcloud config get-value project)
+
+# 2. Grant Spanner Admin role to your user account to allow IAM policy updates
+gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
+  --member="user:$(gcloud config get-value account)" \
+  --role="roles/spanner.admin"
 ```
 
 ### 3. Create Workspace Directory
