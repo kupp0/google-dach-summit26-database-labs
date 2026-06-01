@@ -101,12 +101,16 @@ resource "google_bigquery_table" "spanner_external_table" {
 }
 
 #--- 4. IAM Permissions ---
+data "google_project" "project" {
+  project_id = var.project_id
+}
+
 resource "google_spanner_database_iam_member" "spanner_reader" {
   project  = var.project_id
   instance = google_spanner_instance.disneyland.name
   database = google_spanner_database.agent_lab.name
   role     = "roles/spanner.databaseReader"
-  member   = "serviceAccount:${google_bigquery_connection.spanner_conn.cloud_spanner[0].service_account_id}"
+  member   = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-bigqueryconnection.iam.gserviceaccount.com"
 }
 ```
 
