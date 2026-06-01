@@ -117,7 +117,7 @@ resource "google_spanner_database_iam_member" "spanner_reader" {
   project    = data.google_project.project.project_id
   instance   = google_spanner_instance.disneyland.name
   database   = google_spanner_database.agent_lab.name
-  role       = "roles/spanner.databaseReader"
+  role     = "roles/spanner.databaseUser"
   member     = "serviceAccount:${google_bigquery_connection.spanner_conn.cloud_resource[0].service_account_id}"
   depends_on = [time_sleep.wait_for_database]
 }
