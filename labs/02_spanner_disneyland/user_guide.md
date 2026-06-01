@@ -119,6 +119,14 @@ gcloud spanner rows insert --instance=disneyland --database=agent-lab \
 
 gcloud spanner rows insert --instance=disneyland --database=agent-lab \
   --table=Singers --data=SingerId=2,Name="Donald Duck"
+
+# 4. Create the BigQuery Zero-Copy Bridge (View)
+bq query --use_legacy_sql=false \
+  "CREATE OR REPLACE VIEW \`$(gcloud config get-value project).disney.external_spanner_table\` AS
+   SELECT * FROM EXTERNAL_QUERY(
+     '$(gcloud config get-value project).europe-west1.spanner_conn',
+     'SELECT * FROM Singers;'
+   );"
 ```
 
 ---
@@ -147,10 +155,7 @@ Validate that the federated bridge is working correctly by executing a live quer
 
 ```sql
 SELECT * 
-FROM EXTERNAL_QUERY(
-  "YOUR_PROJECT_ID.europe-west1.spanner_conn",
-  "SELECT * FROM Singers;"
-)
+FROM `YOUR_PROJECT_ID.disney.external_spanner_table`
 ```
 
 The output should show your Spanner records:
