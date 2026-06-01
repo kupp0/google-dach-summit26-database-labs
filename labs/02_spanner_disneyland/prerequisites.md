@@ -31,7 +31,7 @@ gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
 
 If participants are utilizing **Cloud Workstations** rather than Google Cloud Shell, the following shared networking infrastructure must be pre-provisioned:
 * **Private NAT**: Enable Private NAT inside the target VPC network.
-* **Subnets**: A dedicated VPC network and subnet must be created in the primary region (`europe-west1`).
+* **Subnets**: A dedicated VPC network and subnet must be created in the primary region (`europe-west9`).
 * **IAM/Security Accounts**: Ensure the Cloud Workstations service accounts have adequate IAM permissions to join resources inside the designated subnet.
 
 ---
@@ -41,7 +41,7 @@ If participants are utilizing **Cloud Workstations** rather than Google Cloud Sh
 The original user guide contained steps to manually install the GCP MCP Toolbox client and list active tools:
 ```bash
 gcloud components install mcp-toolbox
-gcloud mcp-toolbox list-resources --project=$(gcloud config get-value project) --location=europe-west1
+gcloud mcp-toolbox list-resources --project=$(gcloud config get-value project) --location=europe-west9
 ```
 
 > [!WARNING]

@@ -35,7 +35,7 @@ Open `main.tf` in your editor (e.g., `nano main.tf`), paste the following config
 
 ```terraform
 # ==============================================================================
-# 0. Terraform Configuration & Providers
+# 0. Terraform Configuration & Variables
 # ==============================================================================
 terraform {
   required_providers {
@@ -50,11 +50,15 @@ terraform {
   }
 }
 
-provider "google" {
-  region  = "europe-west1"
+variable "project_id" {
+  description = "The Google Cloud Project ID"
+  type        = string
 }
 
-data "google_project" "project" {}
+provider "google" {
+  project = var.project_id
+  region  = "europe-west9"
+}
 
 # ==============================================================================
 # 1. Enable Required APIs
@@ -65,16 +69,17 @@ resource "google_project_service" "enabled_apis" {
     "bigquery.googleapis.com",
     "bigqueryconnection.googleapis.com"
   ])
-  project            = data.google_project.project.project_id
+  project            = var.project_id
   service            = each.key
   disable_on_destroy = false
 }
+
 # ==============================================================================
 # 2. Cloud Spanner Setup
 # ==============================================================================
 resource "google_spanner_instance" "disneyland" {
   name             = "disneyland"
-  config           = "regional-europe-west1"
+  config           = "regional-europe-west9"
   display_name     = "Disneyland AI Agents"
   edition          = "ENTERPRISE"
   processing_units = 100
@@ -82,74 +87,61 @@ resource "google_spanner_instance" "disneyland" {
 }
 
 resource "google_spanner_database" "agent_lab" {
-  instance         = google_spanner_instance.disneyland.name
-  name             = "agent-lab"
-  database_dialect = "GOOGLE_STANDARD_SQL"
-}
-
-# Add a propagation delay after database creation to ensure its control plane and IAM resources are fully active
-resource "time_sleep" "wait_for_database" {
-  create_duration = "20s"
-  depends_on      = [google_spanner_database.agent_lab]
+  instance            = google_spanner_instance.disneyland.name
+  name                = "agent-lab"
+  database_dialect    = "GOOGLE_STANDARD_SQL"
+  deletion_protection = false
 }
 
 # ==============================================================================
-# 3. BigQuery Standard Setup & Connection
+# 3. BigQuery Setup & Connection
 # ==============================================================================
 resource "google_bigquery_dataset" "disney_dataset" {
   dataset_id = "disney"
-  location   = "europe-west1"
+  location   = "europe-west9"
   depends_on = [google_project_service.enabled_apis]
 }
 
 resource "google_bigquery_connection" "spanner_conn" {
   connection_id = "spanner_conn"
-  location      = "europe-west1"
+  location      = "europe-west9"
   friendly_name = "Spanner Connector"
   cloud_resource {}
-  depends_on = [google_project_service.enabled_apis]
+  depends_on    = [google_project_service.enabled_apis]
+}
+
+# Mitigates GCP's global directory registration delay for new service accounts
+resource "time_sleep" "wait_for_connection_sa" {
+  create_duration = "15s"
+  depends_on      = [google_bigquery_connection.spanner_conn]
 }
 
 # ==============================================================================
-# 4. IAM Permissions (Authorizing BigQuery to read Spanner)
+# 4. Authoritative IAM Admin Permissions (Simplified Integration)
 # ==============================================================================
-resource "google_spanner_database_iam_member" "spanner_reader" {
-  project    = data.google_project.project.project_id
-  instance   = google_spanner_instance.disneyland.name
-  database   = google_spanner_database.agent_lab.name
-  role     = "roles/spanner.databaseUser"
-  member     = "serviceAccount:${google_bigquery_connection.spanner_conn.cloud_resource[0].service_account_id}"
-  depends_on = [time_sleep.wait_for_database]
+resource "google_project_iam_binding" "spanner_admin_bridge" {
+  project = var.project_id
+  role    = "roles/spanner.admin" # <-- Grants combined metadata schema + full database row read access
+  members = ["serviceAccount:${google_bigquery_connection.spanner_conn.cloud_resource[0].service_account_id}"]
+  
+  depends_on = [time_sleep.wait_for_connection_sa]
 }
 
-# Authorize BigQuery connection to view Spanner metadata (DDL listing, etc.) required for the external dataset mapping
-resource "google_project_iam_member" "spanner_viewer" {
-  project = data.google_project.project.project_id
-  role    = "roles/spanner.viewer"
-  member  = "serviceAccount:${google_bigquery_connection.spanner_conn.cloud_resource[0].service_account_id}"
-}
-
-# ==============================================================================
-# 5. The IAM Propagation Delay
-# ==============================================================================
+# Holds final bridge linking to give global control plane caching time to sync
 resource "time_sleep" "wait_for_iam" {
-  create_duration = "60s"
-  depends_on      = [
-    google_spanner_database_iam_member.spanner_reader,
-    google_project_iam_member.spanner_viewer
-  ]
+  create_duration = "45s"
+  depends_on      = [google_project_iam_binding.spanner_admin_bridge]
 }
 
 # ==============================================================================
-# 6. BigQuery External Dataset (The Spanner Bridge)
+# 5. BigQuery External Dataset (The Spanner Bridge)
 # ==============================================================================
 resource "google_bigquery_dataset" "spanner_external_dataset" {
   dataset_id  = "disneyland_spanner_external"
-  location    = "europe-west1"
-  description = "External dataset mapping to Cloud Spanner"
-
+  location    = "europe-west9"
+  
   external_dataset_reference {
-    external_source = "google-cloudspanner:/projects/${data.google_project.project.project_id}/instances/${google_spanner_instance.disneyland.name}/databases/${google_spanner_database.agent_lab.name}"
+    external_source = "google-cloudspanner:/projects/${var.project_id}/instances/${google_spanner_instance.disneyland.name}/databases/${google_spanner_database.agent_lab.name}"
     connection      = google_bigquery_connection.spanner_conn.id
   }
   
@@ -162,11 +154,18 @@ Open `outputs.tf` in your editor, paste the following configuration, and save:
 
 ```terraform
 output "spanner_instance_id" {
-  value = google_spanner_instance.disneyland.id
+  value       = google_spanner_instance.disneyland.id
+  description = "The fully qualified unique identifier for the Spanner Instance."
 }
 
 output "bq_spanner_connection_id" {
-  value = google_bigquery_connection.spanner_conn.name
+  value       = google_bigquery_connection.spanner_conn.id
+  description = "The unique identification path for the BigQuery External Connection."
+}
+
+output "mcp_verify_command" {
+  value       = "gcloud mcp-toolbox list-resources --project=${var.project_id} --location=europe-west9"
+  description = "The terminal verification command for students to validate their Model Context Protocol service registry."
 }
 ```
 
