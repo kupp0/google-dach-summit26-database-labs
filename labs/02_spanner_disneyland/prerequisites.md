@@ -1,57 +1,35 @@
-# Prerequisites for Lab 2: Cloud Spanner & BigQuery Disneyland Lab
+# Lab 2 Infrastructure Setup & Prerequisites (Internal Reference)
 
-Before deploying the Terraform infrastructure and starting the lab, you must complete the following setup steps in your Google Cloud environment.
-
----
-
-## 1. Sandbox / frictionless Account Setup
-
-To avoid resource conflicts and permission issues, you must use an assigned sandbox account.
-1. Open the [frictionless accounts sheet](https://docs.google.com/spreadsheets/d/1CU4at6i5aeGfFotrcKLFeytHcIqCKHDmzZMUT1EMCAg/edit?gid=1814460091#gid=1814460091).
-2. Select a free account.
-3. Mark the account with your name in the **"Printout"** column.
+This document serves as an internal operational reference for organizers and infrastructure engineers to prepare sandbox environments for **Lab 2: Cloud Spanner & BigQuery Disneyland Lab**.
 
 ---
 
-## 2. Enable the Cloud Resource Manager API & Grant Spanner Permissions
+## 1. Sandbox Account & API Prerequisites
 
-Terraform requires the Cloud Resource Manager API to dynamically look up project information, and requires explicit IAM permissions (`spanner.databases.setIamPolicy`) to authorize BigQuery access to Spanner.
+### A. Participant Sandbox Accounts
+Participants must be assigned dedicated sandbox accounts to prevent resource conflicts.
+* Reference sheet: [frictionless accounts sheet](https://docs.google.com/spreadsheets/d/1CU4at6i5aeGfFotrcKLFeytHcIqCKHDmzZMUT1EMCAg/edit?gid=1814460091#gid=1814460091)
 
-In your Google Cloud Shell (or active terminal), run these commands:
-
+### B. Enable Cloud Resource Manager API
+Before provisioning the Spanner infrastructure via Terraform, the Cloud Resource Manager API must be enabled within the target project context:
 ```bash
-# 1. Enable Cloud Resource Manager API
 gcloud services enable cloudresourcemanager.googleapis.com --project=$(gcloud config get-value project)
+```
 
-# 2. Grant Spanner Admin permissions to your user account to allow IAM policy setup
+### C. Grant Spanner Admin Permissions
+To authorize BigQuery connections to read transactional data from Cloud Spanner, Terraform creates an IAM policy binding on the Spanner database. The sandbox account deploying the Terraform script must possess Spanner administration privileges.
+Ensure the following role is bound to the deploying account/agent:
+```bash
 gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
   --member="user:$(gcloud config get-value account)" \
   --role="roles/spanner.admin"
 ```
 
-> [!IMPORTANT]
-> If you do not enable the Cloud Resource Manager API first, Terraform will fail to initialize. 
-> If you do not grant the `roles/spanner.admin` role to your active account, Terraform will fail with a `403 Caller is missing IAM permission spanner.databases.setIamPolicy` when establishing the database IAM permissions.
-
 ---
 
-## 3. Create Workspace Directory & Configuration Files
+## 2. Networking Requirements (For Cloud Workstations User)
 
-Prepare a clean workspace in your Cloud Shell:
-
-```bash
-# 1. Create and enter a clean project directory
-mkdir my-terraform-project && cd my-terraform-project
-
-# 2. Create the two required Terraform configuration files
-touch main.tf outputs.tf
-```
-
----
-
-## 4. Networking Requirements (For Cloud Workstations User)
-
-If you or other participants plan to use **Cloud Workstations** instead of Cloud Shell:
-* You must enable **Private NAT** in your VPC network.
-* A dedicated VPC network setup and a subnet must be pre-provisioned in the `europe-west1` region.
-* Ensure the service accounts have permissions to join resources into this subnet.
+If participants are utilizing **Cloud Workstations** rather than Google Cloud Shell, the following shared networking infrastructure must be pre-provisioned:
+* **Private NAT**: Enable Private NAT inside the target VPC network.
+* **Subnets**: A dedicated VPC network and subnet must be created in the primary region (`europe-west1`).
+* **IAM/Security Accounts**: Ensure the Cloud Workstations service accounts have adequate IAM permissions to join resources inside the designated subnet.
