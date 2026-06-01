@@ -122,12 +122,22 @@ resource "google_spanner_database_iam_member" "spanner_reader" {
   depends_on = [time_sleep.wait_for_database]
 }
 
+# Authorize BigQuery connection to view Spanner metadata (DDL listing, etc.) required for the external dataset mapping
+resource "google_project_iam_member" "spanner_viewer" {
+  project = data.google_project.project.project_id
+  role    = "roles/spanner.viewer"
+  member  = "serviceAccount:${google_bigquery_connection.spanner_conn.cloud_resource[0].service_account_id}"
+}
+
 # ==============================================================================
 # 5. The IAM Propagation Delay
 # ==============================================================================
 resource "time_sleep" "wait_for_iam" {
   create_duration = "60s"
-  depends_on      = [google_spanner_database_iam_member.spanner_reader]
+  depends_on      = [
+    google_spanner_database_iam_member.spanner_reader,
+    google_project_iam_member.spanner_viewer
+  ]
 }
 
 # ==============================================================================
