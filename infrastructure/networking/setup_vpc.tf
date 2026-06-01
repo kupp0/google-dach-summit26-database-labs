@@ -9,6 +9,13 @@ resource "google_project_service" "compute" {
   disable_on_destroy = false
 }
 
+# Enable Service Networking API
+resource "google_project_service" "servicenetworking" {
+  project            = var.project_id
+  service            = "servicenetworking.googleapis.com"
+  disable_on_destroy = false
+}
+
 # Create VPC with Cloud Nat in one region
 resource "google_compute_network" "vpc" {
   name                    = var.network_name
@@ -73,4 +80,22 @@ output "vpc_id" {
 
 output "subnet_id" {
   value = google_compute_subnetwork.subnet.id
+}
+
+# --- Service Networking for AlloyDB ---
+
+resource "google_compute_global_address" "private_ip_alloc" {
+  name          = "alloydb-private-ip"
+  purpose       = "VPC_PEERING"
+  address_type  = "INTERNAL"
+  prefix_length = 16
+  network       = google_compute_network.vpc.id
+  project       = var.project_id
+}
+
+resource "google_service_networking_connection" "private_vpc_connection" {
+  network                 = google_compute_network.vpc.id
+  service                 = "servicenetworking.googleapis.com"
+  reserved_peering_ranges = [google_compute_global_address.private_ip_alloc.name]
+  depends_on              = [google_project_service.servicenetworking]
 }

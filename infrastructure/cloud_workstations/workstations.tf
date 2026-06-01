@@ -62,3 +62,13 @@ resource "google_workstations_workstation" "default" {
 
   depends_on = [google_workstations_workstation_config.default]
 }
+
+resource "google_workstations_workstation_iam_member" "workstationuser" {
+  project                = var.project_id
+  location               = var.region
+  workstation_cluster_id = google_workstations_workstation_cluster.default.workstation_cluster_id
+  workstation_config_id  = google_workstations_workstation_config.default.workstation_config_id
+  workstation_id         = google_workstations_workstation.default.workstation_id
+  role                   = "roles/workstations.user"
+  member                 = var.workstationuser
+}

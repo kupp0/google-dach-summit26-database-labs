@@ -36,12 +36,13 @@ resource "google_project_iam_member" "alloydb_vertex_user" {
 
 #--- 3. AlloyDB Cluster Setup ---
 resource "google_alloydb_cluster" "default" {
-  cluster_id = "search-cluster"
+  cluster_id = "search-cluster-v2"
   project    = var.project_id
   location   = var.region
+  deletion_protection = false
 
   network_config {
-    network = "projects/${var.project_id}/global/networks/default"
+    network = var.vpc_id
   }
 
   initial_user {
@@ -60,7 +61,6 @@ resource "google_alloydb_instance" "primary" {
   database_flags = {
     "google_ml_integration.enable_model_support"             = "on"
     "google_ml_integration.enable_faster_embedding_generation" = "on"
-    "scann.max_allowed_num_levels"                            = "3"
   }
 
   depends_on = [google_alloydb_cluster.default]

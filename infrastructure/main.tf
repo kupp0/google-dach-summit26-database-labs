@@ -14,6 +14,7 @@ module "gcp_setup" {
 
   project_id = var.project_id
   region     = var.region
+  vpc_id     = module.networking.vpc_id
 }
 
 module "cloud_workstations" {
@@ -23,6 +24,13 @@ module "cloud_workstations" {
   region     = var.region
   vpc_id     = module.networking.vpc_id
   subnet_id  = module.networking.subnet_id
+  workstationuser = var.iap_member
 
   depends_on = [module.gcp_setup]
+}
+
+resource "google_project_iam_member" "user_ai_developer" {
+  project = var.project_id
+  role    = "roles/aiplatform.user"
+  member  = var.iap_member
 }
