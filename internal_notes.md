@@ -46,8 +46,8 @@ Ensure the following regional quotas are requested at least **48 hours** before 
 | :--- | :--- | :--- | :--- | :--- |
 | **AlloyDB** | AlloyDB Clusters | 2 | `europe-west1` | `us-central1` |
 | **AlloyDB** | AlloyDB CPU cores | 16 vCPUs | `europe-west1` | `us-central1` |
-| **Cloud Spanner** | Spanner Processing Units | 100 PUs | `europe-west1` | `us-east1` |
-| **BigQuery Connections** | BQ API Connection objects | 5 | `europe-west1` | `us-east1` |
+| **Cloud Spanner** | Spanner Processing Units | 100 PUs | `europe-west9` | `us-east1` |
+| **BigQuery Connections** | BQ API Connection objects | 5 | `europe-west9` | `us-east1` |
 | **Vertex AI** | text-embedding-005 Online Queries | 100,000 QPM | `europe-west1` | `us-central1` |
 
 ---
@@ -86,7 +86,7 @@ If a participant reports that `CALL ai.initialize_embeddings` returns a permissi
 
 ### Primary Variables
 - `PROJECT_ID` = *(Assigned per participant)*
-- `REGION` = `europe-west1`
+- `REGION` = `europe-west9`
 - `SPANNER_INSTANCE` = `disneyland`
 - `SPANNER_DATABASE` = `agent-lab`
 - `BQ_DATASET` = `disney`
