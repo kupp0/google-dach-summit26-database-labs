@@ -139,7 +139,6 @@ resource "google_bigquery_dataset" "spanner_external_dataset" {
   description = "External dataset mapping to Cloud Spanner"
 
   external_dataset_reference {
-    # The "google-cloudspanner:/" prefix is strictly required here
     external_source = "google-cloudspanner:/projects/${data.google_project.project.project_id}/instances/${google_spanner_instance.disneyland.name}/databases/${google_spanner_database.agent_lab.name}"
     connection      = google_bigquery_connection.spanner_conn.id
   }
@@ -158,10 +157,6 @@ output "spanner_instance_id" {
 
 output "bq_spanner_connection_id" {
   value = google_bigquery_connection.spanner_conn.name
-}
-
-output "mcp_verify_command" {
-  value = "gcloud mcp-toolbox list-resources --project=${data.google_project.project.project_id} --location=europe-west1"
 }
 ```
 
@@ -403,17 +398,13 @@ INSERT INTO Path (SourceAttractionID, TargetAttractionID, DistanceMeters) VALUES
 
 ---
 
-## Phase 5: Install and Configure MCP Toolbox
+## Phase 5: Model Context Protocol (MCP) Toolbox Integration
 
-Enable agentic, AI-driven database interactions using the Google Cloud MCP Toolbox:
-
-```bash
-# 1. Install the toolbox component
-gcloud components install mcp-toolbox
-
-# 2. Verify the active resources and connections
-gcloud mcp-toolbox list-resources --project=$(gcloud config get-value project) --location=europe-west1
-```
+> [!NOTE]
+> **AI Agent Tooling Integration**:
+> The **Model Context Protocol (MCP) Toolbox** provides a gateway for AI agents to securely execute real-time queries against transactional databases. In a production environment, this toolbox component is deployed as an automated service (e.g., inside a secure Cloud Run proxy) by your team's cloud administrators.
+>
+> Once the base infrastructure is deployed, agents can interact directly with your Cloud Spanner instance via the federated bridge. Let's verify this analytical bridge in the next step!
 
 ---
 

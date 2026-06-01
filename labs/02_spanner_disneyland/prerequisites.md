@@ -33,3 +33,24 @@ If participants are utilizing **Cloud Workstations** rather than Google Cloud Sh
 * **Private NAT**: Enable Private NAT inside the target VPC network.
 * **Subnets**: A dedicated VPC network and subnet must be created in the primary region (`europe-west1`).
 * **IAM/Security Accounts**: Ensure the Cloud Workstations service accounts have adequate IAM permissions to join resources inside the designated subnet.
+
+---
+
+## 3. Model Context Protocol (MCP) Toolbox Setup (Action Required)
+
+The original user guide contained steps to manually install the GCP MCP Toolbox client and list active tools:
+```bash
+gcloud components install mcp-toolbox
+gcloud mcp-toolbox list-resources --project=$(gcloud config get-value project) --location=europe-west1
+```
+
+> [!WARNING]
+> **gcloud Component Registration Issue**:
+> Standard `gcloud` CLI environments (including Cloud Shell) currently do not recognize `mcp-toolbox` as a valid installable component, resulting in the error:
+> `ERROR: (gcloud.components.install) "mcp-toolbox" are not valid component name(s).`
+> 
+> **Action Item**:
+> The coworker working on the base environment script must either:
+> 1. Package/deploy the open-source Model Context Protocol (MCP) database proxy service directly to Cloud Run inside the base Terraform environment.
+> 2. Provide participants with a custom component manager URL registry if a private pre-release `gcloud` build is intended for the workshop.
+> 3. Or verify the MCP Toolbox status via backend logs rather than requiring participant terminal commands.
