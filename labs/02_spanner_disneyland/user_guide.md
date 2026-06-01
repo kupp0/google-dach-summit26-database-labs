@@ -451,18 +451,23 @@ Once inside the Gemini interactive shell, you can use the following slash comman
 
 ### 2. Prompting Gemini to Generate the React Agentic Application
 
-Paste the following comprehensive prompt into the Gemini interactive chat session to generate your application code and agent tools:
+Paste the following developer prompt into the Gemini interactive chat session to initiate code generation:
 
 ```text
-I have a Spanner instance called "disneyland", and a database called "agent-lab" in this project. I would like to use the data and schema to build a React application that will help visitors navigate Disneyland Paris attractions.
+Goal: Build a fresh React application in a new directory to help navigate Disneyland Paris attractions.
 
-Please implement this system with the following instructions:
-1. Leverage Spanner Graph capabilities (using the Attraction and Path tables) for navigation.
-2. Use the AGY SDK to build a data agent equipped with these four specific tools:
+Data Context: I have data and schema available in a Spanner instance called "disneyland" and a database called "agent-lab" in this project.
+
+Instructions:
+1. Show the planning phase of development first.
+2. Test that the app can query data from Spanner without issues.
+3. Leverage Spanner Graph capabilities (using the Attraction and Path tables) for pathfinding and navigation.
+4. Use the AGY SDK to build a data agent equipped with these four specific tools:
    * `list_all_attractions`: Lists all available attractions.
    * `search_attractions_by_needs`: Finds attractions matching specific user needs or descriptions (using vector embeddings or keyword matching).
-   * `find_shortest_path_between_two_attractions`: Calculates and maps the optimal path and distance between two attractions.
-   * `find_attractions_near_another_attraction`: Finds all neighboring attractions within close proximity to a specified attraction.
+   * `find_shortest_path_between_two_attractions`: Finds optimized paths between two attractions using native Graph queries.
+   * `find_attractions_near_another_attraction`: Finds all attractions closed to another one.
+5. UI/UX: Design a beautiful, professional user interface featuring a premium Disneyland-themed color palette.
 ```
 
 ---
@@ -490,9 +495,18 @@ This zero-copy Spanner Graph structure enables instant pathfinding logic inside 
 
 ---
 
+## Phase 8: Troubleshooting & Pro-Tips
+
+* **IAM Permissions 403 Forbidden**: If you encounter `Caller is missing IAM permission spanner.databases.setIamPolicy` during resource deployment, ensure that your active gcloud user account has been granted the Spanner Admin (`roles/spanner.admin`) role as described in the prerequisites reference file.
+* **Billing Account**: Cloud Spanner requires an active Google Cloud billing account. Make sure your target sandbox project has billing correctly enabled.
+* **API Keys & Authentication**: If the AGY agent requires an API key to call external Vertex AI LLM services, you can generate one at the Google AI Studio platform or run within active GCP application credentials.
+* **Time Propagation**: If BQ connections fail immediately upon setup, wait approximately 60 seconds for the Spanner IAM reader bindings to propagate globally.
+
+---
+
 ## Clean Up
 
 > [!WARNING]
 > **Ongoing Costs**:
-> To avoid incurring ongoing charges for the regional Spanner instance and router, destroy the infrastructure once finished:
+> To avoid incurring ongoing charges for the regional Spanner instance, destroy all provisioned infrastructure when you have completed the lab:
 > `terraform destroy`
