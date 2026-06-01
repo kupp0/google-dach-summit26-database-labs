@@ -123,11 +123,12 @@ resource "google_bigquery_connection" "spanner_conn" {
 # 4. IAM Permissions (Authorizing BigQuery to read Spanner)
 # ==============================================================================
 resource "google_spanner_database_iam_member" "spanner_reader" {
-  project  = var.project_id
-  instance = google_spanner_instance.disneyland.name
-  database = google_spanner_database.agent_lab.name
-  role     = "roles/spanner.databaseReader"
-  member   = "serviceAccount:${google_bigquery_connection.spanner_conn.cloud_resource[0].service_account_id}"
+  project    = var.project_id
+  instance   = google_spanner_instance.disneyland.name
+  database   = google_spanner_database.agent_lab.name
+  role       = "roles/spanner.databaseReader"
+  member     = "serviceAccount:${google_bigquery_connection.spanner_conn.cloud_resource[0].service_account_id}"
+  depends_on = [google_spanner_database.agent_lab]
 }
 
 # ==============================================================================
