@@ -98,6 +98,12 @@ resource "google_spanner_database" "agent_lab" {
   database_dialect = "GOOGLE_STANDARD_SQL"
 }
 
+# Add a propagation delay after database creation to ensure its control plane and IAM resources are fully active
+resource "time_sleep" "wait_for_database" {
+  create_duration = "20s"
+  depends_on      = [google_spanner_database.agent_lab]
+}
+
 # ==============================================================================
 # 3. BigQuery Standard Setup & Connection
 # ==============================================================================
@@ -124,7 +130,7 @@ resource "google_spanner_database_iam_member" "spanner_reader" {
   database   = google_spanner_database.agent_lab.name
   role       = "roles/spanner.databaseReader"
   member     = "serviceAccount:${google_bigquery_connection.spanner_conn.cloud_resource[0].service_account_id}"
-  depends_on = [google_spanner_database.agent_lab]
+  depends_on = [time_sleep.wait_for_database]
 }
 
 # ==============================================================================
