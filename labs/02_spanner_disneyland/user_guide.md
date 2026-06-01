@@ -409,22 +409,7 @@ INSERT INTO Path (SourceAttractionID, TargetAttractionID, DistanceMeters) VALUES
 
 ---
 
-## Phase 5: Model Context Protocol (MCP) Agent Registry Verification
-
-Once your Cloud Spanner database is successfully created and active, Spanner is automatically registered as a Google-managed MCP Server in the **Agent Registry** for Vertex AI.
-
-To verify that the Spanner MCP Server is registered and available in your region:
-
-Run this command directly in your Cloud Shell terminal (the `alpha` component group is pre-installed by default in Cloud Shell):
-
-```bash
-gcloud alpha agent-registry mcp-servers list --location=europe-west1
-```
-*(Look for an entry related to Spanner in the output to confirm availability).*
-
----
-
-## Phase 6: Real-Time Bridge Verification Query
+## Phase 5: Real-Time Bridge Verification Query
 
 Validate that the zero-copy federated bridge is working correctly by executing a live query in BigQuery that fetches data directly from your Cloud Spanner transactional tables.
 
@@ -438,6 +423,23 @@ SELECT *
 FROM `YOUR_PROJECT_ID.disneyland_spanner_external.Attraction` 
 LIMIT 5;
 ```
+
+---
+
+## Phase 6: Model Context Protocol (MCP) Agent Registry Verification
+
+Once your Cloud Spanner database is successfully created and active, Spanner is automatically registered as a Google-managed MCP Server in the **Agent Registry** for Vertex AI.
+
+To verify that the Spanner MCP Server is registered and available in your region:
+
+Run this command directly in your Cloud Shell terminal. Alternatively, navigate to the [Managed MCP Servers](https://console.cloud.google.com/agent-platform/agent-registry/mcp-servers) in the Cloud Console:
+
+```bash
+gcloud alpha agent-registry mcp-servers list \
+  --location=global \
+  --format=json
+```
+*(Look for an entry related to Spanner in the output to confirm availability).*
 
 ---
 
