@@ -131,6 +131,11 @@ output "mcp_verify_command" {
 
 ## Phase 3: Deployment & Data Injection
 
+> [!IMPORTANT]
+> ⚠️ **Terraform Directory**:
+> Make sure you are inside the folder containing your Terraform files. If you aren't already, navigate to it using:
+> `cd my-terraform-project`
+
 Run these shell commands in order to initialize, deploy, and populate the database:
 
 ```bash
