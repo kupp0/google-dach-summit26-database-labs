@@ -36,7 +36,7 @@ Open `main.tf` in your editor (e.g., `nano main.tf`), paste the following config
 #--- Configuration & Variables ---
 provider "google" {
   project = var.project_id
-  region  = "europe-west9"
+  region  = "europe-west1"
 }
 
 variable "project_id" {
@@ -59,7 +59,7 @@ resource "google_project_service" "enabled_apis" {
 #--- 1. Cloud Spanner Setup ---
 resource "google_spanner_instance" "disneyland" {
   name             = "disneyland"
-  config           = "regional-europe-west9"
+  config           = "regional-europe-west1"
   display_name     = "Disneyland AI Agents"
   edition          = "ENTERPRISE"
   processing_units = 100
@@ -75,13 +75,13 @@ resource "google_spanner_database" "agent_lab" {
 #--- 2. BigQuery Setup ---
 resource "google_bigquery_dataset" "disney_dataset" {
   dataset_id = "disney"
-  location   = "europe-west9"
+  location   = "europe-west1"
   depends_on = [google_project_service.enabled_apis]
 }
 
 resource "google_bigquery_connection" "spanner_conn" {
   connection_id = "spanner_conn"
-  location      = "europe-west9"
+  location      = "europe-west1"
   friendly_name = "Spanner Connector"
   cloud_spanner {
     database = "projects/${var.project_id}/instances/${google_spanner_instance.disneyland.name}/databases/${google_spanner_database.agent_lab.name}"
@@ -123,7 +123,7 @@ output "bq_spanner_connection_id" {
 }
 
 output "mcp_verify_command" {
-  value = "gcloud mcp-toolbox list-resources --project=${var.project_id} --location=europe-west9"
+  value = "gcloud mcp-toolbox list-resources --project=${var.project_id} --location=europe-west1"
 }
 ```
 
@@ -162,7 +162,7 @@ Enable agentic, AI-driven database interactions using the Google Cloud MCP Toolb
 gcloud components install mcp-toolbox
 
 # 2. Verify the active resources and connections
-gcloud mcp-toolbox list-resources --project=$(gcloud config get-value project) --location=europe-west9
+gcloud mcp-toolbox list-resources --project=$(gcloud config get-value project) --location=europe-west1
 ```
 
 ---
