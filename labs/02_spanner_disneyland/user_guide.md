@@ -425,6 +425,71 @@ LIMIT 5;
 
 ---
 
+## Phase 7: Building the Agentic React Application using Gemini CLI
+
+In this phase, you will launch the **Gemini CLI** directly from your Cloud Shell terminal and use it to build a complete React application. The application will utilize an **AGY SDK Agent** that queries your Spanner transactional database and leverages **Spanner Graph** capabilities to perform navigation and pathfinding across Disneyland Paris attractions.
+
+### 1. Starting Gemini CLI in Cloud Shell
+
+Run this command in your Google Cloud Shell terminal to launch an interactive session with Gemini using the latest architecture model:
+
+```bash
+gemini chat --model=gemini-3.1-pro-preview
+```
+
+#### Essential Gemini CLI Commands
+Once inside the Gemini interactive shell, you can use the following slash commands to manage your session:
+
+| Command | Action |
+| :--- | :--- |
+| `/list-sessions` | Shows a numbered list of your past session activities to resume. |
+| `/resume latest` | Jumps back into your most recent active conversation. |
+| `/exit` | Exits the Gemini CLI session and returns to your standard Cloud Shell prompt. |
+| `/auth` | Re-authenticates or switches credentials (e.g., to use a specific API Key). |
+
+---
+
+### 2. Prompting Gemini to Generate the React Agentic Application
+
+Paste the following comprehensive prompt into the Gemini interactive chat session to generate your application code and agent tools:
+
+```text
+I have a Spanner instance called "disneyland", and a database called "agent-lab" in this project. I would like to use the data and schema to build a React application that will help visitors navigate Disneyland Paris attractions.
+
+Please implement this system with the following instructions:
+1. Leverage Spanner Graph capabilities (using the Attraction and Path tables) for navigation.
+2. Use the AGY SDK to build a data agent equipped with these four specific tools:
+   * `list_all_attractions`: Lists all available attractions.
+   * `search_attractions_by_needs`: Finds attractions matching specific user needs or descriptions (using vector embeddings or keyword matching).
+   * `find_shortest_path_between_two_attractions`: Calculates and maps the optimal path and distance between two attractions.
+   * `find_attractions_near_another_attraction`: Finds all neighboring attractions within close proximity to a specified attraction.
+```
+
+---
+
+### 3. Deep Dive: Spanner Graph Queries under the Hood
+
+When the agent calls the pathfinding tools, it runs a native **Spanner Graph** query using the `GRAPH_TABLE` function on the property graph defined on the `Attraction` and `Path` tables.
+
+For example, the tool `find_shortest_path_between_two_attractions` resolves under the hood to:
+
+```sql
+SELECT * 
+FROM GRAPH_TABLE(DisneylandGraph
+  MATCH (src:Attraction {Name: 'Phantom Manor'})
+        -[p:Path*1..5]->
+        (dest:Attraction {Name: 'Big Thunder Mountain'})
+  RETURN 
+    src.Name AS Source, 
+    dest.Name AS Target, 
+    SUM(p.DistanceMeters) AS TotalDistanceMeters
+);
+```
+
+This zero-copy Spanner Graph structure enables instant pathfinding logic inside your AI agent without needing extra external graph databases or complex application-level traversal algorithms.
+
+---
+
 ## Clean Up
 
 > [!WARNING]
