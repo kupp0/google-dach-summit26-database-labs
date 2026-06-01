@@ -67,8 +67,7 @@ resource "google_project_service" "enabled_apis" {
   for_each = toset([
     "spanner.googleapis.com",
     "bigquery.googleapis.com",
-    "bigqueryconnection.googleapis.com",
-    "agentregistry.googleapis.com"
+    "bigqueryconnection.googleapis.com"
   ])
   project            = var.project_id
   service            = each.key
@@ -419,7 +418,7 @@ To verify that the Spanner MCP Server is registered and available in your region
 Run this command directly in your Cloud Shell terminal (the `alpha` component group is pre-installed by default in Cloud Shell):
 
 ```bash
-gcloud alpha agent-registry mcp-servers list --location=europe-west1 --project=$(gcloud config get-value project)
+gcloud alpha agent-registry mcp-servers list --location=europe-west1
 ```
 *(Look for an entry related to Spanner in the output to confirm availability).*
 

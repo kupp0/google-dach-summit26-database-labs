@@ -16,13 +16,20 @@ Before provisioning the Spanner infrastructure via Terraform, the Cloud Resource
 gcloud services enable cloudresourcemanager.googleapis.com --project=$(gcloud config get-value project)
 ```
 
-### C. Grant Spanner Admin Permissions
-To authorize BigQuery connections to read transactional data from Cloud Spanner, Terraform creates an IAM policy binding on the Spanner database. The sandbox account deploying the Terraform script must possess Spanner administration privileges.
-Ensure the following role is bound to the deploying account/agent:
+### C. Grant Spanner Admin & MCP Tool User Permissions
+To authorize BigQuery connections to read transactional data from Cloud Spanner, and to allow the deploying user to query/interact with the registered Model Context Protocol (MCP) servers, both Spanner administration and MCP tool user roles must be granted to the active account.
+
+Ensure the following roles are bound to the deploying account/agent:
 ```bash
+# 1. Grant Spanner Admin permissions to deploy and configure Spanner
 gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
   --member="user:$(gcloud config get-value account)" \
   --role="roles/spanner.admin"
+
+# 2. Grant MCP Tool User permissions to interact with Google-managed MCP Servers
+gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
+  --member="user:$(gcloud config get-value account)" \
+  --role="roles/mcp.toolUser"
 ```
 
 ---
