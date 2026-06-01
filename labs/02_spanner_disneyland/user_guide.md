@@ -129,8 +129,11 @@ resource "google_project_iam_binding" "spanner_admin_bridge" {
 
 # Holds final bridge linking to give global control plane caching time to sync
 resource "time_sleep" "wait_for_iam" {
-  create_duration = "45s"
-  depends_on      = [google_project_iam_binding.spanner_admin_bridge]
+  create_duration = "60s"
+  depends_on      = [
+    google_project_iam_binding.spanner_admin_bridge,
+    google_spanner_database.agent_lab
+  ]
 }
 
 # ==============================================================================
