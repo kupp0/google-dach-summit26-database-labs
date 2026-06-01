@@ -73,18 +73,6 @@ resource "google_bigquery_connection" "spanner_conn" {
     database = "projects/${var.project_id}/instances/${google_spanner_instance.disneyland.name}/databases/${google_spanner_database.agent_lab.name}"
   }
 }
-
-#--- 3. External Table (The Bridge) ---
-resource "google_bigquery_table" "spanner_external_table" {
-  dataset_id = google_bigquery_dataset.disney_dataset.dataset_id
-  table_id   = "external_spanner_table"
-  external_data_configuration {
-    autodetect    = true
-    connection_id = google_bigquery_connection.spanner_conn.name
-    source_format = "GOOGLE_CLOUD_SPANNER"
-    source_uris   = ["projects/${var.project_id}/instances/${google_spanner_instance.disneyland.name}/databases/${google_spanner_database.agent_lab.name}/tables/Singers"]
-  }
-}
 ```
 
 ### 2. Populate `outputs.tf`
@@ -159,7 +147,10 @@ Validate that the federated bridge is working correctly by executing a live quer
 
 ```sql
 SELECT * 
-FROM `YOUR_PROJECT_ID.disney.external_spanner_table`
+FROM EXTERNAL_QUERY(
+  "YOUR_PROJECT_ID.europe-west1.spanner_conn",
+  "SELECT * FROM Singers;"
+)
 ```
 
 The output should show your Spanner records:
