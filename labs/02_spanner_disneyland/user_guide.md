@@ -67,7 +67,8 @@ resource "google_project_service" "enabled_apis" {
   for_each = toset([
     "spanner.googleapis.com",
     "bigquery.googleapis.com",
-    "bigqueryconnection.googleapis.com"
+    "bigqueryconnection.googleapis.com",
+    "agentregistry.googleapis.com"
   ])
   project            = var.project_id
   service            = each.key
