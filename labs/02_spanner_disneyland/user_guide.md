@@ -5,7 +5,6 @@ In this lab, you will build a zero-copy federated analytical "bridge" linking **
 ---
 
 ## Objective
-- Provision custom VPC networking and a private NAT gateway to host Google Cloud Workstations.
 - Deploy Cloud Spanner, BigQuery dataset, and BigQuery Connection infrastructure using Terraform.
 - Establish an external dataset mapping to automatically federate Cloud Spanner tables into BigQuery.
 - Inject a rich Disneyland attraction dataset containing vector embeddings via Spanner Studio.
@@ -79,55 +78,12 @@ resource "google_project_service" "enabled_apis" {
   for_each = toset([
     "spanner.googleapis.com",
     "bigquery.googleapis.com",
-    "bigqueryconnection.googleapis.com",
-    "compute.googleapis.com",
-    "artifactregistry.googleapis.com"
+    "bigqueryconnection.googleapis.com"
   ])
   project            = var.project_id
   service            = each.key
   disable_on_destroy = false
 }
-
-# ------------------------------------------------------------------------------
-# VPC Network & Subnet (Required for Cloud Workstations)
-# ------------------------------------------------------------------------------
-resource "google_compute_network" "agent_vpc" {
-  name                    = "agent-lab-vpc"
-  auto_create_subnetworks = false 
-  depends_on              = [google_project_service.enabled_apis]
-}
-
-resource "google_compute_subnetwork" "agent_subnet" {
-  name          = "agent-lab-subnet"
-  ip_cidr_range = "10.0.1.0/24"   
-  region        = "europe-west9"  
-  network       = google_compute_network.agent_vpc.id
-  depends_on    = [google_project_service.enabled_apis]
-}
-
-# ------------------------------------------------------------------------------
-# Cloud Router & NAT (Grants internet access to the private subnet)
-# ------------------------------------------------------------------------------
-resource "google_compute_router" "agent_router" {
-  name    = "agent-lab-router"
-  region  = "europe-west9"
-  network = google_compute_network.agent_vpc.id
-  depends_on = [google_project_service.enabled_apis]
-}
-
-resource "google_compute_router_nat" "agent_nat" {
-  name                               = "agent-lab-nat"
-  router                             = google_compute_router.agent_router.name
-  region                             = "europe-west9"
-  nat_ip_allocate_option             = "AUTO_ONLY"
-  source_subnetwork_ip_ranges_to_nat = "LIST_OF_SUBNETWORKS"
-
-  subnetwork {
-    name                    = google_compute_subnetwork.agent_subnet.id
-    source_ip_ranges_to_nat = ["ALL_IP_RANGES"]
-  }
-}
-
 # ==============================================================================
 # 2. Cloud Spanner Setup
 # ==============================================================================
