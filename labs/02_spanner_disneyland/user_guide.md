@@ -473,19 +473,18 @@ Paste the following developer prompt into the Gemini interactive chat session to
 
 ```text
 Goal: Build a fresh React application in a new directory to help navigate Disneyland Paris attractions.
-
-Data Context: I have data and schema available in a Spanner instance called "disneyland" and a database called "agent-lab" in this project.
-
+Data Context: I have data and schema available in a Spanner instance called disneyland and a database called agent-lab in this project.
 Instructions:
-1. Show the planning phase of development first.
-2. Test that the app can query data from Spanner without issues.
-3. Leverage Spanner Graph capabilities (using the Attraction and Path tables) for pathfinding and navigation.
-4. Use the AGY SDK to build a data agent equipped with these four specific tools:
-   * `list_all_attractions`: Lists all available attractions.
-   * `search_attractions_by_needs`: Finds attractions matching specific user needs or descriptions (using vector embeddings or keyword matching).
-   * `find_shortest_path_between_two_attractions`: Finds optimized paths between two attractions using native Graph queries.
-   * `find_attractions_near_another_attraction`: Finds all attractions closed to another one.
-5. UI/UX: Design a beautiful, professional user interface featuring a premium Disneyland-themed color palette.
+Show the planning phase of development first.
+Test that the app can query data from Spanner without issues.
+Leverage Spanner Graph capabilities for pathfinding.
+Use an ADK Agent with the following tools:
+list_all_attractions: List all attractions.
+search_attractions_by_needs: Find attractions based on user needs.
+find_shortest_path_between_two_attractions: Find optimized paths using Graph queries.
+find_attractions_near_another_attraction: Find attractions closed to another one.
+UI/UX: Use a Disneyland-themed color palette with an appealing, professional aesthetic.
+
 ```
 
 ---
