@@ -57,7 +57,7 @@ variable "project_id" {
 
 provider "google" {
   project = var.project_id
-  region  = "europe-west9"
+  region  = "europe-west1"
 }
 
 # ==============================================================================
@@ -79,7 +79,7 @@ resource "google_project_service" "enabled_apis" {
 # ==============================================================================
 resource "google_spanner_instance" "disneyland" {
   name             = "disneyland"
-  config           = "regional-europe-west9"
+  config           = "regional-europe-west1"
   display_name     = "Disneyland AI Agents"
   edition          = "ENTERPRISE"
   processing_units = 100
@@ -98,13 +98,13 @@ resource "google_spanner_database" "agent_lab" {
 # ==============================================================================
 resource "google_bigquery_dataset" "disney_dataset" {
   dataset_id = "disney"
-  location   = "europe-west9"
+  location   = "europe-west1"
   depends_on = [google_project_service.enabled_apis]
 }
 
 resource "google_bigquery_connection" "spanner_conn" {
   connection_id = "spanner_conn"
-  location      = "europe-west9"
+  location      = "europe-west1"
   friendly_name = "Spanner Connector"
   cloud_resource {}
   depends_on    = [google_project_service.enabled_apis]
@@ -138,7 +138,7 @@ resource "time_sleep" "wait_for_iam" {
 # ==============================================================================
 resource "google_bigquery_dataset" "spanner_external_dataset" {
   dataset_id  = "disneyland_spanner_external"
-  location    = "europe-west9"
+  location    = "europe-west1"
   
   external_dataset_reference {
     external_source = "google-cloudspanner:/projects/${var.project_id}/instances/${google_spanner_instance.disneyland.name}/databases/${google_spanner_database.agent_lab.name}"
@@ -164,11 +164,10 @@ output "bq_spanner_connection_id" {
 }
 
 output "mcp_verify_command" {
-  value       = "gcloud mcp-toolbox list-resources --project=${var.project_id} --location=europe-west9"
+  value       = "gcloud mcp-toolbox list-resources --project=${var.project_id} --location=europe-west1"
   description = "The terminal verification command for students to validate their Model Context Protocol service registry."
 }
 ```
-
 ---
 
 ## Phase 3: Deploying Infrastructure
