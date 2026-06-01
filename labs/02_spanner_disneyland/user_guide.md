@@ -167,7 +167,7 @@ output "bq_spanner_connection_id" {
 }
 
 output "mcp_verify_command" {
-  value       = "gcloud mcp-toolbox list-resources --project=${var.project_id} --location=europe-west1"
+  value       = "gcloud alpha agent-registry mcp-servers list --project=${var.project_id} --location=europe-west1"
   description = "The terminal verification command for students to validate their Model Context Protocol service registry."
 }
 ```
@@ -409,13 +409,21 @@ INSERT INTO Path (SourceAttractionID, TargetAttractionID, DistanceMeters) VALUES
 
 ---
 
-## Phase 5: Model Context Protocol (MCP) Toolbox Integration
+## Phase 5: Model Context Protocol (MCP) Agent Registry Verification
 
-> [!NOTE]
-> **AI Agent Tooling Integration**:
-> The **Model Context Protocol (MCP) Toolbox** provides a gateway for AI agents to securely execute real-time queries against transactional databases. In a production environment, this toolbox component is deployed as an automated service (e.g., inside a secure Cloud Run proxy) by your team's cloud administrators.
->
-> Once the base infrastructure is deployed, agents can interact directly with your Cloud Spanner instance via the federated bridge. Let's verify this analytical bridge in the next step!
+Once your Cloud Spanner database is successfully created and active, Spanner is automatically registered as a Google-managed MCP Server in the **Agent Registry** for Vertex AI.
+
+To verify that the Spanner MCP Server is registered and available in your region:
+
+1. **Install the `alpha` component** in your Cloud Shell if not already installed:
+   ```bash
+   gcloud components install alpha
+   ```
+2. **List the registered MCP Servers** in your project:
+   ```bash
+   gcloud alpha agent-registry mcp-servers list --location=europe-west1 --project=$(gcloud config get-value project)
+   ```
+   *(Look for an entry related to Spanner in the output to confirm availability).*
 
 ---
 
