@@ -62,14 +62,10 @@ terraform {
 }
 
 provider "google" {
-  project = var.project_id
   region  = "europe-west9"
 }
 
-variable "project_id" {
-  description = "The Google Cloud Project ID"
-  type        = string
-}
+data "google_project" "project" {}
 
 # ==============================================================================
 # 1. Enable Required APIs
@@ -80,7 +76,7 @@ resource "google_project_service" "enabled_apis" {
     "bigquery.googleapis.com",
     "bigqueryconnection.googleapis.com"
   ])
-  project            = var.project_id
+  project            = data.google_project.project.project_id
   service            = each.key
   disable_on_destroy = false
 }
@@ -123,7 +119,7 @@ resource "google_bigquery_connection" "spanner_conn" {
 # 4. IAM Permissions (Authorizing BigQuery to read Spanner)
 # ==============================================================================
 resource "google_spanner_database_iam_member" "spanner_reader" {
-  project    = var.project_id
+  project    = data.google_project.project.project_id
   instance   = google_spanner_instance.disneyland.name
   database   = google_spanner_database.agent_lab.name
   role       = "roles/spanner.databaseReader"
@@ -149,7 +145,7 @@ resource "google_bigquery_dataset" "spanner_external_dataset" {
 
   external_dataset_reference {
     # The "google-cloudspanner:/" prefix is strictly required here
-    external_source = "google-cloudspanner:/projects/${var.project_id}/instances/${google_spanner_instance.disneyland.name}/databases/${google_spanner_database.agent_lab.name}"
+    external_source = "google-cloudspanner:/projects/${data.google_project.project.project_id}/instances/${google_spanner_instance.disneyland.name}/databases/${google_spanner_database.agent_lab.name}"
     connection      = google_bigquery_connection.spanner_conn.id
   }
   
@@ -170,7 +166,7 @@ output "bq_spanner_connection_id" {
 }
 
 output "mcp_verify_command" {
-  value = "gcloud mcp-toolbox list-resources --project=${var.project_id} --location=europe-west9"
+  value = "gcloud mcp-toolbox list-resources --project=${data.google_project.project.project_id} --location=europe-west9"
 }
 ```
 
@@ -188,7 +184,7 @@ terraform init
 terraform plan
 
 # 3. Apply changes and deploy resources
-terraform apply -var="project_id=$(gcloud config get-value project)"
+terraform apply
 ```
 *(Type `yes` when prompted to confirm the deployment).*
 
@@ -448,4 +444,4 @@ LIMIT 5;
 > [!WARNING]
 > **Ongoing Costs**:
 > To avoid incurring ongoing charges for the regional Spanner instance and router, destroy the infrastructure once finished:
-> `terraform destroy -var="project_id=$(gcloud config get-value project)"`
+> `terraform destroy`
