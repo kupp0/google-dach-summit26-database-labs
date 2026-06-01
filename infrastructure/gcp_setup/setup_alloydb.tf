@@ -2,17 +2,6 @@
 # DACH Summit 2026: Lab 1 AlloyDB & Vertex AI Core Infrastructure Setup
 # ==============================================================================
 
-variable "project_id" {
-  description = "The Google Cloud Project ID"
-  type        = string
-}
-
-variable "region" {
-  description = "GCP region for database clusters"
-  type        = string
-  default     = "europe-west1"
-}
-
 # Retrieve project number dynamically
 data "google_project" "project" {
   project_id = var.project_id
@@ -25,7 +14,11 @@ resource "google_project_service" "alloydb_apis" {
     "compute.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "servicenetworking.googleapis.com",
-    "aiplatform.googleapis.com"
+    "aiplatform.googleapis.com",
+    "workstations.googleapis.com",
+    "cloudaicompanion.googleapis.com",
+    "artifactregistry.googleapis.com",
+    "developerknowledge.googleapis.com"
   ])
   project            = var.project_id
   service            = each.key
