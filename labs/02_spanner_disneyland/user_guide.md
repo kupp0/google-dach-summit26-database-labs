@@ -231,14 +231,26 @@ CREATE TABLE Path (
   CONSTRAINT FK_TargetAttraction FOREIGN KEY (TargetAttractionID) REFERENCES Attraction(AttractionID)
 ) PRIMARY KEY (SourceAttractionID, TargetAttractionID);
 
--- 4. Insert DisneylandPark Records
+-- 4. Create the Spanner Property Graph
+CREATE OR REPLACE PROPERTY GRAPH DisneylandGraph
+  NODE TABLES (
+    Attraction
+  )
+  EDGE TABLES (
+    Path
+      SOURCE KEY (SourceAttractionID) REFERENCES Attraction (AttractionID)
+      DESTINATION KEY (TargetAttractionID) REFERENCES Attraction (AttractionID)
+  );
+
+-- 5. Insert DisneylandPark Records
 INSERT INTO DisneylandPark (ParkID, Name, Location) VALUES (1, 'Disneyland Park (Paris)', 'Paris, France');
 INSERT INTO DisneylandPark (ParkID, Name, Location) VALUES (2, 'Walt Disney Studios Park', 'Paris, France');
 INSERT INTO DisneylandPark (ParkID, Name, Location) VALUES (3, 'Disneyland Park (California)', 'Anaheim, USA');
 INSERT INTO DisneylandPark (ParkID, Name, Location) VALUES (4, 'Disney California Adventure Park', 'Anaheim, USA');
 INSERT INTO DisneylandPark (ParkID, Name, Location) VALUES (5, 'Tokyo Disneyland', 'Tokyo, Japan');
 
--- 5. Insert Attraction Records
+-- 6. Insert Attraction Records
+
 INSERT INTO Attraction (AttractionID, ParkID, Name, Land, Type, Description) VALUES (1, 1, 'Disneyland Railroad Station', 'Main Street, U.S.A.', 'Transport', 'Board a vintage steam train for a scenic journey around the park.');
 INSERT INTO Attraction (AttractionID, ParkID, Name, Land, Type, Description) VALUES (2, 1, 'Horse-Drawn Streetcars', 'Main Street, U.S.A.', 'Transport', 'Enjoy a nostalgic ride down Main Street in a turn-of-the-century streetcar.');
 INSERT INTO Attraction (AttractionID, ParkID, Name, Land, Type, Description) VALUES (3, 1, 'Main Street Vehicles', 'Main Street, U.S.A.', 'Transport', 'Travel in style aboard a variety of vintage vehicles, like a fire engine or omnibus.');
@@ -289,7 +301,8 @@ INSERT INTO Attraction (AttractionID, ParkID, Name, Land, Type, Description) VAL
 INSERT INTO Attraction (AttractionID, ParkID, Name, Land, Type, Description) VALUES (49, 1, 'Arcade Alpha & Arcade Bêta', 'Discoveryland', 'Arcade', 'A video game arcade with a mix of classic and modern games.');
 INSERT INTO Attraction (AttractionID, ParkID, Name, Land, Type, Description) VALUES (50, 1, 'Videopolis Theatre', 'Discoveryland', 'Show', 'A huge indoor venue for live shows, often with a nearby restaurant.');
 
--- 6. Insert Path Records
+-- 7. Insert Path Records
+
 INSERT INTO Path (SourceAttractionID, TargetAttractionID, DistanceMeters) VALUES (1, 2, 70);
 INSERT INTO Path (SourceAttractionID, TargetAttractionID, DistanceMeters) VALUES (1, 3, 60);
 INSERT INTO Path (SourceAttractionID, TargetAttractionID, DistanceMeters) VALUES (2, 1, 70);
@@ -483,17 +496,19 @@ Paste the following developer prompt into the Gemini interactive chat session to
 
 ```text
 Goal: Build a fresh React application in a new directory to help navigate Disneyland Paris attractions.
-Data Context: I have data and schema available in a Spanner instance called disneyland and a database called agent-lab in this project.
+Infrastructure Context: I have provisioned a Cloud Spanner instance called "disneyland" and a database called "agent-lab" in this Google Cloud project.
+Agent & Integration Model: Integrate the AI Agent with the Google-managed Spanner Model Context Protocol (MCP) Server registered in the project's Agent Registry.
 Instructions:
-Show the planning phase of development first.
-Test that the app can query data from Spanner without issues.
-Leverage Spanner Graph capabilities for pathfinding.
-Use an ADK Agent with the following tools:
-list_all_attractions: List all attractions.
-search_attractions_by_needs: Find attractions based on user needs.
-find_shortest_path_between_two_attractions: Find optimized paths using Graph queries.
-find_attractions_near_another_attraction: Find attractions closed to another one.
-UI/UX: Use a Disneyland-themed color palette with an appealing, professional aesthetic.
+- Show the planning phase of development first.
+- The agent must dynamically query Spanner database schema and tables using the managed Spanner MCP Server tools (e.g., execution/query tools) rather than static hand-written client APIs.
+- Leverage Spanner Graph capabilities for pathfinding by dynamically executing native graph queries on the "DisneylandGraph" property graph.
+- Support the following user actions:
+  1. List all attractions (dynamically querying the "Attraction" table).
+  2. Search attractions by user needs (filtering descriptions dynamically).
+  3. Find optimized navigation paths between any two attractions using Spanner Graph MATCH queries over the "Path" edge tables.
+  4. Find attractions near a given attraction by sorting path distance.
+- UI/UX: Use a premium, professional Disneyland-themed color palette (deep navy, royal gold, sparkling gold highlights) with smooth hover micro-animations.
+
 
 ```
 
