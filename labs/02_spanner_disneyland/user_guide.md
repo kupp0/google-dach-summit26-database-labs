@@ -582,10 +582,13 @@ This zero-copy Spanner Graph structure enables instant pathfinding logic inside 
 
 ## Phase 8: Troubleshooting & Pro-Tips
 
-* **IAM Permissions 403 Forbidden**: If you encounter `Caller is missing IAM permission spanner.databases.setIamPolicy` during resource deployment, ensure that your active gcloud user account has been granted the Spanner Admin (`roles/spanner.admin`) role as described in the prerequisites reference file.
-* **Billing Account**: Cloud Spanner requires an active Google Cloud billing account. Make sure your target sandbox project has billing correctly enabled.
-* **API Keys & Authentication**: If the AGY agent requires an API key to call external Vertex AI LLM services, you can generate one at the Google AI Studio platform or run within active GCP application credentials.
-* **Time Propagation**: If BQ connections fail immediately upon setup, wait approximately 60 seconds for the Spanner IAM reader bindings to propagate globally.
+* **🪄 The Vibe-Coding Playground is Yours!**: Structured rails? Where we are going, we don't need rails! 🚀 You have successfully set up the core infrastructure. Now, the **Antigravity CLI** (`agy`) is your personal genie—and unlike standard genies, it doesn't have a three-wish limit. Feel free to prompt it to build whatever wacky, premium, or hyper-engineered features you can dream of!
+  Need some inspiration to flex your vibe-coding muscles?
+  - 🎢 **Churro-Metric Navigation**: Ask it to calculate the optimal route between Space Mountain and Big Thunder Mountain based on how many jumbo Disneyland churros you can consume while walking.
+  - 🐭 **Mickey Voice Mode**: Prompt the AI agent to format all conversational chat responses in the squeaky, optimistic tone of Mickey Mouse himself.
+  - 🚀 **Hyperdrive Mode**: Add a button that triggers a flashy warp-speed CSS particle effect whenever Space Mountain is clicked.
+  
+  Unleash your imagination, type your heart out in the `agy` CLI session, and let the AI do the heavy lifting. Have fun, and enjoy your vibe coding journey! 🏰✨
 
 ---
 
