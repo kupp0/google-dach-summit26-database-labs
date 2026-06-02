@@ -446,11 +446,19 @@ gcloud alpha agent-registry mcp-servers list \
 
 ## Phase 7: Building the Agentic React Application using Gemini CLI
 
-In this phase, you will launch the **Gemini CLI** directly from your Cloud Shell terminal and use it to build a complete React application. The application will utilize an **AGY SDK Agent** that queries your Spanner transactional database and leverages **Spanner Graph** capabilities to perform navigation and pathfinding across Disneyland Paris attractions.
+In this phase, you will launch the **Gemini CLI** directly from a terminal session within your **Cloud Workstation** and use it to build a complete React application. The application will utilize an **AGY SDK Agent** that queries your Spanner transactional database and leverages **Spanner Graph** capabilities to perform navigation and pathfinding across Disneyland Paris attractions.
 
-### 1. Starting Gemini CLI in Cloud Shell
+### 1. Open a Terminal in Cloud Workstations
 
-Run this command in your Google Cloud Shell terminal to launch an interactive session with Gemini using the latest architecture model:
+To open a terminal session within your Cloud Workstation:
+1. In the Google Cloud Console, navigate to the **Cloud Workstations** page.
+2. Select your workstation instance and click **Launch** to open the browser-based editor UI.
+3. In the top-left corner of the workstation window, click the application menu button.
+4. Navigate to **Terminal** and select **New Terminal** (or use the keyboard shortcut `Ctrl+Shift+C`).
+
+<img src="assets/workstation_terminal.png" alt="Open Workstation Terminal" width="350" />
+
+5. Once the terminal opens, run this command to launch an interactive session with Gemini using the latest architecture model:
 
 ```bash
 gemini --model=gemini-3.1-pro-preview
@@ -463,8 +471,9 @@ Once inside the Gemini interactive shell, you can use the following slash comman
 | :--- | :--- |
 | `/list-sessions` | Shows a numbered list of your past session activities to resume. |
 | `/resume latest` | Jumps back into your most recent active conversation. |
-| `/exit` | Exits the Gemini CLI session and returns to your standard Cloud Shell prompt. |
+| `/exit` | Exits the Gemini CLI session and returns to your standard workstation terminal prompt. |
 | `/auth` | Re-authenticates or switches credentials (e.g., to use a specific API Key). |
+
 
 ---
 
