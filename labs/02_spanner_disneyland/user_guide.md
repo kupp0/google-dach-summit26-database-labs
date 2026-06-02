@@ -520,7 +520,7 @@ Paste the following developer prompt into the active `agy` CLI interactive chat 
 ```text
 Goal: Build a high-performance, beautiful Disneyland Paris Navigator application in a new directory under 10 minutes.
 Stack & Architecture: To bypass slow npm installations and build compilation steps, implement a clean FastAPI Python backend (app.py) paired with a rich, premium Single-Page HTML5/JS frontend (index.html) utilizing Tailwind CSS via CDN.
-Infrastructure Context: I have provisioned a Cloud Spanner instance called "disneyland" and a database called "agent-lab" in this Google Cloud project.
+Infrastructure Context: I have provisioned a Cloud Spanner instance called "disneyland" and a database called "agent-lab" in this Google Cloud project. Generate appropriate Spanner Graph DDL to add graph edges between rides and attractions.
 Agent & Integration Model: Integrate the AI Agent using the Google Antigravity (google-antigravity) Python SDK and connect it with the Google-managed Spanner Model Context Protocol (MCP) Server registered under the Vertex AI Agent Registry (location: global).
 Instructions:
 - Show the planning phase of development first.
