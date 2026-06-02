@@ -520,15 +520,27 @@ Paste the following developer prompt into the active `agy` CLI interactive chat 
 ```text
 Goal: Build a high-performance, beautiful Disneyland Paris Navigator application in a new directory under 10 minutes.
 Stack & Architecture: To bypass slow npm installations and build compilation steps, implement a clean FastAPI Python backend (app.py) paired with a rich, premium Single-Page HTML5/JS frontend (index.html) utilizing Tailwind CSS via CDN.
-Infrastructure Context: I have provisioned a Cloud Spanner instance called "disneyland" and a database called "agent-lab" in this Google Cloud project. Generate appropriate Spanner Graph DDL to add graph edges between rides and attractions.
+Infrastructure Context: I have provisioned a Cloud Spanner instance called "disneyland" and a database called "agent-lab" in this Google Cloud project.
+
+Database DDL & Property Graph Schema:
+Use the existing Spanner schema and property graph defined as follows:
+- Table 'DisneylandPark' (ParkID INT64, Name STRING, Location STRING)
+- Table 'Attraction' (AttractionID INT64, ParkID INT64, Name STRING, Land STRING, Type STRING, Description STRING, Embedding ARRAY<FLOAT32>)
+- Table 'Path' (SourceAttractionID INT64, TargetAttractionID INT64, DistanceMeters INT64)
+- Property Graph:
+  CREATE OR REPLACE PROPERTY GRAPH DisneylandGraph
+    NODE TABLES (Attraction)
+    EDGE TABLES (Path SOURCE KEY (SourceAttractionID) REFERENCES Attraction (AttractionID) DESTINATION KEY (TargetAttractionID) REFERENCES Attraction (AttractionID));
+
 Agent & Integration Model: Integrate the AI Agent using the Google Antigravity (google-antigravity) Python SDK and connect it with the Google-managed Spanner Model Context Protocol (MCP) Server registered under the Vertex AI Agent Registry (location: global).
 Instructions:
 - Show the planning phase of development first.
 - Backend (app.py): Use FastAPI to expose endpoints.
   - Endpoint /api/chat: Uses the google-antigravity SDK Agent (configured with the Spanner MCP server) to handle conversational database querying dynamically.
-  - Endpoint /api/navigate: Executes custom Spanner Graph MATCH queries on the "DisneylandGraph" property graph to find optimized routes.
+  - Endpoint /api/navigate: Executes custom Spanner Graph MATCH queries on the "DisneylandGraph" property graph to find optimized routes. Expose the executed Spanner SQL and Graph GQL queries in the API responses.
 - Frontend (index.html): Create a premium, immersive Disneyland-themed user interface (glassmorphic cards, deep navy and sparkling royal gold colors, hover micro-animations).
   - Features: Interactive pathfinder (source -> target attraction displaying path nodes and total distance), search filter, and a terminal-style Chat component connected to /api/chat.
+  - Add a "View Queries" button/panel to the top of the UI to allow users to inspect the exact Spanner SQL/GQL queries executed by the Agent and backend.
 - Startup Script (setup.sh): For local debugging, create an automated startup shell script that initializes a Python virtual environment, installs fastapi, uvicorn, google-antigravity, runs app.py, and opens the dashboard in the browser.
 ```
 
