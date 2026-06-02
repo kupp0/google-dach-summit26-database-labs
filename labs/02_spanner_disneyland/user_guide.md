@@ -520,7 +520,7 @@ Once inside the active Antigravity interactive shell, you can use the following 
 Paste the following developer prompt into the active `agy` CLI interactive chat session to initiate code generation:
 
 ```text
-Goal: Build a high-performance, beautiful Disneyland Paris Navigator application in a new directory under 10 minutes.
+Goal: Build a high-performance, beautiful Disneyland Paris Navigator application in 5-10 minutes.
 Stack & Architecture: To bypass slow npm installations and build compilation steps, implement a clean FastAPI Python backend (app.py) paired with a rich, premium Single-Page HTML5/JS frontend (index.html) utilizing Tailwind CSS via CDN.
 Infrastructure Context: I have provisioned a Cloud Spanner instance called "disneyland" and a database called "agent-lab" in this Google Cloud project.
 
