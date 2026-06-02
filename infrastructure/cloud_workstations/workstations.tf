@@ -39,6 +39,10 @@ resource "google_workstations_workstation_config" "default" {
 
   container {
     image = "us-central1-docker.pkg.dev/cloud-workstations-images/predefined/code-oss:latest"
+    command = ["/bin/bash", "-c"]
+    args = [
+      "curl -sSL https://raw.githubusercontent.com/kupp0/google-dach-summit26-database-labs/main/infrastructure/cloud_workstations/bootstrapping.sh | bash && /usr/bin/entrypoint.sh"
+    ]
   }
 
   persistent_directories {

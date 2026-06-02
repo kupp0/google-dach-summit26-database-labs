@@ -2,23 +2,28 @@
 
 # Get the directory where the bootstrapping.sh script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BASE_URL="https://raw.githubusercontent.com/kupp0/google-dach-summit26-database-labs/main/infrastructure/cloud_workstations"
 
 echo "Starting Workstation Bootstrapping Coordination..."
 
 # 1. Initialize Model Context Protocol configuration settings
 if [ -f "$SCRIPT_DIR/setup_mcp.sh" ]; then
-    echo "Running MCP setup script..."
+    echo "Running local MCP setup script..."
     bash "$SCRIPT_DIR/setup_mcp.sh"
 else
-    echo "Error: setup_mcp.sh not found!"
+    echo "setup_mcp.sh not found locally. Downloading from GitHub..."
+    curl -sSL "$BASE_URL/setup_mcp.sh" -o /tmp/setup_mcp.sh
+    bash /tmp/setup_mcp.sh
 fi
 
 # 2. Initialize lab folder and custom agent skills
 if [ -f "$SCRIPT_DIR/setup_skills.sh" ]; then
-    echo "Running skills setup script..."
+    echo "Running local skills setup script..."
     bash "$SCRIPT_DIR/setup_skills.sh"
 else
-    echo "Error: setup_skills.sh not found!"
+    echo "setup_skills.sh not found locally. Downloading from GitHub..."
+    curl -sSL "$BASE_URL/setup_skills.sh" -o /tmp/setup_skills.sh
+    bash /tmp/setup_skills.sh
 fi
 
 echo "Workstation Bootstrapping Coordination completed successfully!"
