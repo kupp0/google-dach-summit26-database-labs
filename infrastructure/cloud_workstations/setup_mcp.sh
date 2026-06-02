@@ -1,0 +1,79 @@
+#!/bin/bash
+
+# Auto-detect GCP Project ID
+PROJECT_ID=""
+
+# 1. Check gcloud config billing quota project
+PROJECT_ID=$(gcloud config get-value billing/quota_project 2>/dev/null)
+
+# 2. Check application default credentials JSON file
+if [ -z "$PROJECT_ID" ] && [ -f "$HOME/.config/gcloud/application_default_credentials.json" ]; then
+    PROJECT_ID=$(jq -r '.quota_project_id // empty' "$HOME/.config/gcloud/application_default_credentials.json" 2>/dev/null)
+fi
+
+# 3. Check environment variable GOOGLE_CLOUD_PROJECT
+if [ -z "$PROJECT_ID" ]; then
+    PROJECT_ID="$GOOGLE_CLOUD_PROJECT"
+fi
+
+# 4. Fallback to active gcloud project
+if [ -z "$PROJECT_ID" ]; then
+    PROJECT_ID=$(gcloud config get-value project 2>/dev/null)
+fi
+
+# If still not found, ask user or error
+if [ -z "$PROJECT_ID" ]; then
+    echo "Error: Could not auto-detect GCP Project ID."
+    echo "Please set GOOGLE_CLOUD_PROJECT or authenticate with: gcloud auth application-default login"
+    exit 1
+fi
+
+echo "Detected GCP Project ID: $PROJECT_ID"
+
+INSTANCE_ID="disneyland"
+DATABASE_ID="agent-lab"
+
+# Define the JSON configuration
+MCP_CONFIG_CONTENT=$(cat <<EOF
+{
+  "mcpServers": {
+    "google-managed-spanner": {
+      "url": "https://spanner.googleapis.com/mcp",
+      "serverUrl": "https://spanner.googleapis.com/mcp",
+      "serverURL": "https://spanner.googleapis.com/mcp",
+      "authProviderType": "google_credentials"
+    }
+  }
+}
+EOF
+)
+
+PLUGIN_CONTENT=$(cat <<EOF
+{
+  "url": "https://spanner.googleapis.com/mcp",
+  "serverUrl": "https://spanner.googleapis.com/mcp",
+  "serverURL": "https://spanner.googleapis.com/mcp",
+  "authProviderType": "google_credentials"
+}
+EOF
+)
+
+# Target directory paths
+DIR1="$HOME/.gemini/config"
+DIR2="$HOME/.gemini/antigravity-cli"
+DIR3="$HOME/.gemini/antigravity-cli/plugins"
+
+# Create directories
+mkdir -p "$DIR1" "$DIR2" "$DIR3"
+
+# Write the config files
+echo "Writing configuration files..."
+echo "$MCP_CONFIG_CONTENT" > "$DIR1/mcp_config.json"
+echo "$MCP_CONFIG_CONTENT" > "$DIR2/mcp_config.json"
+echo "$PLUGIN_CONTENT" > "$DIR3/google-managed-spanner.json"
+
+echo "MCP Server configuration successfully generated!"
+echo "Target files updated:"
+echo " - $DIR1/mcp_config.json"
+echo " - $DIR2/mcp_config.json"
+echo " - $DIR3/google-managed-spanner.json"
