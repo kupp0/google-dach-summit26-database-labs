@@ -531,6 +531,8 @@ Instructions:
   3. Find optimized navigation paths between any two attractions using Spanner Graph MATCH queries over the "Path" edge tables.
   4. Find attractions near a given attraction by sorting path distance.
 - UI/UX: Use a premium, professional Disneyland-themed color palette (deep navy, royal gold, sparkling gold highlights) with smooth hover micro-animations.
+
+At the end: For local debugging create a setup.sh startup script and test it
 ```
 
 ---
