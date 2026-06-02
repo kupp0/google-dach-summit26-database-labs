@@ -534,7 +534,7 @@ Use the existing Spanner schema and property graph defined as follows:
     NODE TABLES (Attraction)
     EDGE TABLES (Path SOURCE KEY (SourceAttractionID) REFERENCES Attraction (AttractionID) DESTINATION KEY (TargetAttractionID) REFERENCES Attraction (AttractionID));
 
-Agent & Integration Model: Integrate the AI Agent using the Google Antigravity (google-antigravity) Python SDK and connect it with the Google-managed Spanner Model Context Protocol (MCP) Server registered under the Vertex AI Agent Registry (location: global).
+Agent & Integration Model: Integrate the AI Agent using the Google Antigravity (google-antigravity) Python SDK, explicitly configuring it to use the 'gemini-3.5-flash' model. Connect the agent to the Google-managed Spanner Model Context Protocol (MCP) Server registered under the Vertex AI Agent Registry (location: global).
 Instructions:
 - Show the planning phase of development first.
 - Backend (app.py): Use FastAPI to expose endpoints.
