@@ -452,7 +452,7 @@ In this phase, you will launch the **Gemini CLI** directly from your Cloud Shell
 Run this command in your Google Cloud Shell terminal to launch an interactive session with Gemini using the latest architecture model:
 
 ```bash
-gemini chat --model=gemini-3.1-pro-preview
+gemini --model=gemini-3.1-pro-preview
 ```
 
 #### Essential Gemini CLI Commands
@@ -524,6 +524,6 @@ This zero-copy Spanner Graph structure enables instant pathfinding logic inside 
 ## Clean Up
 
 > [!WARNING]
-> **Ongoing Costs**:
-> To avoid incurring ongoing charges for the regional Spanner instance, destroy all provisioned infrastructure when you have completed the lab:
+> **Ongoing Costs (if you're using your own Google Cloud project)**:
+> To avoid incurring ongoing charges for resources created during the lab (like the regional Spanner instance), please destroy all provisioned infrastructure when you have completed the lab:
 > `terraform destroy`

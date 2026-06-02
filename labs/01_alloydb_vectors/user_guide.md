@@ -20,7 +20,19 @@ AlloyDB AI integration requires specific database flags to be enabled on the pri
 Before proceeding, let's verify that the flags are active.
 
 ### Verification via SQL (AlloyDB Studio)
+
+> [!NOTE]
+> **AlloyDB Studio Login Credentials**:
+> When logging in to the **AlloyDB Studio**, use the following connection parameters:
+> * **Database**: `postgres`
+> * **Authentication method**: `Built-in database authentication`
+> * **User**: `postgres`
+> * **Password**: `alloydb-hackathon-password`
+> 
+> ![AlloyDB Studio Login Example](assets/alloydb_studio_login.png)
+
 Connect to your database cluster inside the **AlloyDB Studio** and execute these commands to verify the configurations:
+
 
 ```sql
 -- Check that Google ML Model support is active
