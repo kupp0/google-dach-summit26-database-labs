@@ -457,9 +457,9 @@ gcloud alpha agent-registry mcp-servers list \
 
 ---
 
-## Phase 7: Building the Agentic React Application using Gemini CLI
+## Phase 7: Building the Agentic React Application using Antigravity CLI
 
-In this phase, you will launch the **Gemini CLI** directly from a terminal session within your **Cloud Workstation** and use it to build a complete React application. The application will utilize an **AGY SDK Agent** that queries your Spanner transactional database and leverages **Spanner Graph** capabilities to perform navigation and pathfinding across Disneyland Paris attractions.
+In this phase, you will launch the **Antigravity CLI** directly from a terminal session within your **Cloud Workstation** and use it to build a complete React application. The application will utilize an **AGY SDK Agent** that queries your Spanner transactional database and leverages **Spanner Graph** capabilities to perform navigation and pathfinding across Disneyland Paris attractions.
 
 ### 1. Open a Terminal in Cloud Workstations
 
@@ -471,28 +471,51 @@ To open a terminal session within your Cloud Workstation:
 
 <img src="assets/workstation_terminal.png" alt="Open Workstation Terminal" width="350" />
 
-5. Once the terminal opens, run this command to launch an interactive session with Gemini using the latest architecture model:
+5. Once the terminal opens, you are ready to launch and configure the Antigravity CLI.
+
+---
+
+### 2. Initializing and Getting Started with the Antigravity CLI
+
+Launch the interactive Antigravity session by running the following command in your terminal:
 
 ```bash
-gemini --model=gemini-3.1-pro-preview
+antigravity
 ```
+*(Note: You can also use the shorthand alias `agy` if it is configured in your workstation environment).*
 
-#### Essential Gemini CLI Commands
-Once inside the Gemini interactive shell, you can use the following slash commands to manage your session:
+Upon running the CLI for the first time, complete the following setup flow:
+
+1. **Authentication**: Follow the authentication flow by clicking on the provided link in your browser and sign in with your **Devstar** user credentials. Afterwards, copy the authorization code and paste it back into the terminal `agy` CLI session.
+2. **GCP Project ID**: When prompted, enter your active **GCP Project ID**.
+3. **Location & Theme**: Choose the `global` location, and then select your color theme of choice.
+4. **Terms & Conditions**: Agree to the Terms and Conditions (T/C).
+5. **Open Settings**: Open the session settings panel by typing:
+   ```text
+   /settings
+   ```
+6. **Auto-Approve**: Enable the **Auto Approve** setting to save time during your vibe coding journey, allowing the AI agent:
+   - **Tool Permission**: always-proceed
+   - **Artifact Review**: agent decides
+7. **Set Up Managed MCP Server**: Link and initialize the Google-managed Spanner MCP Server so the agent can query your transactional Spanner instance directly.
+
+Now you are ready to begin! Enjoy your vibe coding journey.
+
+#### Essential Antigravity CLI Commands
+Once inside the active Antigravity interactive shell, you can use the following slash commands to manage your session:
 
 | Command | Action |
 | :--- | :--- |
 | `/list-sessions` | Shows a numbered list of your past session activities to resume. |
 | `/resume latest` | Jumps back into your most recent active conversation. |
-| `/exit` | Exits the Gemini CLI session and returns to your standard workstation terminal prompt. |
-| `/auth` | Re-authenticates or switches credentials (e.g., to use a specific API Key). |
-
+| `/exit` | Exits the interactive CLI session and returns to your standard terminal prompt. |
+| `/settings` | Configures global behavior, themes, model configurations, and auto-approve options. |
 
 ---
 
-### 2. Prompting Gemini to Generate the React Agentic Application
+### 3. Prompting Antigravity to Generate the React Agentic Application
 
-Paste the following developer prompt into the Gemini interactive chat session to initiate code generation:
+Paste the following developer prompt into the active `agy` CLI interactive chat session to initiate code generation:
 
 ```text
 Goal: Build a fresh React application in a new directory to help navigate Disneyland Paris attractions.
@@ -508,13 +531,22 @@ Instructions:
   3. Find optimized navigation paths between any two attractions using Spanner Graph MATCH queries over the "Path" edge tables.
   4. Find attractions near a given attraction by sorting path distance.
 - UI/UX: Use a premium, professional Disneyland-themed color palette (deep navy, royal gold, sparkling gold highlights) with smooth hover micro-animations.
-
-
 ```
 
 ---
 
-### 3. Deep Dive: Spanner Graph Queries under the Hood
+### 4. Run and Explore your Vibe Coded Application
+
+Here's an example Vibe coded Disneyland navigator app! Once the Antigravity agent has finished writing the application:
+
+1. **Run the App Locally**: Run the application locally (using `npm run dev` or the appropriate command outlined by the agent) and open the dashboard in your browser to check it out.
+2. **Check Spanner Graph**: Go to the **Cloud Spanner Studio** in the Google Cloud Console and examine the generated Spanner Graph definition to see how the property graph structure is laid out.
+3. **Inspect the Code**: Get familiar with the application by reading the code of your backend service (e.g., `server.js` or the api handlers generated by the agent).
+4. **Ask Questions**: If you want any specific parts of the implementation explained, simply ask inside your active `agy` CLI session to get code walk-throughs and technical details!
+
+---
+
+### 5. Deep Dive: Spanner Graph Queries under the Hood
 
 When the agent calls the pathfinding tools, it runs a native **Spanner Graph** query using the `GRAPH_TABLE` function on the property graph defined on the `Attraction` and `Path` tables.
 
