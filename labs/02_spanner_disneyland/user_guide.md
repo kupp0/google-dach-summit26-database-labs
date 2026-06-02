@@ -182,12 +182,13 @@ Run these shell commands inside your `my-terraform-project` folder:
 terraform init
 
 # 2. Review the Execution Plan
-terraform plan
+terraform plan -var="project_id=$(gcloud config get-value project)"
 
 # 3. Apply changes and deploy resources
-terraform apply
+terraform apply -var="project_id=$(gcloud config get-value project)"
 ```
 *(Type `yes` when prompted to confirm the deployment).*
+
 
 ---
 
