@@ -457,9 +457,9 @@ gcloud alpha agent-registry mcp-servers list \
 
 ---
 
-## Phase 7: Building the Agentic React Application using Antigravity CLI
+## Phase 7: Building the Agentic Application using Antigravity CLI
 
-In this phase, you will launch the **Antigravity CLI** directly from a terminal session within your **Cloud Workstation** and use it to build a complete React application. The application will utilize an **AGY SDK Agent** that queries your Spanner transactional database and leverages **Spanner Graph** capabilities to perform navigation and pathfinding across Disneyland Paris attractions.
+In this phase, you will launch the **Antigravity CLI** directly from a terminal session within your **Cloud Workstation** and use it to build a complete web application. The application will utilize a FastAPI Python backend powered by the **AGY SDK** that queries your Spanner transactional database, coupled with a modern single-page HTML5/JS frontend client. It leverages **Spanner Graph** capabilities to perform navigation and pathfinding across Disneyland Paris attractions.
 
 ### 1. Open a Terminal in Cloud Workstations
 
@@ -513,26 +513,23 @@ Once inside the active Antigravity interactive shell, you can use the following 
 
 ---
 
-### 3. Prompting Antigravity to Generate the React Agentic Application
+### 3. Prompting Antigravity to Generate the Agentic Application
 
 Paste the following developer prompt into the active `agy` CLI interactive chat session to initiate code generation:
 
 ```text
-Goal: Build a fresh React application in a new directory to help navigate Disneyland Paris attractions.
+Goal: Build a high-performance, beautiful Disneyland Paris Navigator application in a new directory under 10 minutes.
+Stack & Architecture: To bypass slow npm installations and build compilation steps, implement a clean FastAPI Python backend (app.py) paired with a rich, premium Single-Page HTML5/JS frontend (index.html) utilizing Tailwind CSS via CDN.
 Infrastructure Context: I have provisioned a Cloud Spanner instance called "disneyland" and a database called "agent-lab" in this Google Cloud project.
-Agent & Integration Model: Integrate the AI Agent with the Google-managed Spanner Model Context Protocol (MCP) Server registered in the project's Agent Registry.
+Agent & Integration Model: Integrate the AI Agent using the Google Antigravity (google-antigravity) Python SDK and connect it with the Google-managed Spanner Model Context Protocol (MCP) Server registered under the Vertex AI Agent Registry (location: global).
 Instructions:
 - Show the planning phase of development first.
-- The agent must dynamically query Spanner database schema and tables using the managed Spanner MCP Server tools (e.g., execution/query tools) rather than static hand-written client APIs.
-- Leverage Spanner Graph capabilities for pathfinding by dynamically executing native graph queries on the "DisneylandGraph" property graph.
-- Support the following user actions:
-  1. List all attractions (dynamically querying the "Attraction" table).
-  2. Search attractions by user needs (filtering descriptions dynamically).
-  3. Find optimized navigation paths between any two attractions using Spanner Graph MATCH queries over the "Path" edge tables.
-  4. Find attractions near a given attraction by sorting path distance.
-- UI/UX: Use a premium, professional Disneyland-themed color palette (deep navy, royal gold, sparkling gold highlights) with smooth hover micro-animations.
-
-At the end: For local debugging create a setup.sh startup script and test it
+- Backend (app.py): Use FastAPI to expose endpoints.
+  - Endpoint /api/chat: Uses the google-antigravity SDK Agent (configured with the Spanner MCP server) to handle conversational database querying dynamically.
+  - Endpoint /api/navigate: Executes custom Spanner Graph MATCH queries on the "DisneylandGraph" property graph to find optimized routes.
+- Frontend (index.html): Create a premium, immersive Disneyland-themed user interface (glassmorphic cards, deep navy and sparkling royal gold colors, hover micro-animations).
+  - Features: Interactive pathfinder (source -> target attraction displaying path nodes and total distance), search filter, and a terminal-style Chat component connected to /api/chat.
+- Startup Script (setup.sh): For local debugging, create an automated startup shell script that initializes a Python virtual environment, installs fastapi, uvicorn, google-antigravity, runs app.py, and opens the dashboard in the browser.
 ```
 
 ---
@@ -541,9 +538,9 @@ At the end: For local debugging create a setup.sh startup script and test it
 
 Here's an example Vibe coded Disneyland navigator app! Once the Antigravity agent has finished writing the application:
 
-1. **Run the App Locally**: Run the application locally (using `npm run dev` or the appropriate command outlined by the agent) and open the dashboard in your browser to check it out.
+1. **Run the App Locally**: Launch your app by executing `bash setup.sh` inside your terminal, which will spin up your local FastAPI server and open the visual navigator dashboard in your browser.
 2. **Check Spanner Graph**: Go to the **Cloud Spanner Studio** in the Google Cloud Console and examine the generated Spanner Graph definition to see how the property graph structure is laid out.
-3. **Inspect the Code**: Get familiar with the application by reading the code of your backend service (e.g., `server.js` or the api handlers generated by the agent).
+3. **Inspect the Code**: Open the generated directory to see how clean the codebase is! Read the FastAPI backend (`app.py`) to see how it uses the `google-antigravity` SDK to chat with Spanner.
 4. **Ask Questions**: If you want any specific parts of the implementation explained, simply ask inside your active `agy` CLI session to get code walk-throughs and technical details!
 
 ---
