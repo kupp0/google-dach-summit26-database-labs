@@ -29,7 +29,8 @@ Before proceeding, let's verify that the flags are active.
 > * **User**: `postgres`
 > * **Password**: `alloydb-hackathon-password`
 > 
-> ![AlloyDB Studio Login Example](assets/alloydb_studio_login.png)
+> <img src="assets/alloydb_studio_login.png" alt="AlloyDB Studio Login Example" width="350" />
+
 
 Connect to your database cluster inside the **AlloyDB Studio** and execute these commands to verify the configurations:
 
