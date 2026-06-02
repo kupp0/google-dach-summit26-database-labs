@@ -119,3 +119,75 @@ EOF
 echo "Lab folder and Spanner Graph skill successfully generated!"
 echo "Target skill updated:"
 echo " - $SKILL_DIR/SKILL.md"
+
+# Create Vertex AI Configuration skill
+VERTEXT_SKILL_DIR="$LAB_DIR/skills/vertex-config"
+echo "Generating Vertex AI Configuration skill inside: $VERTEXT_SKILL_DIR"
+mkdir -p "$VERTEXT_SKILL_DIR"
+
+cat << 'EOF' > "$VERTEXT_SKILL_DIR/SKILL.md"
+# Skill: GCP Vertex AI Model & Credentials Configuration
+
+## Description
+Provides explicit, verified guidelines for configuring `google-antigravity` agents to connect to Google Cloud Vertex AI APIs, resolve project/credential discrepancies, and select active models under the DACH Summit workshop sandbox.
+
+---
+
+## 1. Vertex AI Initialization & Project Resolution
+In standard VM environments (e.g., Cloud Workstations), multiple project IDs might exist (e.g., quota project vs. resource project). 
+To ensure the agent has authorization to make Vertex AI API calls, always initialize the `LocalAgentConfig` by programmatically resolving the active Google Cloud project and setting the region:
+
+```python
+import os
+import subprocess
+
+def get_active_project_id():
+    # 1. Check environment variable
+    project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
+    if project_id:
+        return project_id
+    # 2. Fallback to active gcloud configuration
+    try:
+        result = subprocess.run(
+            ["gcloud", "config", "get-value", "project"],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        return result.stdout.strip()
+    except Exception:
+        return None
+
+# Resolve credentials context
+PROJECT_ID = get_active_project_id()
+LOCATION = "us-central1" # Primary Vertex AI API region for this workshop
+```
+
+---
+
+## 2. Verified Model Selection
+When running in GCP Vertex AI mode, use these active model identifiers. Avoid guessing or trying external AI Studio formats:
+
+- **Primary Model (High speed & efficiency):** `gemini-1.5-flash`
+- **Advanced Model (Complex reasoning):** `gemini-1.5-pro`
+
+---
+
+## 3. Agent Setup Scaffold (FastAPI Backend integration)
+Implement the `LocalAgentConfig` inside `app.py` using this verified pattern:
+
+```python
+from google.antigravity import Agent, LocalAgentConfig
+
+config = LocalAgentConfig(
+    model="gemini-1.5-flash", # Verified Vertex AI model name
+    project=PROJECT_ID,        # Dynamically resolved active sandbox project
+    location="us-central1",    # Vertex AI endpoint location
+)
+```
+EOF
+
+echo "Vertex AI configuration skill successfully generated!"
+echo "Target skill updated:"
+echo " - $VERTEXT_SKILL_DIR/SKILL.md"
+
