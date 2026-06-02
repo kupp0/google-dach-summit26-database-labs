@@ -12,3 +12,10 @@ variable "vpc_id" {
   description = "The ID of the VPC network"
   type        = string
 }
+
+variable "private_vpc_connection_id" {
+  description = "The ID of the private VPC connection peering"
+  type        = string
+  default     = ""
+}
+

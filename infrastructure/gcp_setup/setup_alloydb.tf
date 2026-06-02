@@ -31,7 +31,7 @@ resource "google_project_iam_member" "alloydb_vertex_user" {
   project    = var.project_id
   role       = "roles/aiplatform.user"
   member     = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-alloydb.iam.gserviceaccount.com"
-  depends_on = [google_project_service.alloydb_apis]
+  depends_on = [google_project_service.alloydb_apis, google_alloydb_instance.primary]
 }
 
 #--- 3. AlloyDB Cluster Setup ---
@@ -49,8 +49,12 @@ resource "google_alloydb_cluster" "default" {
     password = "alloydb-hackathon-password"
   }
 
-  depends_on = [google_project_service.alloydb_apis]
+  depends_on = [
+    google_project_service.alloydb_apis,
+    var.private_vpc_connection_id
+  ]
 }
+
 
 #--- 4. AlloyDB Instance Setup with database flags ---
 resource "google_alloydb_instance" "primary" {
