@@ -88,12 +88,12 @@ Use this structure when navigating multi-hop networks, computing routing paths, 
 
 ```sql
 GRAPH {GRAPH_NAME}
-MATCH GRAPH_PATH p = (src:{NODE_LABEL_NAME})-[:{EDGE_LABEL_NAME} *1..{MAX_HOPS}]->(dst:{NODE_LABEL_NAME})
+MATCH p = (src:{NODE_LABEL_NAME})-[:{EDGE_LABEL_NAME}]->{1,{MAX_HOPS}}(dst:{NODE_LABEL_NAME})
 WHERE src.{ATTRIBUTE_NAME} = '{START_VALUE}' AND dst.{ATTRIBUTE_NAME} = '{END_VALUE}'
 RETURN 
   src.{ATTRIBUTE_NAME} AS origin, 
   dst.{ATTRIBUTE_NAME} AS destination, 
-  ARRAY(SIZE(p)) AS hop_count;
+  ARRAY(SELECT n.{ATTRIBUTE_NAME} FROM UNNEST(nodes(p)) AS n) AS path_nodes;
 ```
 
 ### Pattern C: Topologically Sorted Neighbors by Distance/Weight
@@ -184,6 +184,28 @@ config = LocalAgentConfig(
     project=PROJECT_ID,        # Dynamically resolved active sandbox project
     location="us-central1",    # Vertex AI endpoint location
 )
+```
+
+---
+
+## 4. GCP Billing & Routing Projects (403 Forbidden Workaround)
+In shared GCP sandbox environments, user credentials can reside in a default quota project that differs from the actual resource project (e.g., where Spanner is hosted).
+To bypass `403 Forbidden` errors during tool or model executions, explicitly pass the active `PROJECT_ID` inside the `X-Goog-User-Project` and `Google-Cloud-Project` headers in your HTTP client requests to the Spanner MCP server:
+
+```python
+headers = {
+    "X-Goog-User-Project": PROJECT_ID,
+    "Google-Cloud-Project": PROJECT_ID,
+    "Authorization": f"Bearer {OAUTH_TOKEN}"
+}
+```
+
+---
+
+## 5. MCP Connection & Session Lifecycle Management
+To avoid Pydantic validation collisions, `TaskGroup` sub-exceptions, or `Connection closed` errors across multiple client threads or fallbacks:
+- Always instantiate **fresh, separate client sessions** or MCP stream servers for distinct model calls or fallback runs.
+- Never reuse the same closed `McpStreamableHttpServer` or client instance across sequential Agent lifecycles.
 ```
 EOF
 
