@@ -498,7 +498,7 @@ Upon running the CLI for the first time, complete the following setup flow:
 6. **Auto-Approve**: Enable the **Auto Approve** setting to save time during your vibe coding journey, allowing the AI agent:
    - **Tool Permission**: always-proceed
    - **Artifact Review**: agent decides
-7. **Set Up Managed MCP Server**: Link and initialize the Google-managed Spanner MCP Server so the agent can query your transactional Spanner instance directly. Afterwards, check with the `/mcp` command that your remote MCP Spanner server is correctly configured and connected.
+7. **Verify Managed MCP Server**: Link and initialize the Google-managed Spanner MCP Server so the agent can query your transactional Spanner instance directly. Afterwards, check with the `/mcp` command that your remote MCP Spanner server is correctly configured and connected.
 
 Now you are ready to begin! Enjoy your vibe coding journey.
 
