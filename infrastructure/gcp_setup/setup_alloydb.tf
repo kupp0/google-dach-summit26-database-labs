@@ -36,7 +36,7 @@ resource "google_project_iam_member" "alloydb_vertex_user" {
 
 #--- 3. AlloyDB Cluster Setup ---
 resource "google_alloydb_cluster" "default" {
-  cluster_id = "search-cluster-v2"
+  cluster_id = "search-cluster"
   project    = var.project_id
   location   = var.region
   deletion_protection = false

@@ -53,7 +53,7 @@ Create a file named `test-gda.sh`, paste the script below, and execute it:
 # --- HARDCODED TESTING VARIABLES ---
 # Replace these placeholder values with your actual GCP details
 GCP_PROJECT_ID="YOUR_PROJECT_ID"
-GCP_LOCATION="europe-west1"
+GCP_LOCATION="europe-west3"
 ALLOYDB_CLUSTER_ID="search-cluster"
 ALLOYDB_INSTANCE_ID="search-primary"
 DB_NAME="search"

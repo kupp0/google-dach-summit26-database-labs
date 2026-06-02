@@ -48,6 +48,16 @@ Provisioning files for **Google Cloud Workstations**, providing participants wit
 
 Before calling Gemini, make sure to set the following environment variables in your terminal:
 
+### Authenticate as your user - not the service account
+Open the link using CTRL + Click and login as the devstar user. Agree to the terms. Copy the code back the terminal. You need to run both commands
+
+```bash
+gcloud auth login
+
+gcloud auth application-default login
+```
+
+
 ```bash
 export GOOGLE_CLOUD_PROJECT="your-project-id"
 export GOOGLE_CLOUD_LOCATION="global"

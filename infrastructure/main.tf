@@ -36,9 +36,23 @@ module "cloud_workstations" {
   depends_on = [module.gcp_setup]
 }
 
-resource "google_project_iam_member" "user_ai_developer" {
+resource "google_project_iam_member" "user_roles" {
+  for_each = toset([
+    "roles/aiplatform.user",
+    "roles/spanner.admin",
+    "roles/mcp.toolUser",
+    "roles/oauthconfig.editor"
+  ])
+
   project = var.project_id
-  role    = "roles/aiplatform.user"
+  role    = each.key
   member  = local.iap_member
 }
+
+module "spanner_lab" {
+  source = "./02_spanner_lab"
+  project_id = var.project_id
+  region     = var.region
+}
+
 

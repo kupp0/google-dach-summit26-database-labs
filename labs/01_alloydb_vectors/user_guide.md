@@ -50,7 +50,7 @@ SHOW google_ml_integration.enable_faster_embedding_generation;
 > ```bash
 > gcloud alloydb instances update search-primary \
 >   --cluster=search-cluster \
->   --region=europe-west1 \
+>   --region=europe-west3 \
 >   --database-flags=google_ml_integration.enable_model_support=on,google_ml_integration.enable_faster_embedding_generation=on
 > ```
 
