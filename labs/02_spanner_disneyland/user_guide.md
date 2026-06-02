@@ -477,12 +477,13 @@ To open a terminal session within your Cloud Workstation:
 
 ### 2. Initializing and Getting Started with the Antigravity CLI
 
-Launch the interactive Antigravity session by running the following command in your terminal:
+First, navigate to your initialized lab workspace folder, and then launch the interactive Antigravity session:
 
 ```bash
+cd ~/disneyland-navigator
 antigravity
 ```
-*(Note: You can also use the shorthand alias `agy` if it is configured in your workstation environment).*
+*(Note: You can launch the CLI by running the full `antigravity` command or by typing its quick shorthand alias `agy`).*
 
 Upon running the CLI for the first time, complete the following setup flow:
 
