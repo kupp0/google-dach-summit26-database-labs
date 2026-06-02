@@ -498,7 +498,7 @@ Upon running the CLI for the first time, complete the following setup flow:
 6. **Auto-Approve**: Enable the **Auto Approve** setting to save time during your vibe coding journey, allowing the AI agent:
    - **Tool Permission**: always-proceed
    - **Artifact Review**: agent decides
-7. **Set Up Managed MCP Server**: Link and initialize the Google-managed Spanner MCP Server so the agent can query your transactional Spanner instance directly.
+7. **Set Up Managed MCP Server**: Link and initialize the Google-managed Spanner MCP Server so the agent can query your transactional Spanner instance directly. Afterwards, check with the `/mcp` command that your remote MCP Spanner server is correctly configured and connected.
 
 Now you are ready to begin! Enjoy your vibe coding journey.
 
@@ -511,6 +511,7 @@ Once inside the active Antigravity interactive shell, you can use the following 
 | `/resume latest` | Jumps back into your most recent active conversation. |
 | `/exit` | Exits the interactive CLI session and returns to your standard terminal prompt. |
 | `/settings` | Configures global behavior, themes, model configurations, and auto-approve options. |
+| `/mcp` | Displays a list of active Model Context Protocol (MCP) servers and verifies their connection status. |
 
 ---
 
