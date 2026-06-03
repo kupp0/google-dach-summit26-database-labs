@@ -362,7 +362,7 @@ Use the existing Spanner schema and property graph defined as follows:
 
 Agent & Integration Model: Integrate the AI Agent using the Google Antigravity (google-antigravity) Python SDK, utilizing the pre-installed custom skills available in your workspace (`skills/spanner-graph` and `skills/vertex-config`) to resolve model names, active GCP Project/credentials context, and Spanner GQL queries. Connect the agent to the Google-managed Spanner Model Context Protocol (MCP) Server registered under the Vertex AI Agent Registry (location: global).
 Instructions:
-- Show the planning phase of development first.
+- Show the planning phase of development first. Create the implementation plan inside the project directory and open it in OSS code after creation.
 - Backend (app.py): Use FastAPI to expose endpoints.
   - Endpoint /api/chat: Uses the google-antigravity SDK Agent (configured with the Spanner MCP server) to handle conversational database querying dynamically.
   - Endpoint /api/navigate: Executes custom Spanner Graph MATCH queries on the "DisneylandGraph" property graph to find optimized routes. Expose the executed Spanner SQL and Graph GQL queries in the API responses.
