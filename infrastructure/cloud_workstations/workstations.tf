@@ -41,8 +41,12 @@ resource "google_workstations_workstation_config" "default" {
     image = "us-central1-docker.pkg.dev/cloud-workstations-images/predefined/code-oss:latest"
     command = ["/bin/bash", "-c"]
     args = [
-      "curl -sSL https://raw.githubusercontent.com/kupp0/google-dach-summit26-database-labs/main/infrastructure/cloud_workstations/bootstrapping.sh | bash && /usr/bin/entrypoint.sh"
+      "curl -sSL https://raw.githubusercontent.com/kupp0/google-dach-summit26-database-labs/main/infrastructure/cloud_workstations/bootstrapping.sh | bash && /google/scripts/entrypoint.sh"
     ]
+    env = {
+      GOOGLE_CLOUD_PROJECT  = var.project_id
+      GOOGLE_CLOUD_LOCATION = "global"
+    }
   }
 
   persistent_directories {
