@@ -5,7 +5,6 @@ In this lab, you will build a zero-copy federated analytical "bridge" linking **
 ---
 
 ## Objective
-- Deploy Cloud Spanner, BigQuery dataset, and BigQuery Connection infrastructure using Terraform.
 - Establish an external dataset mapping to automatically federate Cloud Spanner tables into BigQuery.
 - Inject a rich Disneyland attraction dataset containing vector embeddings via Spanner Studio.
 - Configure and verify the **MCP Toolbox** for agentic AI integration.
@@ -13,31 +12,15 @@ In this lab, you will build a zero-copy federated analytical "bridge" linking **
 
 ---
 
-## Phase 1: Environment Setup
+## Phase 1: Infrastructure Provisioning (Terraform)
 
-### 1. Create Workspace Directory
-Run these commands to prepare a clean workspace:
-
-```bash
-# Create and enter a clean project directory
-mkdir my-terraform-project && cd my-terraform-project
-
-# Create the two required Terraform configuration files
-touch main.tf outputs.tf
-```
+The infrastructure is already deployed, if you are interested in the terraform code, you can find it in the [infrastructure](infrastructure) directory.
 
 ---
 
-## Phase 2: Infrastructure Provisioning (Terraform)
+## Phase 2: Schema Creation & Data Injection
 
-The infrastructure is already deployed, skip to the next phase.
-
-
----
-
-## Phase 4: Schema Creation & Data Injection
-
-Once Terraform successfully completes the deployment, populate the transactional database:
+Populate Spanner database **`agent-lab`** with tables and data.
 
 1. Go to the **Cloud Spanner** page in the Google Cloud Console.
 2. Click on your Spanner instance **`disneyland`**, and then select database **`agent-lab`**.
@@ -266,7 +249,7 @@ INSERT INTO Path (SourceAttractionID, TargetAttractionID, DistanceMeters) VALUES
 
 ---
 
-## Phase 5: Real-Time Bridge Verification Query
+## Phase 3: Real-Time Bridge Verification Query
 
 Validate that the zero-copy federated bridge is working correctly by executing a live query in BigQuery that fetches data directly from your Cloud Spanner transactional tables.
 
