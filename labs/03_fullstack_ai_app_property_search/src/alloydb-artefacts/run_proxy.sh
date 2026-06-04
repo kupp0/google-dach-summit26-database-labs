@@ -11,7 +11,7 @@ if [ -f "$ENV_FILE" ]; then
     echo "📄 Loading configuration from backend/.env..."
     export $(grep -v '^#' "$ENV_FILE" | xargs)
 else
-    echo "❌ backend/.env not found. Please run ../terraform/generate_env.sh first."
+    echo "❌ backend/.env not found. Please run ./init.sh first in the workspace root."
     exit 1
 fi
 

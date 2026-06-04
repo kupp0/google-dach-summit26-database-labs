@@ -7,7 +7,7 @@ if [ -f "backend/.env" ]; then
     echo "📄 Loading configuration from backend/.env..."
     export $(grep -v '^#' backend/.env | xargs)
 else
-    echo "❌ backend/.env not found. Please run ./setup_env.sh first."
+    echo "❌ backend/.env not found. Please run ./init.sh first."
     exit 1
 fi
 
