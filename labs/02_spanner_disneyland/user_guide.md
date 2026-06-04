@@ -305,11 +305,27 @@ To open a terminal session within your Cloud Workstation:
 
 <img src="assets/workstation_terminal.png" alt="Open Workstation Terminal" width="350" />
 
-3. Once the terminal opens, you are ready to launch and configure the Antigravity CLI.
+3. Once the terminal opens, you are ready to authenticate and set up your workspace environment.
 
 ---
 
-### 3. Initializing and Getting Started with the Antigravity CLI
+### 3. Authenticate your Workstation Terminal
+
+Before launching the interactive AI CLI, you need to authenticate your terminal session with Google Cloud. This ensures both the CLI and the generated Python backend have authorization to access Gemini and Spanner APIs:
+
+Run the following commands in the terminal:
+```bash
+# 1. Authenticate the gcloud CLI
+gcloud auth login
+
+# 2. Authenticate Application Default Credentials (ADC) for Python APIs
+gcloud auth application-default login
+```
+*(Follow the browser authentication flows for both commands, sign in using your Devstar user credentials, and paste the authorization codes back into the terminal if prompted).*
+
+---
+
+### 4. Initializing and Getting Started with the Antigravity CLI
 
 First, navigate to your initialized lab workspace folder, and then launch the interactive Antigravity session:
 
@@ -348,7 +364,7 @@ Once inside the active Antigravity interactive shell, you can use the following 
 
 ---
 
-### 4. Prompting Antigravity to Generate the Agentic Application
+### 5. Prompting Antigravity to Generate the Agentic Application
 
 Paste the following developer prompt into the active `agy` CLI interactive chat session to initiate code generation:
 
@@ -384,7 +400,7 @@ Instructions:
 
 ---
 
-### 5. Understanding the `agy` CLI Development Workflow & Planning Mode
+### 6. Understanding the `agy` CLI Development Workflow & Planning Mode
 
 When you submit the prompt to the `agy` CLI, the agent initiates its standard agentic development workflow:
 
@@ -407,7 +423,7 @@ When you submit the prompt to the `agy` CLI, the agent initiates its standard ag
 
 ---
 
-### 6. Run and Explore your Vibe Coded Application
+### 7. Run and Explore your Vibe Coded Application
 
 Here's an example Vibe coded Disneyland navigator app! Once the Antigravity agent has finished writing the application:
 
@@ -423,7 +439,7 @@ Here's an example Vibe coded Disneyland navigator app! Once the Antigravity agen
 
 ---
 
-### 7. Deep Dive: Spanner Graph Queries under the Hood
+### 8. Deep Dive: Spanner Graph Queries under the Hood
 
 When the agent calls the pathfinding tools, it runs a native **Spanner Graph** query using the `GRAPH_TABLE` function on the property graph defined on the `Attraction` and `Path` tables.
 
