@@ -9,7 +9,7 @@ echo "Starting Workstation Bootstrapping Coordination..."
 # Pre-clone the repository if not already present in the workspace
 if [ ! -d "/home/user/google-dach-summit26-database-labs" ]; then
     echo "Cloning database-labs repository..."
-    git clone https://github.com/kupp0/google-dach-summit26-database-labs.git /home/user/google-dach-summit26-database-labs
+    git clone https://github.com/kupp0/google-dach-summit26-database-labs.git /home/user/google-dach-summit26-database-labs < /dev/null
     # Fix permissions for the cloned repo right away
     chown -R 1000:1000 /home/user/google-dach-summit26-database-labs
 fi
@@ -19,21 +19,21 @@ REPO_DIR="/home/user/google-dach-summit26-database-labs"
 # 1. Initialize Model Context Protocol configuration settings
 if [ -f "$REPO_DIR/infrastructure/cloud_workstations/setup_mcp.sh" ]; then
     echo "Running local MCP setup script..."
-    bash "$REPO_DIR/infrastructure/cloud_workstations/setup_mcp.sh"
+    bash "$REPO_DIR/infrastructure/cloud_workstations/setup_mcp.sh" < /dev/null
 else
     echo "setup_mcp.sh not found locally. Downloading from GitHub..."
     curl -sSL "$BASE_URL/setup_mcp.sh" -o "/tmp/setup_mcp_${USER}.sh"
-    bash "/tmp/setup_mcp_${USER}.sh"
+    bash "/tmp/setup_mcp_${USER}.sh" < /dev/null
 fi
 
 # 2. Initialize lab folder and custom agent skills
 if [ -f "$REPO_DIR/infrastructure/cloud_workstations/setup_skills.sh" ]; then
     echo "Running local skills setup script..."
-    bash "$REPO_DIR/infrastructure/cloud_workstations/setup_skills.sh"
+    bash "$REPO_DIR/infrastructure/cloud_workstations/setup_skills.sh" < /dev/null
 else
     echo "setup_skills.sh not found locally. Downloading from GitHub..."
     curl -sSL "$BASE_URL/setup_skills.sh" -o "/tmp/setup_skills_${USER}.sh"
-    bash "/tmp/setup_skills_${USER}.sh"
+    bash "/tmp/setup_skills_${USER}.sh" < /dev/null
 fi
 
 # 3. Initialize Lab 3 Swiss Property Search workspace
