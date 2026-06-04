@@ -1,6 +1,6 @@
 # Lab 3: Swiss Property Search: Fullstack AI App with AlloyDB & Gemini Agent Platform (formerly VertexAI)
 
-In this track, you will build and deploy a premium real-estate search application that showcases three different ways to execute AI-powered semantic and relational searches. The entire project was vibe-coded from scratch using Gemini and uses **AlloyDB**, **Gemini Agent Platform (formerly VertexAI)**, and **Gemini Data Analytics** as its core backend.
+In this track, you will build and deploy a premium real-estate search application that showcases three different ways to execute AI-powered semantic and relational searches. The entire project was vibe-coded from scratch using Gemini and uses **AlloyDB**, **Gemini Agent Platform (formerly VertexAI)**, and **Gemini Data Analytics Query Data Tool** as its core backend.
 
 ---
 
@@ -37,6 +37,10 @@ sequenceDiagram
 ### Onboarding & Infrastructure Links
 - **Core Infrastructure Blueprint**: Refer to the baseline repo for standard setup: [Bootkon pr2pr Repository](https://github.com/mikrovvelle/bootkon/blob/pr2pr/content/pr2pr/README.md)
 - **Background Inspiration**: Read the story behind the application on [Matthias Kupczak's Blog Post](https://medium.com/@matthiaskupczak/genai-everywhere-building-a-full-stack-ai-search-demo-with-alloydb-vertex-ai-and-agentic-37eb38c3e646).
+
+- **Next '26 Presentation**: Check out the Google Cloud Next 26 presentation about Data Agents and the Data Query Tool (NL2SQL):
+  - 📄 [Official Presentation Slides](https://content-cdn.sessionboard.com/content/6XCkKXeZTfmxxblcF7MH_BRK3-003.pdf)
+  - 🎥 [YouTube Session Recording](https://www.youtube.com/watch?v=GMVF9KNIqP4&t=2s)
 
 ---
 
