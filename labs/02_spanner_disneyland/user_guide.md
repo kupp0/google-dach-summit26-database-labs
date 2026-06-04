@@ -287,21 +287,29 @@ gcloud alpha agent-registry mcp-servers list \
 
 In this phase, you will launch the **Antigravity CLI** directly from a terminal session within your **Cloud Workstation** and use it to build a complete web application. The application will utilize a FastAPI Python backend powered by the **AGY SDK** that queries your Spanner transactional database, coupled with a modern single-page HTML5/JS frontend client. It leverages **Spanner Graph** capabilities to perform navigation and pathfinding across Disneyland Paris attractions.
 
-### 1. Open a Terminal in Cloud Workstations
+### 1. Open the User Home Folder in Cloud Workstations
 
-To open a terminal session within your Cloud Workstation:
+When you launch your Cloud Workstation for the first time, you need to open your user home directory:
 1. In the Google Cloud Console, navigate to the **Cloud Workstations** page.
 2. Select your workstation instance and click **Launch** to open the browser-based editor UI.
-3. In the top-left corner of the workstation window, click the application menu button.
-4. Navigate to **Terminal** and select **New Terminal** (or use the keyboard shortcut `Ctrl+Shift+C`).
-
-<img src="assets/workstation_terminal.png" alt="Open Workstation Terminal" width="350" />
-
-5. Once the terminal opens, you are ready to launch and configure the Antigravity CLI.
+3. In the left Explorer pane of the editor UI, click **Open Folder** (or select **File** -> **Open Folder** from the application menu).
+4. Verify or type `/home/user/` in the dialog input field and click **OK**.
 
 ---
 
-### 2. Initializing and Getting Started with the Antigravity CLI
+### 2. Open a Terminal in Cloud Workstations
+
+To open a terminal session within your Cloud Workstation:
+1. In the top-left corner of the workstation window, click the application menu button.
+2. Navigate to **Terminal** and select **New Terminal** (or use the keyboard shortcut `Ctrl+Shift+C`).
+
+<img src="assets/workstation_terminal.png" alt="Open Workstation Terminal" width="350" />
+
+3. Once the terminal opens, you are ready to launch and configure the Antigravity CLI.
+
+---
+
+### 3. Initializing and Getting Started with the Antigravity CLI
 
 First, navigate to your initialized lab workspace folder, and then launch the interactive Antigravity session:
 
@@ -341,7 +349,7 @@ Once inside the active Antigravity interactive shell, you can use the following 
 
 ---
 
-### 3. Prompting Antigravity to Generate the Agentic Application
+### 4. Prompting Antigravity to Generate the Agentic Application
 
 Paste the following developer prompt into the active `agy` CLI interactive chat session to initiate code generation:
 
@@ -374,7 +382,7 @@ Instructions:
 
 ---
 
-### 4. Run and Explore your Vibe Coded Application
+### 5. Run and Explore your Vibe Coded Application
 
 Here's an example Vibe coded Disneyland navigator app! Once the Antigravity agent has finished writing the application:
 
@@ -390,7 +398,7 @@ Here's an example Vibe coded Disneyland navigator app! Once the Antigravity agen
 
 ---
 
-### 5. Deep Dive: Spanner Graph Queries under the Hood
+### 6. Deep Dive: Spanner Graph Queries under the Hood
 
 When the agent calls the pathfinding tools, it runs a native **Spanner Graph** query using the `GRAPH_TABLE` function on the property graph defined on the `Attraction` and `Path` tables.
 
