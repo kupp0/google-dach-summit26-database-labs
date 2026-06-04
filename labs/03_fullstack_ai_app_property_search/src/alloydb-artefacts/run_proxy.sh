@@ -25,19 +25,18 @@ echo "🔧 Setting up AlloyDB Auth Proxy..."
 BASTION_NAME="search-demo-bastion"
 BASTION_ZONE="${REGION}-b"
 
-# Ensure local proxy binary exists
-if [ ! -f "alloydb-auth-proxy" ]; then
-    echo "⬇️  Downloading proxy binary locally..."
-    wget -q https://storage.googleapis.com/alloydb-auth-proxy/v1.10.0/alloydb-auth-proxy.linux.amd64 -O alloydb-auth-proxy
-    chmod +x alloydb-auth-proxy
-fi
-
-# Copy proxy to Bastion
-echo "📤 Copying proxy to Bastion..."
 # Kill existing proxy process on Bastion to avoid "Text file busy"
 gcloud compute ssh $BASTION_NAME --zone $BASTION_ZONE --command "killall alloydb-auth-proxy || true" --quiet
-gcloud compute scp alloydb-auth-proxy $BASTION_NAME:~/alloydb-auth-proxy --zone $BASTION_ZONE --quiet
-gcloud compute ssh $BASTION_NAME --zone $BASTION_ZONE --command "chmod +x alloydb-auth-proxy"
+
+# Ensure proxy binary exists on Bastion (download directly via Cloud NAT)
+echo "📥 Ensuring alloydb-auth-proxy is installed on Bastion..."
+gcloud compute ssh $BASTION_NAME --zone $BASTION_ZONE --command "
+  if [ ! -f 'alloydb-auth-proxy' ]; then
+    echo 'Downloading alloydb-auth-proxy on Bastion...'
+    curl -sSL https://storage.googleapis.com/alloydb-auth-proxy/v1.10.0/alloydb-auth-proxy.linux.amd64 -o alloydb-auth-proxy
+    chmod +x alloydb-auth-proxy
+  fi
+" --quiet
 
 # Start Proxy on Bastion and Tunnel
 echo "🔌 Establishing SSH tunnel and starting remote proxy..."
