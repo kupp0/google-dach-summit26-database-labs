@@ -415,6 +415,7 @@ This zero-copy Spanner Graph structure enables instant pathfinding logic inside 
   - 🎢 **Churro-Metric Navigation**: Ask it to calculate the optimal route between Space Mountain and Big Thunder Mountain based on how many jumbo Disneyland churros you can consume while walking.
   - 🐭 **Mickey Voice Mode**: Prompt the AI agent to format all conversational chat responses in the squeaky, optimistic tone of Mickey Mouse himself.
   - 🚀 **Hyperdrive Mode**: Add a button that triggers a flashy warp-speed CSS particle effect whenever Space Mountain is clicked.
+  - 🔍 **Semantic Attraction Search**: As you learned in Lab 01, vector embeddings enable semantic search capabilities. Ask the AI to generate vector embeddings of the attractions (the `Embedding ARRAY<FLOAT32>(vector_length=>3072)` column already exists in the `Attraction` table). Let the AI generate the embeddings of the attraction descriptions and add a semantic attraction search widget to your UI.
   
   Unleash your imagination, type your heart out in the `agy` CLI session, and let the AI do the heavy lifting. Have fun, and enjoy your vibe coding journey! 🏰✨
 
