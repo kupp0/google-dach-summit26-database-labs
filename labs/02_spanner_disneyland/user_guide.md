@@ -310,7 +310,7 @@ gcloud auth login --update-adc
 
 Navigate to the project workspace and launch the CLI:
 ```bash
-cd ~/disneyland-navigator
+cd ~/lab02_disneyland_navigator
 agy
 ```
 

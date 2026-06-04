@@ -16,11 +16,11 @@ In this track, you will build and deploy a premium real-estate search applicatio
 
 ### 1. Open the Workspace Folder in Cloud Workstations
 1. In your Cloud Workstation window, select **File** -> **Open Folder**.
-2. Type `/home/user/swiss-property-search` and click **OK**.
+2. Type `/home/user/lab03_swiss_property_search` and click **OK**.
 3. Open a terminal by selecting **Terminal** -> **New Terminal** (or use the shortcut `Ctrl+Shift+C`).
 
 ### 2. Workspace File Architecture
-Your workspace `/home/user/swiss-property-search` contains:
+Your workspace `/home/user/lab03_swiss_property_search` contains:
 * `alloydb-artefacts/`: Database initialization SQL scripts and python bootstrap scripts.
 * `backend/`: FastAPI backend (`main.py`), Agent orchestration, and MCP server config files.
 * `frontend/`: React + Vite + Tailwind CSS frontend application source code.
@@ -30,7 +30,7 @@ Your workspace `/home/user/swiss-property-search` contains:
 ### 3. Initialize your Environment and Permissions
 Before executing database scripts or tunnels, run the initialization script to authorize IAP SSH tunneling to the Bastion host:
 ```bash
-cd ~/swiss-property-search
+cd ~/lab03_swiss_property_search
 bash init.sh
 ```
 *(This installs base requirements and grants your active user account `roles/iap.tunnelResourceAccessor` permissions on the GCP project).*
@@ -50,13 +50,13 @@ bash init.sh
 Natively generate visual listing images and calculate embeddings using Vertex AI Imagen:
 1. Open a terminal in Cloud Workstations and start the database proxy:
    ```bash
-   cd ~/swiss-property-search/alloydb-artefacts
+   cd ~/lab03_swiss_property_search/alloydb-artefacts
    bash run_proxy.sh
    ```
    *(Keep this terminal open to maintain the database connection tunnel).*
 2. Open a **New Terminal tab/window** in the editor and initialize a Python virtual environment to execute the generator:
    ```bash
-   cd ~/swiss-property-search/alloydb-artefacts
+   cd ~/lab03_swiss_property_search/alloydb-artefacts
    python3 -m venv venv
    source venv/bin/activate
    pip install -r requirements.txt
@@ -81,13 +81,13 @@ Natively generate visual listing images and calculate embeddings using Vertex AI
 ### 1. Verify Local Environment Configuration
 The backend environment configuration file `backend/.env` is generated automatically when you run `bash init.sh` in Phase 1.
 
-1. Open `/home/user/swiss-property-search/backend/.env` in Code-OSS to verify its contents.
+1. Open `/home/user/lab03_swiss_property_search/backend/.env` in Code-OSS to verify its contents.
 2. Confirm that `GCP_PROJECT_ID` and `INSTANCE_CONNECTION_NAME` have been resolved correctly to your project's AlloyDB cluster.
 
 ### 2. Deploy to Cloud Run
 1. In the terminal, run the deployment shell script:
    ```bash
-   cd ~/swiss-property-search
+   cd ~/lab03_swiss_property_search
    bash deploy.sh
    ```
    *(This builds Docker images via Cloud Build and deploys 4 services: backend query api, MCP toolbox server, agent engine, and frontend UI to Cloud Run).*
@@ -117,7 +117,7 @@ Wire up the third search modality by indexing AlloyDB records directly into Vert
 
 ## Phase 5: Hands-On Agentic Coding Challenges (ADK CLI)
 
-Now use the **ADK CLI (agy)** or your AI Assistant inside the workspace `/home/user/swiss-property-search` to expand and style the application.
+Now use the **ADK CLI (agy)** or your AI Assistant inside the workspace `/home/user/lab03_swiss_property_search` to expand and style the application.
 
 ### Challenge 1: Architecture Exploration & UML Generation
 - **Prompt**: *"Analyze this repository, provide a concise directory summary, and visualize the message flow of a search query through the system with a PlantUML sequence diagram. Save the diagram source as PlantUML and render it as a PNG."*

@@ -36,18 +36,24 @@ fi
 
 # 3. Initialize Lab 3 Swiss Property Search workspace
 LAB3_SRC_DIR="/home/user/google-dach-summit26-database-labs/labs/03_fullstack_ai_app_property_search/src"
-LAB3_DEST_DIR="/home/user/swiss-property-search"
+LAB3_DEST_DIR="/home/user/lab03_swiss_property_search"
 
-if [ -d "$LAB3_SRC_DIR" ]; then
-    echo "Initializing Lab 3 workspace at $LAB3_DEST_DIR..."
-    mkdir -p "$LAB3_DEST_DIR"
-    cp -rf "$LAB3_SRC_DIR"/* "$LAB3_DEST_DIR"/
-else
-    echo "Warning: Lab 3 source files not found at $LAB3_SRC_DIR"
+if [ ! -d "$LAB3_DEST_DIR" ]; then
+    if [ -d "$LAB3_SRC_DIR" ]; then
+        echo "Initializing Lab 3 workspace at $LAB3_DEST_DIR..."
+        mkdir -p "$LAB3_DEST_DIR"
+        cp -rf "$LAB3_SRC_DIR"/* "$LAB3_DEST_DIR"/
+    else
+        echo "Warning: Lab 3 source files not found at $LAB3_SRC_DIR"
+    fi
 fi
 
 # 4. Ensure proper file ownership for Code-OSS user execution
 echo "Fixing file permissions for Code-OSS workspace directories..."
-chown -R 1000:1000 /home/user/disneyland-navigator /home/user/swiss-property-search /home/user/.gemini 2>/dev/null
+chown -R 1000:1000 /home/user/lab02_disneyland_navigator /home/user/lab03_swiss_property_search /home/user/.gemini 2>/dev/null
+
+# 5. Clean up the cloned repository to keep workspace clean
+echo "Removing cloned template repository..."
+rm -rf /home/user/google-dach-summit26-database-labs
 
 echo "Workstation Bootstrapping Coordination completed successfully!"
