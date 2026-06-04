@@ -366,10 +366,10 @@ Once inside the active Antigravity interactive shell, you can use the following 
 Paste the following developer prompt into the active `agy` CLI interactive chat session to initiate code generation:
 
 > [!NOTE]
-> **Generation Duration**: The generation process runs autonomously and will take approximately **10 minutes** to complete. Make sure to monitor your active `agy` CLI session closely, as it will perform a codebase research phase first, generate the `implementation_plan.md` file, and then pause to wait for your review and approval before proceeding to the code execution phase.
+> **Generation Duration**: The generation process runs autonomously and will take approximately **10-20 minutes** to complete. Make sure to monitor your active `agy` CLI session closely, as it will perform a codebase research phase first, generate the `implementation_plan.md` file, and then pause to wait for your review and approval before proceeding to the code execution phase.
 
 ```text
-Goal: Build a high-performance, beautiful Disneyland Paris Navigator application in 5-10 minutes.
+Goal: Build a high-performance, beautiful Disneyland Paris Navigator application in 10 minutes.
 Stack & Architecture: To bypass slow npm installations and build compilation steps, implement a clean FastAPI Python backend (app.py) paired with a rich, premium Single-Page HTML5/JS frontend (index.html) utilizing Tailwind CSS via CDN.
 Infrastructure Context: I have provisioned a Cloud Spanner instance called "disneyland" and a database called "agent-lab" in this Google Cloud project.
 
@@ -390,7 +390,7 @@ Instructions:
   - Endpoint /api/chat: Uses the google-antigravity SDK Agent (configured with the Spanner MCP server) to handle conversational database querying dynamically. Use gemini-3.5-flash model with location global.
   - Endpoint /api/navigate: Executes custom Spanner Graph MATCH queries on the "DisneylandGraph" property graph to find optimized routes. Expose the executed Spanner SQL and Graph GQL queries in the API responses.
 - Frontend (index.html): Create a premium, immersive Disneyland-themed user interface (glassmorphic cards, deep navy and sparkling royal gold colors, hover micro-animations).
-  - Features: Interactive pathfinder (source -> target attraction displaying path nodes and total distance), search filter, and a terminal-style Chat component connected to /api/chat.
+  - Features: Interactive pathfinder (source -> target attraction displaying path nodes and total distance), visualize the attraction graph in a Graphviz graph visualization, search filter, and a terminal-style Chat component connected to /api/chat.
   - Add a "View Queries" button/panel to the top of the UI to allow users to inspect the exact Spanner SQL/GQL queries executed by the Agent and backend.
 - Startup Script (setup.sh): For local debugging, create an automated startup shell script that initializes a Python virtual environment, installs fastapi, uvicorn, google-antigravity, runs app.py, and opens the dashboard in the browser.
 ```
