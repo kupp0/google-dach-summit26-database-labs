@@ -6,6 +6,14 @@ BASE_URL="https://raw.githubusercontent.com/kupp0/google-dach-summit26-database-
 
 echo "Starting Workstation Bootstrapping Coordination..."
 
+# Pre-clone the repository if not already present in the workspace
+if [ ! -d "/home/user/google-dach-summit26-database-labs" ]; then
+    echo "Cloning database-labs repository..."
+    git clone https://github.com/kupp0/google-dach-summit26-database-labs.git /home/user/google-dach-summit26-database-labs
+    # Fix permissions for the cloned repo right away
+    chown -R 1000:1000 /home/user/google-dach-summit26-database-labs
+fi
+
 # 1. Initialize Model Context Protocol configuration settings
 if [ -f "$SCRIPT_DIR/setup_mcp.sh" ]; then
     echo "Running local MCP setup script..."

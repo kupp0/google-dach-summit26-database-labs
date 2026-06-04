@@ -78,15 +78,11 @@ Natively generate visual listing images and calculate embeddings using Vertex AI
 
 ## Phase 3: Deploying and Running the Application
 
-### 1. Setup Local Environment Configuration
-Before deploying, generate your active `.env` configuration file:
-1. In your terminal, run the following:
-   ```bash
-   cd ~/swiss-property-search/backend
-   # Copy the example configurations
-   cp .env.example .env
-   ```
-2. Open `/home/user/swiss-property-search/backend/.env` in Code-OSS and replace the placeholder variables (like `GCP_PROJECT_ID`, `GCP_LOCATION`, etc.) with your actual sandbox details.
+### 1. Verify Local Environment Configuration
+The backend environment configuration file `backend/.env` is generated automatically when you run `bash init.sh` in Phase 1.
+
+1. Open `/home/user/swiss-property-search/backend/.env` in Code-OSS to verify its contents.
+2. Confirm that `GCP_PROJECT_ID` and `INSTANCE_CONNECTION_NAME` have been resolved correctly to your project's AlloyDB cluster.
 
 ### 2. Deploy to Cloud Run
 1. In the terminal, run the deployment shell script:
