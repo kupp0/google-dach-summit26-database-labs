@@ -12,7 +12,6 @@ During the hackathon event, participants will receive empty, fresh GCP projects.
 infrastructure/
 ├── README.md                       # This overview and operations guide
 ├── gcp_setup/
-│   ├── automations.sh              # Bootstrap script (APIs, Billing, IAM binding)
 │   └── setup_alloydb.tf            # Terraform script enabling APIs and Vertex AI bindings for Lab 1
 ├── networking/
 │   └── setup_vpc.tf                # VPC Network, Subnets, Cloud NAT, and IAP Firewalls
@@ -24,11 +23,11 @@ infrastructure/
 
 ## Infrastructure Component Descriptions
 
-### 1. [GCP Setup Automations](file:///usr/local/google/home/kupczak/dev/google-dach-summit26-database-labs/infrastructure/gcp_setup/automations.sh)
-An orchestrator script that loops through all active user projects to:
-- Link billing accounts to the empty participant projects.
-- Enable all required services (AlloyDB, Spanner, BigQuery, Vertex AI, Cloud Workstations).
-- Bind appropriate IAM roles to user profiles and service agents.
+### 1. [Base Setup & AlloyDB Infrastructure](file:///usr/local/google/home/kupczak/dev/google-dach-summit26-database-labs/infrastructure/gcp_setup/setup_alloydb.tf)
+Terraform configurations that bootstrap user project settings:
+- Enable all required regional services (AlloyDB, Spanner, BigQuery, Vertex AI, Cloud Workstations).
+- Provision the primary AlloyDB cluster and instance with required ML and embedding flags.
+- Configure IAM bindings, mapping the AlloyDB service agent to Vertex AI user roles.
 
 ### 2. [Networking Core](file:///usr/local/google/home/kupczak/dev/google-dach-summit26-database-labs/infrastructure/networking/setup_vpc.tf)
 A standard Terraform configuration that sets up the shared network boundaries:

@@ -7,7 +7,7 @@ In this track, you will build and deploy a premium real-estate search applicatio
 ## Objective
 - Explore the architecture of the Switzerland Property Search fullstack application.
 - Test the Gemini Data Analytics backend using a shell script and custom payloads.
-- Complete hands-on **Gemini CLI Coding Challenges** to modify, style, and enhance the application in real-time.
+- Complete hands-on **Antigravity CLI Coding Challenges** to modify, style, and enhance the application in real-time.
 
 ---
 
@@ -129,9 +129,9 @@ echo
 
 ---
 
-## Phase 3: Hands-On Agentic Coding Challenges (Gemini CLI)
+## Phase 3: Hands-On Agentic Coding Challenges (Antigravity CLI)
 
-Once your Swiss Property Search application is deployed and verified, use the **Gemini CLI** or your AI Coding Assistant to enhance and expand the application.
+Once your Swiss Property Search application is deployed and verified, use the **Antigravity CLI (agy)** or your AI Coding Assistant to enhance and expand the application.
 
 ### Challenge 1: Architecture Exploration & UML Generation
 Analyze the workspace structure and generate a UML representation:

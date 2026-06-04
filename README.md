@@ -35,7 +35,7 @@ Build a zero-copy federated analytical "bridge" between a transactional database
 
 ### 3. [Lab 3: Swiss Property Search (Fullstack App & Vertex AI)](labs/03_fullstack_ai_app_property_search/user_guide.md)
 Explore and extend a complete fullstack AI-powered search application vibe-coded entirely from scratch using Gemini.
-- **Key Tech**: AlloyDB AI, Vertex AI (text-embedding-005), Gemini CLI, and Gemini Data Analytics endpoints.
+- **Key Tech**: AlloyDB AI, Vertex AI (text-embedding-005), Antigravity CLI (agy), and Gemini Data Analytics endpoints.
 - **Highlights**: Validating backend queryData APIs using shell scripts, and completing developer coding challenges (updating CSS branding palettes, building animated rainbow results popups, and generating dynamic architecture flow diagrams).
 
 ---
@@ -56,5 +56,4 @@ To get started, ensure you are logged in to your Google Cloud account:
 
 ## 🛡️ Internal Operations Runbook
 For workshop organizers and GCP project administrators, please refer to:
-- **[Internal Notes & Pre-requisites](internal_notes.md)**: Project checklist, quota limits, and troubleshooting scripts.
 - **[Infrastructure folder](infrastructure/README.md)**: Automated GCP environment, VPC networking, and Cloud Workstation workspace setup pipelines.
