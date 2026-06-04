@@ -313,15 +313,12 @@ To open a terminal session within your Cloud Workstation:
 
 Before launching the interactive AI CLI, you need to authenticate your terminal session with Google Cloud. This ensures both the CLI and the generated Python backend have authorization to access Gemini and Spanner APIs:
 
-Run the following commands in the terminal:
+Run the following command in the terminal:
 ```bash
-# 1. Authenticate the gcloud CLI
-gcloud auth login
-
-# 2. Authenticate Application Default Credentials (ADC) for Python APIs
-gcloud auth application-default login
+# Authenticate both the gcloud CLI and Application Default Credentials (ADC) for Python APIs
+gcloud auth login --update-adc
 ```
-*(Follow the browser authentication flows for both commands, sign in using your Devstar user credentials, and paste the authorization codes back into the terminal if prompted).*
+*(Follow the browser authentication flow, sign in using your Devstar user credentials, and paste the authorization code back into the terminal if prompted).*
 
 ---
 
