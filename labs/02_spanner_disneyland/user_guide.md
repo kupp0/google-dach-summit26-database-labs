@@ -387,7 +387,7 @@ Agent & Integration Model: Integrate the AI Agent using the Google Antigravity (
 Instructions:
 - Show the planning phase of development first. Create the implementation plan inside the project directory and open it in OSS code after creation.
 - Backend (app.py): Use FastAPI to expose endpoints.
-  - Endpoint /api/chat: Uses the google-antigravity SDK Agent (configured with the Spanner MCP server) to handle conversational database querying dynamically.
+  - Endpoint /api/chat: Uses the google-antigravity SDK Agent (configured with the Spanner MCP server) to handle conversational database querying dynamically. Use gemini-3.5-flash model with location global.
   - Endpoint /api/navigate: Executes custom Spanner Graph MATCH queries on the "DisneylandGraph" property graph to find optimized routes. Expose the executed Spanner SQL and Graph GQL queries in the API responses.
 - Frontend (index.html): Create a premium, immersive Disneyland-themed user interface (glassmorphic cards, deep navy and sparkling royal gold colors, hover micro-animations).
   - Features: Interactive pathfinder (source -> target attraction displaying path nodes and total distance), search filter, and a terminal-style Chat component connected to /api/chat.
@@ -416,7 +416,7 @@ When you submit the prompt to the `agy` CLI, the agent initiates its standard ag
 > [!IMPORTANT]
 > **Known Limitation: File Links in Workstation Terminals**:
 > Due to terminal restrictions in browser-based Cloud Workstations, you might not be able to click on file links (such as `[implementation_plan.md](...)`) in the terminal output to open them automatically in the editor.
-> If clicking the link does not open the file, you can access it manually. In Code-OSS, select **File** -> **Open File...** (or press `Ctrl+O`), navigate to the path mentioned in your agy cli output.
+> If clicking the link does not open the file, you can access it manually. In Code-OSS, select **File** -> **Open File...** (or press `Ctrl+O`), navigate to the path mentioned in your agy cli output. 
 
 ---
 
