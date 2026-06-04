@@ -361,7 +361,7 @@ Once inside the active Antigravity interactive shell, you can use the following 
 
 ---
 
-### 5. Prompting Antigravity to Generate the Agentic Application
+### 5. 🚀 Prompting Antigravity to Generate the Agentic Application
 
 Paste the following developer prompt into the active `agy` CLI interactive chat session to initiate code generation:
 
