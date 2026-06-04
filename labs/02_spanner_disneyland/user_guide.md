@@ -315,9 +315,8 @@ First, navigate to your initialized lab workspace folder, and then launch the in
 
 ```bash
 cd ~/disneyland-navigator
-antigravity
+agy
 ```
-*(Note: You can launch the CLI by running the full `antigravity` command or by typing its quick shorthand alias `agy`).*
 
 Upon running the CLI for the first time, complete the following setup flow:
 
