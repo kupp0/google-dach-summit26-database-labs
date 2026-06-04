@@ -18,7 +18,14 @@ resource "google_project_service" "alloydb_apis" {
     "workstations.googleapis.com",
     "cloudaicompanion.googleapis.com",
     "artifactregistry.googleapis.com",
-    "developerknowledge.googleapis.com"
+    "developerknowledge.googleapis.com",
+    "run.googleapis.com",
+    "discoveryengine.googleapis.com",
+    "iam.googleapis.com",
+    "orgpolicy.googleapis.com",
+    "monitoring.googleapis.com",
+    "cloudtrace.googleapis.com",
+    "secretmanager.googleapis.com"
   ])
   project            = var.project_id
   service            = each.key
@@ -58,13 +65,33 @@ resource "google_alloydb_cluster" "default" {
 
 #--- 4. AlloyDB Instance Setup with database flags ---
 resource "google_alloydb_instance" "primary" {
+  provider      = google-beta
   cluster       = google_alloydb_cluster.default.name
   instance_id   = "search-primary"
   instance_type = "PRIMARY"
 
+  machine_config {
+    cpu_count = 2
+  }
+
   database_flags = {
-    "google_ml_integration.enable_model_support"             = "on"
+    "google_ml_integration.enable_model_support"               = "on"
     "google_ml_integration.enable_faster_embedding_generation" = "on"
+    "alloydb_ai_nl.enabled"                                    = "on"
+    "google_ml_integration.enable_ai_query_engine"             = "on"
+    "scann.enable_zero_knob_index_creation"                    = "on"
+    "password.enforce_complexity"                              = "on"
+    "google_db_advisor.enable_auto_advisor"                    = "on"
+    "google_db_advisor.auto_advisor_schedule"                  = "EVERY 24 HOURS"
+    "parameterized_views.enabled"                              = "on"
+  }
+
+  observability_config {
+    enabled                 = true
+    max_query_string_length = 10240
+    track_wait_event_types  = true
+    track_wait_events       = true
+    query_plans_per_minute  = 20
   }
 
   depends_on = [google_alloydb_cluster.default]

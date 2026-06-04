@@ -19,3 +19,8 @@ variable "private_vpc_connection_id" {
   default     = ""
 }
 
+variable "subnet_id" {
+  description = "The ID of the Subnet network"
+  type        = string
+}
+

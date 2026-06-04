@@ -21,6 +21,7 @@ module "gcp_setup" {
   region                    = var.region
   vpc_id                    = module.networking.vpc_id
   private_vpc_connection_id = module.networking.private_vpc_connection_id
+  subnet_id                 = module.networking.subnet_id
 }
 
 
