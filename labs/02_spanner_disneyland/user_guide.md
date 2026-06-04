@@ -460,6 +460,10 @@ This zero-copy Spanner Graph structure enables instant pathfinding logic inside 
 
 ## Phase 6: Troubleshooting & Pro-Tips
 
+* **📊 Visualizing your Architecture (PlantUML)**: Want to understand the exact architecture and flow of the application the AI just generated? Ask the `agy` CLI to generate a PlantUML diagram for you!
+  - **Example Prompt**: *"Analyze the generated app files and write a PlantUML sequence diagram showing how a search or navigation request flows from the frontend to the Spanner database."*
+  - Once generated, you can copy the PlantUML markup and paste it into a web-based PlantUML visualization tool, or use Gemini to visualize and explain it for you.
+
 * **🪄 The Vibe-Coding Playground is Yours!**: Structured rails? Where we are going, we don't need rails! 🚀 You have successfully set up the core infrastructure. Now, the **Antigravity CLI** (`agy`) is your personal genie—and unlike standard genies, it doesn't have a three-wish limit. Feel free to prompt it to build whatever wacky, premium, or hyper-engineered features you can dream of!
   Need some inspiration to flex your vibe-coding muscles?
   - 🎢 **Churro-Metric Navigation**: Ask it to calculate the optimal route between Space Mountain and Big Thunder Mountain based on how many jumbo Disneyland churros you can consume while walking.
