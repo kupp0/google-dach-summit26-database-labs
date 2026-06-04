@@ -160,7 +160,7 @@ def get_active_project_id():
 
 # Resolve credentials context
 PROJECT_ID = get_active_project_id()
-LOCATION = "us-central1" # Primary Vertex AI API region for this workshop
+LOCATION = "global" # Primary Vertex AI API region for gemini-3.5-flash
 ```
 
 ---
@@ -181,7 +181,7 @@ from google.antigravity import Agent, LocalAgentConfig
 config = LocalAgentConfig(
     model="gemini-3.5-flash", # Verified Vertex AI model name
     project=PROJECT_ID,        # Dynamically resolved active sandbox project
-    location="us-central1",    # Vertex AI endpoint location
+    location="global",    # Vertex AI endpoint location
 )
 ```
 
