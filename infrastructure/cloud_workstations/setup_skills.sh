@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Create lab folder and Spanner Graph skill
-LAB_DIR="$HOME/disneyland-navigator"
+LAB_DIR="/home/user/disneyland-navigator"
 SKILL_DIR="$LAB_DIR/skills/spanner-graph"
 echo "Generating lab folder and Spanner Graph skill inside: $LAB_DIR"
 mkdir -p "$SKILL_DIR"

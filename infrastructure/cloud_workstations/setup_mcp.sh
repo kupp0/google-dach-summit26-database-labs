@@ -7,8 +7,8 @@ PROJECT_ID=""
 PROJECT_ID=$(gcloud config get-value billing/quota_project 2>/dev/null)
 
 # 2. Check application default credentials JSON file
-if [ -z "$PROJECT_ID" ] && [ -f "$HOME/.config/gcloud/application_default_credentials.json" ]; then
-    PROJECT_ID=$(jq -r '.quota_project_id // empty' "$HOME/.config/gcloud/application_default_credentials.json" 2>/dev/null)
+if [ -z "$PROJECT_ID" ] && [ -f "/home/user/.config/gcloud/application_default_credentials.json" ]; then
+    PROJECT_ID=$(jq -r '.quota_project_id // empty' "/home/user/.config/gcloud/application_default_credentials.json" 2>/dev/null)
 fi
 
 # 3. Check environment variable GOOGLE_CLOUD_PROJECT
@@ -59,9 +59,9 @@ EOF
 )
 
 # Target directory paths
-DIR1="$HOME/.gemini/config"
-DIR2="$HOME/.gemini/antigravity-cli"
-DIR3="$HOME/.gemini/antigravity-cli/plugins"
+DIR1="/home/user/.gemini/config"
+DIR2="/home/user/.gemini/antigravity-cli"
+DIR3="/home/user/.gemini/antigravity-cli/plugins"
 
 # Create directories
 mkdir -p "$DIR1" "$DIR2" "$DIR3"

@@ -26,4 +26,8 @@ else
     bash /tmp/setup_skills.sh
 fi
 
+# 3. Ensure proper file ownership for Code-OSS user execution
+echo "Fixing file permissions for Code-OSS workspace directories..."
+chown -R 1000:1000 /home/user/disneyland-navigator /home/user/.gemini 2>/dev/null
+
 echo "Workstation Bootstrapping Coordination completed successfully!"
