@@ -352,6 +352,9 @@ Once inside the active Antigravity interactive shell, you can use the following 
 
 Paste the following developer prompt into the active `agy` CLI interactive chat session to initiate code generation:
 
+> [!NOTE]
+> **Generation Duration**: The generation process runs autonomously and will take approximately **10 minutes** to complete. Make sure to monitor your active `agy` CLI session closely, as it will perform a codebase research phase first, generate the `implementation_plan.md` file, and then pause to wait for your review and approval before proceeding to the code execution phase.
+
 ```text
 Goal: Build a high-performance, beautiful Disneyland Paris Navigator application in 5-10 minutes.
 Stack & Architecture: To bypass slow npm installations and build compilation steps, implement a clean FastAPI Python backend (app.py) paired with a rich, premium Single-Page HTML5/JS frontend (index.html) utilizing Tailwind CSS via CDN.
