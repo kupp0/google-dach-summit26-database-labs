@@ -17,8 +17,8 @@ gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
 ENV_FILE="backend/.env"
 if [ ! -f "$ENV_FILE" ]; then
     echo "Creating backend/.env configuration..."
-    GCP_PROJECT_ID=$(gcloud config get-value project)
-    GCP_LOCATION=$(gcloud alloydb instances list --cluster=search-cluster --format="value(location)" --limit=1 2>/dev/null)
+    GCP_PROJECT_ID=$(gcloud config get-value project 2>/dev/null || echo "")
+    GCP_LOCATION=$(gcloud alloydb instances list --cluster=search-cluster --format="value(location)" --limit=1 2>/dev/null || echo "")
     
     if [ -z "$GCP_LOCATION" ]; then
         GCP_LOCATION="europe-west3"
