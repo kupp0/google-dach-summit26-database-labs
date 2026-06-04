@@ -400,7 +400,7 @@ When you submit the prompt to the `agy` CLI, the agent initiates its standard ag
 > [!IMPORTANT]
 > **Known Limitation: File Links in Workstation Terminals**:
 > Due to terminal restrictions in browser-based Cloud Workstations, you might not be able to click on file links (such as `[implementation_plan.md](...)`) in the terminal output to open them automatically in the editor.
-> If clicking the link does not open the file, simply navigate to the file manually using the left-hand **Explorer** panel in Code-OSS and open it from your workspace folder (`/home/user/disneyland-navigator/`).
+> If clicking the link does not open the file, you can access it manually. In Code-OSS, select **File** -> **Open File...** (or press `Ctrl+O`), navigate to the path `/home/user/.gemini/antigravity-cli/brain/<session-id>/implementation_plan.md` (where `<session-id>` is the unique session UUID generated in your CLI prompt output), and select it to open.
 
 ---
 
