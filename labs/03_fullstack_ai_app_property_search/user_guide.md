@@ -54,15 +54,12 @@ Natively generate visual listing images and calculate embeddings using Vertex AI
    bash run_proxy.sh
    ```
    *(Keep this terminal open to maintain the database connection tunnel).*
-2. Open a **New Terminal tab/window** in the editor and initialize a Python virtual environment to execute the generator:
+2. Open a **New Terminal tab/window** in the editor and execute the generator:
    ```bash
    cd ~/lab03_swiss_property_search/alloydb-artefacts
-   python3 -m venv venv
-   source venv/bin/activate
-   pip install -r requirements.txt
-   python bootstrap_images.py
+   python3 bootstrap_images.py
    ```
-   *(This script connects to AlloyDB, generates visual listings using Imagen, uploads them to your GCS bucket, computes visual embeddings, and updates the database).*
+   *(This script connects to AlloyDB, generates visual listings using Imagen, uploads them to your GCS bucket, computes visual embeddings, and updates the database. All python dependencies were installed in Phase 1).*
 3. Once completed, return to the first terminal window and stop the proxy by pressing `Ctrl+C`.
 
 ### 3. Create Vector Indexes & Natural Language Querying (NLQ)
