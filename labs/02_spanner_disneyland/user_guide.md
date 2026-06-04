@@ -320,9 +320,9 @@ agy
 
 Upon running the CLI for the first time, complete the following setup flow:
 
-1. **Authentication**: Follow the authentication flow by clicking on the provided link in your browser and sign in with your **Devstar** user credentials. Afterwards, copy the authorization code and paste it back into the terminal `agy` CLI session.
+1. **Authenticate with Google Cloud Project **: Follow the authentication flow by clicking on the provided link in your browser and sign in with your **Devstar** user credentials. Afterwards, copy the authorization code and paste it back into the terminal `agy` CLI session.
 2. **GCP Project ID**: When prompted, enter your active **GCP Project ID**.
-3. **Location & Theme**: Choose the `global` location, and then select your color theme of choice.
+3. **Location & Theme**: Choose the `global` location, and then select your color theme of choice. Select to trust the workspace folder.
 4. **Terms & Conditions**: Agree to the Terms and Conditions (T/C).
 5. **Open Settings**: Open the session settings panel by typing:
    ```text
@@ -381,7 +381,30 @@ Instructions:
 
 ---
 
-### 5. Run and Explore your Vibe Coded Application
+### 5. Understanding the `agy` CLI Development Workflow & Planning Mode
+
+When you submit the prompt to the `agy` CLI, the agent initiates its standard agentic development workflow:
+
+1. **The Planning Phase (Implementation Plan)**:
+   - Before writing any code, the agent will analyze the workspace and create an **Implementation Plan** (e.g., `implementation_plan.md` in your project folder).
+   - This plan outlines the files to be created (`app.py`, `index.html`, `setup.sh`), architectural decisions, and steps.
+   - The CLI will pause and ask for your approval. You can review the plan, type feedback to request adjustments, or type `yes` to approve and begin code generation. (If you enabled **Auto Approve** in settings, the agent will proceed automatically).
+
+2. **The Execution Phase**:
+   - The agent writes the backend FastAPI app, the frontend UI client, and the local startup runner script.
+   - It outputs real-time status indicating which files are being edited or created.
+
+3. **The Walkthrough & Review**:
+   - Once all code is written, the agent generates a **Walkthrough** markdown file detailing what was implemented and explaining the code components.
+
+> [!IMPORTANT]
+> **Known Limitation: File Links in Workstation Terminals**:
+> Due to terminal restrictions in browser-based Cloud Workstations, you might not be able to click on file links (such as `[implementation_plan.md](...)`) in the terminal output to open them automatically in the editor.
+> If clicking the link does not open the file, simply navigate to the file manually using the left-hand **Explorer** panel in Code-OSS and open it from your workspace folder (`/home/user/disneyland-navigator/`).
+
+---
+
+### 6. Run and Explore your Vibe Coded Application
 
 Here's an example Vibe coded Disneyland navigator app! Once the Antigravity agent has finished writing the application:
 
@@ -397,7 +420,7 @@ Here's an example Vibe coded Disneyland navigator app! Once the Antigravity agen
 
 ---
 
-### 6. Deep Dive: Spanner Graph Queries under the Hood
+### 7. Deep Dive: Spanner Graph Queries under the Hood
 
 When the agent calls the pathfinding tools, it runs a native **Spanner Graph** query using the `GRAPH_TABLE` function on the property graph defined on the `Attraction` and `Path` tables.
 
