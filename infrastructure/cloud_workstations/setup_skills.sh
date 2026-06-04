@@ -212,16 +212,4 @@ echo "Vertex AI configuration skill successfully generated!"
 echo "Target skill updated:"
 echo " - $VERTEXT_SKILL_DIR/SKILL.md"
 
-# --- Initialize Lab 3 Swiss Property Search workspace ---
-LAB3_SRC_DIR="/home/user/google-dach-summit26-database-labs/labs/03_fullstack_ai_app_property_search/src"
-LAB3_DEST_DIR="/home/user/swiss-property-search"
-
-if [ -d "$LAB3_SRC_DIR" ]; then
-    echo "Initializing Lab 3 workspace at $LAB3_DEST_DIR..."
-    mkdir -p "$LAB3_DEST_DIR"
-    cp -rf "$LAB3_SRC_DIR"/* "$LAB3_DEST_DIR"/
-else
-    echo "Warning: Lab 3 source files not found at $LAB3_SRC_DIR"
-fi
-
 
