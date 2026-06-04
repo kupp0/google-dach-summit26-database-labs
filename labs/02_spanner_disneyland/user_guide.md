@@ -14,7 +14,7 @@ In this lab, you will build a zero-copy federated analytical "bridge" linking **
 
 ## Phase 1: Infrastructure Provisioning (Terraform)
 
-The infrastructure is already deployed, if you are interested in the terraform code, you can find it in the [infrastructure](infrastructure) directory.
+The infrastructure is already deployed, if you are interested in the terraform code, you can find it in the [infrastructure](../../infrastructure) directory.
 
 ---
 
@@ -266,7 +266,7 @@ LIMIT 5;
 
 ---
 
-## Phase 6: Model Context Protocol (MCP) Agent Registry Verification
+## Phase 4: Model Context Protocol (MCP) Agent Registry Verification
 
 Once your Cloud Spanner database is successfully created and active, Spanner is automatically registered as a Google-managed MCP Server in the **Agent Registry** for Vertex AI.
 
@@ -283,7 +283,7 @@ gcloud alpha agent-registry mcp-servers list \
 
 ---
 
-## Phase 7: Building the Agentic Application using Antigravity CLI
+## Phase 5: Building the Agentic Application using Antigravity CLI
 
 In this phase, you will launch the **Antigravity CLI** directly from a terminal session within your **Cloud Workstation** and use it to build a complete web application. The application will utilize a FastAPI Python backend powered by the **AGY SDK** that queries your Spanner transactional database, coupled with a modern single-page HTML5/JS frontend client. It leverages **Spanner Graph** capabilities to perform navigation and pathfinding across Disneyland Paris attractions.
 
@@ -378,7 +378,12 @@ Instructions:
 
 Here's an example Vibe coded Disneyland navigator app! Once the Antigravity agent has finished writing the application:
 
-1. **Run the App Locally**: Launch your app by executing `bash setup.sh` inside your terminal, which will spin up your local FastAPI server and open the visual navigator dashboard in your browser.
+1. **Run the App Locally**: Launch your app by executing `bash setup.sh` inside your terminal, which will spin up your local FastAPI server.
+   
+   > [!TIP]
+   > **Accessing Port 8000 on Cloud Workstations**:
+   > Since you are using Cloud Workstations, when you run the application, the web-based Code-OSS editor will automatically detect that port 8000 has been opened and display a popup in the bottom right corner. Click **Open in Browser** to view the live dashboard.
+
 2. **Check Spanner Graph**: Go to the **Cloud Spanner Studio** in the Google Cloud Console and examine the generated Spanner Graph definition to see how the property graph structure is laid out.
 3. **Inspect the Code**: Open the generated directory to see how clean the codebase is! Read the FastAPI backend (`app.py`) to see how it uses the `google-antigravity` SDK to chat with Spanner.
 4. **Ask Questions**: If you want any specific parts of the implementation explained, simply ask inside your active `agy` CLI session to get code walk-throughs and technical details!
@@ -394,13 +399,12 @@ For example, the tool `find_shortest_path_between_two_attractions` resolves unde
 ```sql
 SELECT * 
 FROM GRAPH_TABLE(DisneylandGraph
-  MATCH (src:Attraction {Name: 'Phantom Manor'})
-        -[p:Path*1..5]->
-        (dest:Attraction {Name: 'Big Thunder Mountain'})
+  MATCH p = (src:Attraction {Name: 'Phantom Manor'})
+        -[:Path]->{1,5}(dest:Attraction {Name: 'Big Thunder Mountain'})
   RETURN 
     src.Name AS Source, 
     dest.Name AS Target, 
-    SUM(p.DistanceMeters) AS TotalDistanceMeters
+    (SELECT SUM(e.DistanceMeters) FROM UNNEST(edges(p)) AS e) AS TotalDistanceMeters
 );
 ```
 
@@ -408,7 +412,7 @@ This zero-copy Spanner Graph structure enables instant pathfinding logic inside 
 
 ---
 
-## Phase 8: Troubleshooting & Pro-Tips
+## Phase 6: Troubleshooting & Pro-Tips
 
 * **🪄 The Vibe-Coding Playground is Yours!**: Structured rails? Where we are going, we don't need rails! 🚀 You have successfully set up the core infrastructure. Now, the **Antigravity CLI** (`agy`) is your personal genie—and unlike standard genies, it doesn't have a three-wish limit. Feel free to prompt it to build whatever wacky, premium, or hyper-engineered features you can dream of!
   Need some inspiration to flex your vibe-coding muscles?
