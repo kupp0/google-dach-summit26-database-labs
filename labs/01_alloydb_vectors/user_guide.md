@@ -132,7 +132,7 @@ Now, perform a bulk generation of embeddings for all 100,000 rows natively in th
 > **The Operational Edge (Transactional Mode)**: By specifying `incremental_refresh_mode => 'transactional'`, AlloyDB automatically configures live database triggers. This transactional synchronization is exceptionally powerful for production-grade operational vector search applications, because any future DML writes are vectorized **automatically** inside the same transaction, guaranteeing your search index remains 100% synchronized with zero operational lag!
 
 > [!TIP]
-> **Performance Benchmark**: In standard summit environments, backfilling the entire **100,000 rows** dataset completes in just **230.9 seconds** (processing over **430 rows per second**)! This highlights the superior speed and efficiency of database-native batch processing over traditional external application-driven loops. Imagine operating 100k individual VertexAI API calls row by row. 
+> **Performance Benchmark**: In standard summit environments, backfilling the entire **100,000 rows** dataset completes in just **230.9 seconds** (processing over **430 rows per second**)! This highlights the superior speed and efficiency of database-native batch processing over traditional external application-driven loops. Imagine operating 100k individual Gemini Agent Platform (formerly VertexAI) API calls row by row. 
 
 By leveraging database-native automatic embedding generation, you eliminate external scheduler loops and background pipeline infrastructure, drastically reducing code maintenance debt. AlloyDB natively manages optimal batch sizes and automatically recovers from transient model quota limit errors, reducing API token overhead and guaranteeing transactional data remains continuously in sync.
 
@@ -151,14 +151,14 @@ CALL ai.initialize_embeddings(
   content_column => 'content_body',
   embedding_column => 'embedding',
   incremental_refresh_mode => 'transactional',
-  batch_size => 100 -- Bulk optimization: groups 100 rows per Vertex AI API call
+  batch_size => 100 -- Bulk optimization: groups 100 rows per Gemini Agent Platform (formerly VertexAI) API call
 );
 ```
 
 > [!NOTE]
 > **Tuning Batch Size & Payload Limits**: 
 > By default, AlloyDB uses a batch size of 50. While increasing the batch size to 100 delivers up to a 2.5x speedup (running in 90.7s), it increases request sizes.
-> If your text columns contain extremely large text blocks, large batch sizes can hit Vertex AI's maximum payload limit, resulting in the error: `AutoEmbeddingGeneration: Request size is greater than 4MB`. In those scenarios, you can optimize performance by scaling down the `batch_size` (e.g. to `25` or `50`) to stay under the 4MB limit.
+> If your text columns contain extremely large text blocks, large batch sizes can hit Gemini Agent Platform (formerly VertexAI)'s maximum payload limit, resulting in the error: `AutoEmbeddingGeneration: Request size is greater than 4MB`. In those scenarios, you can optimize performance by scaling down the `batch_size` (e.g. to `25` or `50`) to stay under the 4MB limit.
 
 ### 3. Monitor Real-Time Embedding Progress
 Since backfilling 100,000 rows is a large operational task, you can monitor the real-time progress, elapsed time, and estimated completion time of the bulk generation by querying the built-in **`ai.embedding_progress_view`**:
@@ -281,7 +281,7 @@ WITH (mode='AUTO',
 You have successfully completed **Lab 1: One Million Vectors, Zero Loops**! 
 
 ### What you've achieved:
-- Automated bulk and transactional database-native vector embedding generation via AlloyDB AI and Vertex AI.
+- Automated bulk and transactional database-native vector embedding generation via AlloyDB AI and Gemini Agent Platform (formerly VertexAI).
 - Set up and verified dynamic pre-filtering semantic search queries.
 - Built an automatically-tuned Google ScaNN index to authorize sub-millisecond high-scale approximate nearest neighbor searches.
 

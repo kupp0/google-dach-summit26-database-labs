@@ -267,7 +267,7 @@ LIMIT 5;
 
 ## Phase 4: Model Context Protocol (MCP) Agent Registry Verification
 
-Spanner is automatically registered as a Google-managed MCP Server in the Vertex AI **Agent Registry** once active.
+Spanner is automatically registered as a Google-managed MCP Server in the Gemini Agent Platform (formerly VertexAI) **Agent Registry** once active.
 
 To verify the registry connection:
 - Check [Managed MCP Servers](https://console.cloud.google.com/agent-platform/agent-registry/mcp-servers) in the Cloud Console.
@@ -355,7 +355,7 @@ Use the existing Spanner schema and property graph defined as follows:
     NODE TABLES (Attraction)
     EDGE TABLES (Path SOURCE KEY (SourceAttractionID) REFERENCES Attraction (AttractionID) DESTINATION KEY (TargetAttractionID) REFERENCES Attraction (AttractionID));
 
-Agent & Integration Model: Integrate the AI Agent using the Google Antigravity (google-antigravity) Python SDK, utilizing the pre-installed custom skills available in your workspace (`skills/spanner-graph` and `skills/vertex-config`) to resolve model names, active GCP Project/credentials context, and Spanner GQL queries. Connect the agent to the Google-managed Spanner Model Context Protocol (MCP) Server registered under the Vertex AI Agent Registry (location: global).
+Agent & Integration Model: Integrate the AI Agent using the Google Antigravity (google-antigravity) Python SDK, utilizing the pre-installed custom skills available in your workspace (`skills/spanner-graph` and `skills/vertex-config`) to resolve model names, active GCP Project/credentials context, and Spanner GQL queries. Connect the agent to the Google-managed Spanner Model Context Protocol (MCP) Server registered under the Gemini Agent Platform (formerly VertexAI) Agent Registry (location: global).
 Instructions:
 - Show the planning phase of development first. Create the implementation plan inside the project directory and open it in OSS code after creation.
 - Backend (app.py): Use FastAPI to expose endpoints.

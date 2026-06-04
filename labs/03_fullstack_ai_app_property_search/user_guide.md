@@ -1,6 +1,6 @@
-# Lab 3: Swiss Property Search: Fullstack AI App with AlloyDB & Vertex AI
+# Lab 3: Swiss Property Search: Fullstack AI App with AlloyDB & Gemini Agent Platform (formerly VertexAI)
 
-In this track, you will build and deploy a premium real-estate search application that showcases three different ways to execute AI-powered semantic and relational searches. The entire project was vibe-coded from scratch using Gemini and uses **AlloyDB**, **Vertex AI**, and **Gemini Data Analytics** as its core backend.
+In this track, you will build and deploy a premium real-estate search application that showcases three different ways to execute AI-powered semantic and relational searches. The entire project was vibe-coded from scratch using Gemini and uses **AlloyDB**, **Gemini Agent Platform (formerly VertexAI)**, and **Gemini Data Analytics** as its core backend.
 
 ---
 
@@ -24,7 +24,7 @@ sequenceDiagram
     participant User as User / Frontend
     participant GDA as Gemini Data Analytics
     participant ADB as AlloyDB Backend
-    participant VAI as Vertex AI (Embeddings)
+    participant VAI as Gemini Agent Platform (formerly VertexAI) (Embeddings)
 
     User->>GDA: Search Prompt ("Lovely Mountain Cabin under 15k")
     GDA->>VAI: Generate Embeddings
