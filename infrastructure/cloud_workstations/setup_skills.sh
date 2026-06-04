@@ -166,10 +166,9 @@ LOCATION = "us-central1" # Primary Vertex AI API region for this workshop
 ---
 
 ## 2. Verified Model Selection
-When running in GCP Vertex AI mode, use these active model identifiers. Avoid guessing or trying external AI Studio formats:
+When running in GCP Vertex AI mode, use this active model identifier. Avoid guessing or trying external AI Studio formats:
 
-- **Primary Model (High speed & efficiency):** `gemini-1.5-flash`
-- **Advanced Model (Complex reasoning):** `gemini-1.5-pro`
+- **Primary Model (Strong agentic capabilities, high speed & value):** `gemini-3.5-flash`
 
 ---
 
@@ -180,7 +179,7 @@ Implement the `LocalAgentConfig` inside `app.py` using this verified pattern:
 from google.antigravity import Agent, LocalAgentConfig
 
 config = LocalAgentConfig(
-    model="gemini-1.5-flash", # Verified Vertex AI model name
+    model="gemini-3.5-flash", # Verified Vertex AI model name
     project=PROJECT_ID,        # Dynamically resolved active sandbox project
     location="us-central1",    # Vertex AI endpoint location
 )
