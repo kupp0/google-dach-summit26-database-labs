@@ -4,7 +4,7 @@ set -e
 # Install root requirements
 if [ -f "requirements.txt" ]; then
     echo "Installing base requirements..."
-    pip install -r requirements.txt
+    pip install --break-system-packages -r requirements.txt
 fi
 
 # Assign IAP Tunnel Access permission to the active user account
