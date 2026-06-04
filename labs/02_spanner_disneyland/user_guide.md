@@ -251,12 +251,11 @@ INSERT INTO Path (SourceAttractionID, TargetAttractionID, DistanceMeters) VALUES
 
 ## Phase 3: Real-Time Bridge Verification Query
 
-Validate that the zero-copy federated bridge is working correctly by executing a live query in BigQuery that fetches data directly from your Cloud Spanner transactional tables.
+Verify the zero-copy federated bridge by querying Spanner tables directly from BigQuery Studio:
 
-1. Go to the **BigQuery Studio** in the Google Cloud Console.
-2. In the left Explorer sidebar, expand your project and you should see the **`disneyland_spanner_external`** dataset mapping all of your Spanner tables dynamically!
-3. Open a new **SQL Query** tab.
-4. Paste and run the query below (replace `YOUR_PROJECT_ID` with your actual project ID):
+1. Open **BigQuery Studio** in the Google Cloud Console.
+2. In the left **Explorer** panel, expand your project to locate the mapped **`disneyland_spanner_external`** dataset.
+3. Open a new SQL tab, paste the following query (replace `YOUR_PROJECT_ID`), and click **Run**:
 
 ```sql
 SELECT * 
@@ -268,96 +267,69 @@ LIMIT 5;
 
 ## Phase 4: Model Context Protocol (MCP) Agent Registry Verification
 
-Once your Cloud Spanner database is successfully created and active, Spanner is automatically registered as a Google-managed MCP Server in the **Agent Registry** for Vertex AI.
+Spanner is automatically registered as a Google-managed MCP Server in the Vertex AI **Agent Registry** once active.
 
-To verify that the Spanner MCP Server is registered and available in your region:
-
-Run this command directly in your Cloud Shell terminal. Alternatively, navigate to the [Managed MCP Servers](https://console.cloud.google.com/agent-platform/agent-registry/mcp-servers) in the Cloud Console:
-
-```bash
-gcloud alpha agent-registry mcp-servers list \
-  --location=global \
-  --format=json
-```
-*(Look for an entry related to Spanner in the output to confirm availability).*
-
----
-
-## Phase 5: Building the Agentic Application using Antigravity CLI
-
-In this phase, you will launch the **Antigravity CLI** directly from a terminal session within your **Cloud Workstation** and use it to build a complete web application. The application will utilize a FastAPI Python backend powered by the **AGY SDK** that queries your Spanner transactional database, coupled with a modern single-page HTML5/JS frontend client. It leverages **Spanner Graph** capabilities to perform navigation and pathfinding across Disneyland Paris attractions.
-
-### 1. Open the User Home Folder in Cloud Workstations
-
-When you launch your Cloud Workstation for the first time, you need to open your user home directory:
-1. In the Google Cloud Console, navigate to the **Cloud Workstations** page.
-2. Select your workstation instance and click **Launch** to open the browser-based editor UI.
-3. In the left Explorer pane of the editor UI, click **Open Folder** (or select **File** -> **Open Folder** from the application menu).
-4. Verify or type `/home/user/` in the dialog input field and click **OK**.
+To verify the registry connection:
+- Check [Managed MCP Servers](https://console.cloud.google.com/agent-platform/agent-registry/mcp-servers) in the Cloud Console.
+- Or run this gcloud command in your terminal:
+  ```bash
+  gcloud alpha agent-registry mcp-servers list \
+    --location=global \
+    --format=json
+  ```
+  *(Confirm a Spanner entry is present in the output).*
 
 ---
 
-### 2. Open a Terminal in Cloud Workstations
+## Phase 5: Building the Agentic Application
 
-To open a terminal session within your Cloud Workstation:
-1. In the top-left corner of the workstation window, click the application menu button.
-2. Navigate to **Terminal** and select **New Terminal** (or use the keyboard shortcut `Ctrl+Shift+C`).
+Use the **Antigravity CLI (agy)** in your Cloud Workstation to generate a complete web app (FastAPI backend and HTML5 frontend) that leverages **Spanner Graph** pathfinding.
+
+### 1. Open the Home Folder & Terminal in Cloud Workstations
+
+1. Launch your workstation instance from the Cloud Workstations page.
+2. In the editor, select **File** -> **Open Folder**, enter `/home/user/`, and click **OK**.
+3. Open a terminal by selecting **Terminal** -> **New Terminal** (or press `Ctrl+Shift+C`).
 
 <img src="assets/workstation_terminal.png" alt="Open Workstation Terminal" width="350" />
 
-3. Once the terminal opens, you are ready to authenticate and set up your workspace environment.
-
 ---
 
-### 3. Authenticate your Workstation Terminal
+### 2. Authenticate the Terminal
 
-Before launching the interactive AI CLI, you need to authenticate your terminal session with Google Cloud. This ensures both the CLI and the generated Python backend have authorization to access Gemini and Spanner APIs:
+Authenticate both the `gcloud` CLI and Application Default Credentials (ADC) to authorize model and database access:
 
-Run the following command in the terminal:
 ```bash
-# Authenticate both the gcloud CLI and Application Default Credentials (ADC) for Python APIs
 gcloud auth login --update-adc
 ```
-*(Follow the browser authentication flow, sign in using your Devstar user credentials, and paste the authorization code back into the terminal if prompted).*
+*(Sign in using your Devstar credentials and paste the authorization code into the terminal if prompted).*
 
 ---
 
-### 4. Initializing and Getting Started with the Antigravity CLI
+### 3. Initialize the Antigravity CLI
 
-First, navigate to your initialized lab workspace folder, and then launch the interactive Antigravity session:
-
+Navigate to the project workspace and launch the CLI:
 ```bash
 cd ~/disneyland-navigator
 agy
 ```
 
-Upon running the CLI for the first time, complete the following setup flow:
+Complete the first-time setup flow:
+1. **OAuth Link**: Click the link in the terminal, authenticate with Devstar, and paste the authorization code back.
+2. **Project ID**: Enter your active GCP Project ID.
+3. **Location & Theme**: Choose `global` location and select a theme. Trust the workspace folder if prompted.
+4. **Terms**: Accept the Terms and Conditions.
+5. **Enable Auto-Approve**: Open settings with `/settings` and set:
+   - **Tool Permission**: `always-proceed`
+   - **Artifact Review**: `agent decides`
+6. **Verify Connection**: Type `/mcp` to ensure the Google-managed Spanner MCP server shows a green connected status.
 
-1. **Authenticate with Google Cloud Project **: Follow the authentication flow by clicking on the provided link in your browser and sign in with your **Devstar** user credentials. Afterwards, copy the authorization code and paste it back into the terminal `agy` CLI session.
-2. **GCP Project ID**: When prompted, enter your active **GCP Project ID**.
-3. **Location & Theme**: Choose the `global` location, and then select your color theme of choice. Select to trust the workspace folder.
-4. **Terms & Conditions**: Agree to the Terms and Conditions (T/C).
-5. **Open Settings**: Open the session settings panel by typing:
-   ```text
-   /settings
-   ```
-6. **Auto-Approve**: Enable the **Auto Approve** setting to save time during your vibe coding journey, allowing the AI agent:
-   - **Tool Permission**: always-proceed
-   - **Artifact Review**: agent decides
-7. **Verify Managed MCP Server**: Verify that the Google-managed Spanner MCP Server is correctly configured and connected by using the `/mcp` command. You should see a green Spanner icon in the top right corner of the terminal. This indicates that the agent can query your Spanner database and has access to the Disneyland schema and data.
-
-Now you are ready to begin! Enjoy your vibe coding journey.
-
-#### Essential Antigravity CLI Commands
-Once inside the active Antigravity interactive shell, you can use the following slash commands to manage your session:
-
-| Command | Action |
-| :--- | :--- |
-| `/list-sessions` | Shows a numbered list of your past session activities to resume. |
-| `/resume latest` | Jumps back into your most recent active conversation. |
-| `/exit` | Exits the interactive CLI session and returns to your standard terminal prompt. |
-| `/settings` | Configures global behavior, themes, model configurations, and auto-approve options. |
-| `/mcp` | Displays a list of active Model Context Protocol (MCP) servers and verifies their connection status. |
+#### Useful CLI Commands
+* `/settings`: Configure model parameters and auto-approve settings.
+* `/mcp`: Check active MCP servers and connection health.
+* `/list-sessions`: View past session activity.
+* `/resume latest`: Return to the last active conversation.
+* `/exit`: Quit the CLI session.
 
 ---
 
@@ -397,50 +369,38 @@ Instructions:
 
 ---
 
-### 6. Understanding the `agy` CLI Development Workflow & Planning Mode
+### 5. Understanding the `agy` CLI Development Workflow
 
-When you submit the prompt to the `agy` CLI, the agent initiates its standard agentic development workflow:
-
-1. **The Planning Phase (Implementation Plan)**:
-   - Before writing any code, the agent will analyze the workspace and create an **Implementation Plan** (e.g., `implementation_plan.md` in your project folder).
-   - This plan outlines the files to be created (`app.py`, `index.html`, `setup.sh`), architectural decisions, and steps.
-   - The CLI will pause and ask for your approval. You can review the plan, type feedback to request adjustments, or type `yes` to approve and begin code generation. (If you enabled **Auto Approve** in settings, the agent will proceed automatically).
-
-2. **The Execution Phase**:
-   - The agent writes the backend FastAPI app, the frontend UI client, and the local startup runner script.
-   - It outputs real-time status indicating which files are being edited or created.
-
-3. **The Walkthrough & Review**:
-   - Once all code is written, the agent generates a **Walkthrough** markdown file detailing what was implemented and explaining the code components.
+The agent operates in three distinct phases:
+1. **Planning (Implementation Plan)**: The agent creates an architecture plan (`implementation_plan.md`) for your review. If auto-approve is off, type `yes` to proceed.
+2. **Execution**: The agent writes the backend FastAPI app (`app.py`), the frontend client (`index.html`), and a startup script (`setup.sh`).
+3. **Walkthrough**: The agent outputs a final `walkthrough.md` report explaining the generated components.
 
 > [!IMPORTANT]
-> **Known Limitation: File Links in Workstation Terminals**:
-> Due to terminal restrictions in browser-based Cloud Workstations, you might not be able to click on file links (such as `[implementation_plan.md](...)`) in the terminal output to open them automatically in the editor.
-> If clicking the link does not open the file, you can access it manually. In Code-OSS, select **File** -> **Open File...** (or press `Ctrl+O`), navigate to the path mentioned in your agy cli output. 
+> **Known Limitation: File Links in Terminals**:
+> Clicking terminal links (like `[implementation_plan.md](...)`) may not open them in browser-based Cloud Workstations. Instead, use **File** -> **Open File...** (or `Ctrl+O`) in Code-OSS and enter the path displayed in your `agy` CLI output.
 
 ---
 
-### 7. Run and Explore your Vibe Coded Application
+### 6. Run and Explore the Application
 
-Here's an example Vibe coded Disneyland navigator app! Once the Antigravity agent has finished writing the application:
+Once the agent completes the code generation:
 
-1. **Run the App Locally**: Launch your app by executing `bash setup.sh` inside your terminal, which will spin up your local FastAPI server.
+1. **Start the Server**: In your terminal, run `bash setup.sh` to install dependencies and start FastAPI.
    
    > [!TIP]
-   > **Accessing Port 8000 on Cloud Workstations**:
-   > Since you are using Cloud Workstations, when you run the application, the web-based Code-OSS editor will automatically detect that port 8000 has been opened and display a popup in the bottom right corner. Click **Open in Browser** to view the live dashboard.
+   > **Accessing Port 8000**:
+   > Code-OSS will automatically detect the open port and show a popup in the bottom right corner. Click **Open in Browser** to launch the live dashboard.
 
-2. **Check Spanner Graph**: Go to the **Cloud Spanner Studio** in the Google Cloud Console and examine the generated Spanner Graph definition to see how the property graph structure is laid out.
-3. **Inspect the Code**: Open the generated directory to see how clean the codebase is! Read the FastAPI backend (`app.py`) to see how it uses the `google-antigravity` SDK to chat with Spanner.
-4. **Ask Questions**: If you want any specific parts of the implementation explained, simply ask inside your active `agy` CLI session to get code walk-throughs and technical details!
+2. **Check Spanner Graph**: Explore the generated property graph schema in the Google Cloud Console under **Cloud Spanner Studio**.
+3. **Inspect the Code**: Open `app.py` in Code-OSS to review how the backend queries Spanner and uses the `google-antigravity` SDK.
+4. **Ask for Clarification**: You can ask questions about the generated code directly in your active `agy` CLI session (e.g., *"Explain how the pathfinding endpoint works"*).
 
 ---
 
-### 8. Deep Dive: Spanner Graph Queries under the Hood
+### 7. Deep Dive: Spanner Graph Queries under the Hood
 
-When the agent calls the pathfinding tools, it runs a native **Spanner Graph** query using the `GRAPH_TABLE` function on the property graph defined on the `Attraction` and `Path` tables.
-
-For example, the tool `find_shortest_path_between_two_attractions` resolves under the hood to:
+The agent uses native **Spanner Graph** queries (via the `GRAPH_TABLE` function) to traverse the property graph. For example:
 
 ```sql
 SELECT * 
@@ -454,30 +414,25 @@ FROM GRAPH_TABLE(DisneylandGraph
 );
 ```
 
-This zero-copy Spanner Graph structure enables instant pathfinding logic inside your AI agent without needing extra external graph databases or complex application-level traversal algorithms.
+This zero-copy graph traversal avoids the overhead of syncing data to a separate graph database or building custom traversal algorithms in application code.
 
 ---
 
 ## Phase 6: Troubleshooting & Pro-Tips
 
-* **📊 Visualizing your Architecture (PlantUML)**: Want to understand the exact architecture and flow of the application the AI just generated? Ask the `agy` CLI to generate a PlantUML diagram for you!
-  - **Example Prompt**: *"Analyze the generated app files and write a PlantUML sequence diagram showing how a search or navigation request flows from the frontend to the Spanner database."*
-  - Once generated, you can copy the PlantUML markup and paste it into a web-based PlantUML visualization tool, or use Gemini to visualize and explain it for you.
-
-* **🪄 The Vibe-Coding Playground is Yours!**: Structured rails? Where we are going, we don't need rails! 🚀 You have successfully set up the core infrastructure. Now, the **Antigravity CLI** (`agy`) is your personal genie—and unlike standard genies, it doesn't have a three-wish limit. Feel free to prompt it to build whatever wacky, premium, or hyper-engineered features you can dream of!
-  Need some inspiration to flex your vibe-coding muscles?
-  - 🎢 **Churro-Metric Navigation**: Ask it to calculate the optimal route between Space Mountain and Big Thunder Mountain based on how many jumbo Disneyland churros you can consume while walking.
-  - 🐭 **Mickey Voice Mode**: Prompt the AI agent to format all conversational chat responses in the squeaky, optimistic tone of Mickey Mouse himself.
-  - 🚀 **Hyperdrive Mode**: Add a button that triggers a flashy warp-speed CSS particle effect whenever Space Mountain is clicked.
-  - 🔍 **Semantic Attraction Search**: As you learned in Lab 01, vector embeddings enable semantic search capabilities. Ask the AI to generate vector embeddings of the attractions (the `Embedding ARRAY<FLOAT32>(vector_length=>3072)` column already exists in the `Attraction` table). Let the AI generate the embeddings of the attraction descriptions and add a semantic attraction search widget to your UI.
-  
-  Unleash your imagination, type your heart out in the `agy` CLI session, and let the AI do the heavy lifting. Have fun, and enjoy your vibe coding journey! 🏰✨
+* **📊 Architecture Visualization (PlantUML)**: Ask the `agy` CLI to generate a PlantUML diagram of the generated app (e.g., *"Generate a PlantUML sequence diagram showing request flow from frontend to Spanner"*). Paste the output markup into a PlantUML visualization tool or Gemini to render it.
+* **🪄 Vibe-Coding Inspiration**: Use the `agy` CLI to add creative custom features to your app:
+  - 🎢 **Churro-Metric Navigation**: Calculate path distances in terms of average Disneyland churros consumed.
+  - 🐭 **Mickey Voice Mode**: Instruct the AI guide to chat in the optimistic, squeaky voice of Mickey Mouse.
+  - 🚀 **Warp-Speed Effects**: Trigger interactive CSS animation/particle effects when Space Mountain is clicked.
+  - 🔍 **Semantic Search**: Use Spanner's vector embeddings (`Embedding ARRAY<FLOAT32>`) on the `Attraction` table to implement semantic attraction searches.
 
 ---
 
 ## Clean Up
 
 > [!WARNING]
-> **Ongoing Costs (if you're using your own Google Cloud project)**:
-> To avoid incurring ongoing charges for resources created during the lab (like the regional Spanner instance), please destroy all provisioned infrastructure when you have completed the lab:
-> `terraform destroy`
+> **Ongoing Costs**: If running in your own GCP project, destroy all resources when finished to avoid charges:
+> ```bash
+> terraform destroy
+> ```
