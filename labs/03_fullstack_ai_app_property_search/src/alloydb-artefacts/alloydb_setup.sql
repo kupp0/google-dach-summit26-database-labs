@@ -25,11 +25,7 @@ PRE-REQUISITES:
 -- ===================================================================================
 
 -- Create a clean slate for the demo
-DROP SCHEMA IF EXISTS "search" CASCADE;
-CREATE SCHEMA "search";
-
--- Set the path so we don't have to type "search." constantly
-SET search_path TO "search", public;
+DROP TABLE IF EXISTS property_listings CASCADE;
 
 
 -- 2. EXTENSION MANAGEMENT
@@ -99,9 +95,9 @@ SELECT google_ml.embedding(
 -- 3. TABLE CREATION
 -- ===================================================================================
 
-DROP TABLE IF EXISTS "search".property_listings CASCADE;
+DROP TABLE IF EXISTS property_listings CASCADE;
 
-CREATE TABLE "search".property_listings (
+CREATE TABLE property_listings (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description TEXT,
@@ -122,14 +118,14 @@ CREATE TABLE "search".property_listings (
 );
 
 -- 3.1 COLUMN METADATA COMMENTS (Gemini Context Enrichment)
-COMMENT ON COLUMN "search".property_listings.bedrooms IS '<gemini>Examples: [''4'', ''6'', ''3''] | Distinct Values: 7 | Null Count: 0 |</gemini>';
-COMMENT ON COLUMN "search".property_listings.canton IS '<gemini>Examples: [''Solothurn'', ''Ticino'', ''Zug''] | Distinct Values: 27 | Null Count: 0 |</gemini>';
-COMMENT ON COLUMN "search".property_listings.city IS '<gemini>Examples: [''Stans'', ''Altdorf'', ''Kilchberg''] | Distinct Values: 89 | Null Count: 0 |</gemini>';
-COMMENT ON COLUMN "search".property_listings.country IS '<gemini>Examples: [''Switzerland''] | Distinct Values: 1 | Null Count: 0 |</gemini>';
-COMMENT ON COLUMN "search".property_listings.description IS '<gemini>Examples: [''The central rail crossroad of Switzerland. Reach anywhere fast. Modern functional apartment.'', ''Cozy retreat for weekend getaways or permanent living.''] | Distinct Values: 250 | Null Count: 0 |</gemini>';
-COMMENT ON COLUMN "search".property_listings.id IS '<gemini>Examples: [''75'', ''247'', ''13''] | Distinct Values: 250 | Null Count: 0 |</gemini>';
-COMMENT ON COLUMN "search".property_listings.image_gcs_uri IS '<gemini>Examples: [''https://storage.googleapis.com/property-images-data-agent-ai-powered-search-alloydb-1542/listings/10.jpg''] | Distinct Values: 250 | Null Count: 0 |</gemini>';
-COMMENT ON COLUMN "search".property_listings.price IS '<gemini>Examples: [''11878.00'', ''4869.00'', ''2792.00''] | Distinct Values: 189 | Null Count: 0 |</gemini>';
-COMMENT ON COLUMN "search".property_listings.title IS '<gemini>Examples: [''Rustic Studio in Landquart'', ''Renovated Villa in Herisau'', ''Quiet Home in Appenzell''] | Distinct Values: 248 | Null Count: 0 |</gemini>';
+COMMENT ON COLUMN property_listings.bedrooms IS '<gemini>Examples: [''4'', ''6'', ''3''] | Distinct Values: 7 | Null Count: 0 |</gemini>';
+COMMENT ON COLUMN property_listings.canton IS '<gemini>Examples: [''Solothurn'', ''Ticino'', ''Zug''] | Distinct Values: 27 | Null Count: 0 |</gemini>';
+COMMENT ON COLUMN property_listings.city IS '<gemini>Examples: [''Stans'', ''Altdorf'', ''Kilchberg''] | Distinct Values: 89 | Null Count: 0 |</gemini>';
+COMMENT ON COLUMN property_listings.country IS '<gemini>Examples: [''Switzerland''] | Distinct Values: 1 | Null Count: 0 |</gemini>';
+COMMENT ON COLUMN property_listings.description IS '<gemini>Examples: [''The central rail crossroad of Switzerland. Reach anywhere fast. Modern functional apartment.'', ''Cozy retreat for weekend getaways or permanent living.''] | Distinct Values: 250 | Null Count: 0 |</gemini>';
+COMMENT ON COLUMN property_listings.id IS '<gemini>Examples: [''75'', ''247'', ''13''] | Distinct Values: 250 | Null Count: 0 |</gemini>';
+COMMENT ON COLUMN property_listings.image_gcs_uri IS '<gemini>Examples: [''https://storage.googleapis.com/property-images-data-agent-ai-powered-search-alloydb-1542/listings/10.jpg''] | Distinct Values: 250 | Null Count: 0 |</gemini>';
+COMMENT ON COLUMN property_listings.price IS '<gemini>Examples: [''11878.00'', ''4869.00'', ''2792.00''] | Distinct Values: 189 | Null Count: 0 |</gemini>';
+COMMENT ON COLUMN property_listings.title IS '<gemini>Examples: [''Rustic Studio in Landquart'', ''Renovated Villa in Herisau'', ''Quiet Home in Appenzell''] | Distinct Values: 248 | Null Count: 0 |</gemini>';
 
 

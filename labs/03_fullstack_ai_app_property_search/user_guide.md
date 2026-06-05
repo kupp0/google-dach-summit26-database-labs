@@ -56,7 +56,7 @@ bash init.sh
 6. Open a third query tab, copy and run the contents of `alloydb-artefacts/alloydb_indexes.sql` to build the vector and ScaNN nearest neighbor indexes.
 7. Run this validation query to verify the records populate successfully (should return ~320):
    ```sql
-   SELECT count(*) as property_count FROM "search".property_listings;
+   SELECT count(*) as property_count FROM property_listings;
    ```
 
 ### 2. Generate Images and Multimodal Embeddings
