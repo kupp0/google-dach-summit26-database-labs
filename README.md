@@ -26,8 +26,8 @@ Build a zero-copy federated analytical "bridge" between a transactional database
 - **Key Tech**: Cloud Spanner, BigQuery connection objects, and the **MCP Toolbox** for agentic AI tooling.
 - **Highlights**: Infrastructure provisioning using Terraform, injecting live Disneyland datasets into Spanner, running real-time BigQuery federated analytical lookups on transactional data, and configuring AI integrations.
 
-### 3. [Lab 3: Swiss Property Search (Fullstack App & Vertex AI)](labs/03_fullstack_ai_app_property_search/user_guide.md)
-Explore and extend a complete fullstack AI-powered search application vibe-coded entirely from scratch using Gemini.
-- **Key Tech**: AlloyDB AI, Vertex AI (text-embedding-005), Antigravity CLI (agy), and Gemini Data Analytics endpoints.
-- **Highlights**: Validating backend queryData APIs using shell scripts, and completing developer coding challenges (updating CSS branding palettes, building animated rainbow results popups, and generating dynamic architecture flow diagrams).
+### 3. [Lab 3: Swiss Property Search (Fullstack AI App & Gemini Data Analytics)](labs/03_fullstack_ai_app_property_search/user_guide.md)
+Build and deploy a premium fullstack real-estate search application leveraging natural language queries via Gemini Data Analytics.
+- **Key Tech**: AlloyDB, Gemini Data Analytics (GDA) QueryData API, Google Antigravity (ADK) SDK, and Model Context Protocol (MCP) Toolbox.
+- **Highlights**: Provisioning database structures, generating visual assets natively via Vertex AI Imagen, registering a GDA Context Set for schema mapping, running a local stateless backend container stack, and building multi-turn conversational chat agents using the ADK SDK.
 
