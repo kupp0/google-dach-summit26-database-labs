@@ -9,7 +9,7 @@ spec:
     metadata:
       annotations:
         run.googleapis.com/execution-environment: gen2
-        run.googleapis.com/network-interfaces: '[{"network":"search-demo-vpc","subnetwork":"search-demo-vpc"}]'
+        run.googleapis.com/network-interfaces: '[{"network":"workstation-network","subnetwork":"workstation-subnet"}]'
         run.googleapis.com/vpc-access-egress: private-ranges-only
     spec:
       serviceAccountName: ${SERVICE_ACCOUNT}

@@ -165,12 +165,3 @@ Now use the **ADK CLI (agy)** or your AI Assistant inside the workspace `/home/u
 
 * **🤖 Ask your AI Assistant (`agy` CLI)**: If you get stuck on any coding challenge, or if you need clarification on how the backend connects to Gemini Data Analytics, you can ask questions directly in your active `agy` CLI session (e.g., *"Explain how the GDA QueryData endpoint works in main.py"* or *"Help me implement the rainbow celebratory popup in App.jsx"*).
 
-### 🌐 IAP Tunneling and Firewall Connectivity Issues
-If the Auth Proxy script (`run_proxy.sh`) fails to connect:
-```bash
-# Allow Ingress TCP traffic from Google's IAP range in the VPC network
-gcloud compute firewall-rules create allow-ssh-ingress-from-iap \
-  --network=workstation-network \
-  --source-ranges=35.235.240.0/20 \
-  --allow=tcp:22
-```
