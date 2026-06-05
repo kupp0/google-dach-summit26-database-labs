@@ -145,6 +145,8 @@ Now use the **ADK CLI (agy)** or your AI Assistant inside the workspace `/home/u
 
 ## Troubleshooting
 
+* **Ask your AI Assistant (`agy` CLI)**: If you get stuck on any coding challenge, or if you need clarification on how the backend connects to Gemini Data Analytics, you can ask questions directly in your active `agy` CLI session (e.g., *"Explain how the GDA QueryData endpoint works in main.py"* or *"Help me implement the rainbow celebratory popup in App.jsx"*).
+
 ### IAP Tunneling and Firewall Connectivity Issues
 If the Auth Proxy script (`run_proxy.sh`) fails to connect:
 ```bash
