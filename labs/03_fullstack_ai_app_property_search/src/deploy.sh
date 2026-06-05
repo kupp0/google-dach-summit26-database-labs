@@ -41,7 +41,7 @@ export DB_PASSWORD=${DB_PASSWORD:-"alloydb-hackathon-password"}
 export DB_USER=${DB_USER:-"postgres"}
 export DB_NAME=${DB_NAME:-"postgres"}
 
-REPO_NAME="search-app-repo"
+REPO_NAME="search-demo"
 
 # Service Names
 export BACKEND_SERVICE="search-backend"
