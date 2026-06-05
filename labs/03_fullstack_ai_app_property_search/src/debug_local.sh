@@ -51,9 +51,9 @@ gcloud compute ssh $BASTION_NAME --zone $BASTION_ZONE \
 PROXY_PID=$!
 echo "   Proxy/Tunnel PID: $PROXY_PID"
 
-# 2. Prepare Configuration using envsubst
+# 2. Prepare Configuration using python3 expanding environment variables
 echo "🔧 Resolving GDA tools configuration..."
-envsubst < backend/mcp_server/tools.yaml > backend/mcp_server/tools_resolved.yaml
+python3 -c "import os, sys; sys.stdout.write(os.path.expandvars(sys.stdin.read()))" < backend/mcp_server/tools.yaml > backend/mcp_server/tools_resolved.yaml
 
 # Prepare credentials with correct permissions for Docker
 cp $HOME/.config/gcloud/application_default_credentials.json /tmp/adc.json
