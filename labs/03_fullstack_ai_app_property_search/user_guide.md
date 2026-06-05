@@ -6,6 +6,9 @@ The application utilizes a single stateless architecture:
 1. **Search Bar**: Sends natural language queries directly to the GDA `/queryData` API to generate SQL, natural language summaries, and intent explanations.
 2. **AI Agent Chat**: A conversational interface powered by the Google Antigravity (ADK) SDK, loading the `cloud_gda_query_tool_alloydb` tool to allow multi-turn questions and refined searches.
 
+> [!NOTE]
+> This lab is based on the reference multi-agent property search demonstration project hosted on GitHub at [multi-db-property-search-data-agents](https://github.com/kupp0/multi-db-property-search-data-agents).
+
 ---
 
 ## Objective
