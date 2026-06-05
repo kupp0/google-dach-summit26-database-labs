@@ -64,19 +64,19 @@ bash init.sh
 
 ### 🎨 2. Generate Visual Assets with Vertex AI Imagen
 Generate listing images and calculate visual embeddings using Vertex AI Imagen models:
-1. Start the AlloyDB Auth Proxy tunnel in your workstation terminal:
+1. Open a **new dedicated terminal session/tab** in your workstation and start the AlloyDB Auth Proxy tunnel:
    ```bash
    cd ~/lab03_swiss_property_search/alloydb-artefacts
-   bash run_proxy.sh
+   ./run_proxy.sh
    ```
-   > [!IMPORTANT]
-   > Keep this terminal open! Stopping the script will close the secure database proxy tunnel.
-2. Open a **new terminal tab** in your editor and execute the generator script:
+   > [!WARNING]
+   > **Separate Terminal Session Required**: The Auth Proxy runs as a foreground process to maintain the database connection. You MUST keep this terminal open and running. Do not run other commands in this session.
+2. Open another **separate terminal session/tab** and execute the generator script:
    ```bash
    cd ~/lab03_swiss_property_search/alloydb-artefacts
    python3 bootstrap_images.py
    ```
-   *(This script connects to AlloyDB, prompts Imagen to generate property visuals, saves them to Cloud Storage, and computes 1408-dimensional visual vectors for database similarity matching).*
+   *(This script connects to AlloyDB via the proxy tunnel, prompts Imagen to generate property visuals, saves them to Cloud Storage, and computes 1408-dimensional visual vectors for database similarity matching).*
 3. Once the generator finishes, go back to the first terminal tab and stop the proxy by pressing `Ctrl+C`.
 
 ---
