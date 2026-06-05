@@ -94,5 +94,19 @@ resource "google_alloydb_instance" "primary" {
     query_plans_per_minute  = 20
   }
 
+  data_api_config {
+    enabled = true
+  }
+
+  depends_on = [google_alloydb_cluster.default]
+}
+
+#--- 5. AlloyDB IAM User Setup ---
+resource "google_alloydb_user" "iam_user" {
+  cluster        = google_alloydb_cluster.default.name
+  user_id        = replace(var.iap_member, "user:", "")
+  database_user_type = "ALLOYDB_IAM_USER"
+  database_roles = ["alloydbsuperuser"]
+  
   depends_on = [google_alloydb_cluster.default]
 }
