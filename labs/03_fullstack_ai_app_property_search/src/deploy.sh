@@ -1,279 +1,234 @@
 #!/bin/bash
+set -euo pipefail
 
-# Exit on error
-set -e
+# ==============================================================================
+# DEPLOYMENT SCRIPT (AlloyDB GDA Only)
+# ==============================================================================
+# This script deploys the Swiss Property Search services to Cloud Run.
+# It assumes Terraform has already been applied and necessary infrastructure exists.
+# ==============================================================================
 
-# Ensure we are in the script's directory
+# --- 1. PRE-FLIGHT CHECKS ---
+
+command -v gcloud >/dev/null 2>&1 || { echo "❌ 'gcloud' is required but not installed. Aborting." >&2; exit 1; }
+command -v docker >/dev/null 2>&1 || { echo "❌ 'docker' is required but not installed. Aborting." >&2; exit 1; }
+command -v envsubst >/dev/null 2>&1 || { echo "❌ 'envsubst' is required but not installed. Aborting." >&2; exit 1; }
+
+# Resolve project root
 cd "$(dirname "$0")"
 
-# Configuration
+# --- 2. CONFIGURATION ---
+
+# Source .env if it exists
 if [ -f "backend/.env" ]; then
-    echo "📄 Loading configuration from backend/.env..."
-    export $(grep -v '^#' backend/.env | xargs)
-else
-    echo "❌ backend/.env not found. Please run ./init.sh first."
-    exit 1
+    echo "📄 Sourcing backend/.env..."
+    set -a
+    source backend/.env
+    set +a
 fi
 
-PROJECT_ID=${GCP_PROJECT_ID}
-REGION=${GCP_LOCATION}
+# Set Defaults (can be overridden by env vars)
+export PROJECT_ID=$(gcloud config get-value project)
+export GCP_LOCATION=${GCP_LOCATION:-"europe-west1"}
+export REGION=$GCP_LOCATION
 
-if [ -z "$PROJECT_ID" ]; then
-    echo "❌ GCP_PROJECT_ID not found in backend/.env"
-    exit 1
-fi
+# AlloyDB Config
+export ALLOYDB_CLUSTER_ID=${ALLOYDB_CLUSTER_ID:-search-cluster}
+export ALLOYDB_INSTANCE_ID=${ALLOYDB_INSTANCE_ID:-search-primary}
+export INSTANCE_CONNECTION_NAME="projects/${PROJECT_ID}/locations/${REGION}/clusters/${ALLOYDB_CLUSTER_ID}/instances/${ALLOYDB_INSTANCE_ID}"
 
-if [ -z "$REGION" ]; then
-    echo "❌ GCP_LOCATION not found in backend/.env"
-    exit 1
-fi
-BACKEND_SERVICE_NAME="search-backend"
-FRONTEND_SERVICE_NAME="search-frontend"
+# Database Credentials
+export DB_PASSWORD=${DB_PASSWORD:-"alloydb-hackathon-password"}
+export DB_USER=${DB_USER:-"postgres"}
+export DB_NAME=${DB_NAME:-"postgres"}
 
-# Ensure required variables are set
-if [ -z "$INSTANCE_CONNECTION_NAME" ]; then
-    echo "❌ Missing required configuration in backend/.env"
-    exit 1
-fi
-
-# Password check
-if [ -z "$DB_PASSWORD" ]; then
-    read -s -p "Enter DB Password: " DB_PASSWORD
-    echo ""
-fi
-
-echo "🚀 Starting Deployment to Cloud Run..."
-echo "Project: $PROJECT_ID"
-echo "Region: $REGION"
-
-# --- PERMISSION CHECK ---
-check_permissions() {
-    echo "🔍 Checking permissions..."
-    CURRENT_USER=$(gcloud config get-value account)
-    echo "User: $CURRENT_USER"
-
-    # Check if user has Owner, Editor, or Artifact Registry Writer roles
-    # This is a heuristic check. 
-    ROLES=$(gcloud projects get-iam-policy $PROJECT_ID \
-        --flatten="bindings[].members" \
-        --format="table(bindings.role)" \
-        --filter="bindings.members:$CURRENT_USER")
-
-    if echo "$ROLES" | grep -qE "roles/owner|roles/editor|roles/artifactregistry.writer|roles/artifactregistry.repoAdmin|roles/artifactregistry.admin"; then
-        echo "✅ User has sufficient Artifact Registry permissions."
-    else
-        echo "❌ ERROR: User '$CURRENT_USER' is missing Artifact Registry permissions."
-        echo "Required: roles/artifactregistry.writer OR roles/owner OR roles/editor"
-        echo "Current Roles:"
-        echo "$ROLES"
-        echo ""
-        echo "To fix this, ask an admin to run:"
-        echo "gcloud projects add-iam-policy-binding $PROJECT_ID \\"
-        echo "    --member='user:$CURRENT_USER' \\"
-        echo "    --role='roles/artifactregistry.writer'"
-        echo ""
-        echo "Exiting..."
-        exit 1
-    fi
-    
-}
-
-check_service_account_permissions() {
-    echo "🔍 Checking Build Service Account permissions..."
-    PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")
-    # Cloud Build often uses the Compute Engine default service account by default in some configs,
-    # or the Cloud Build Service Account.
-    # We are using a dedicated Service Account (search-backend-sa) for the runtime identity,
-    # but the build process itself might still use the default Compute SA or Cloud Build SA depending on configuration.
-    # The checks below ensure the runtime Service Account has all necessary permissions.
-    COMPUTE_SA="search-backend-sa@${PROJECT_ID}.iam.gserviceaccount.com"
-    echo "Checking Dedicated Service Account: $COMPUTE_SA"
-
-    echo "ℹ️  Note: This Service Account is used as the runtime identity for the Cloud Run services."
-    echo "It requires permissions for Logging, Artifact Registry, AlloyDB, Service Usage, Vertex AI, Discovery Engine, Storage, and Secret Manager."
-    
-    # Check if we can see the policy (heuristic)
-    SA_ROLES=$(gcloud projects get-iam-policy $PROJECT_ID \
-        --flatten="bindings[].members" \
-        --format="table(bindings.role)" \
-        --filter="bindings.members:$COMPUTE_SA")
-
-    if echo "$SA_ROLES" | grep -q "roles/logging.logWriter" && \
-       echo "$SA_ROLES" | grep -q "roles/artifactregistry.repoAdmin" && \
-       echo "$SA_ROLES" | grep -q "roles/alloydb.client" && \
-       echo "$SA_ROLES" | grep -q "roles/serviceusage.serviceUsageConsumer" && \
-       echo "$SA_ROLES" | grep -q "roles/aiplatform.user" && \
-       echo "$SA_ROLES" | grep -q "roles/discoveryengine.editor" && \
-       echo "$SA_ROLES" | grep -q "roles/storage.objectAdmin"; then
-        echo "✅ Service Account appears to have necessary roles."
-    else
-        echo "⚠️  WARNING: Service Account '$COMPUTE_SA' might be missing roles."
-        echo "Current Roles:"
-        echo "$SA_ROLES"
-        echo ""
-        echo "To fix the 'Permission denied' errors, we recommend updating the infrastructure via Terraform:"
-        echo "cd terraform && terraform apply"
-        echo ""
-        echo "Alternatively, you can run the following commands manually (NOT RECOMMENDED for reproducibility):"
-        echo "gcloud projects add-iam-policy-binding $PROJECT_ID \\"
-        echo "    --member='serviceAccount:$COMPUTE_SA' \\"
-        echo "    --role='roles/logging.logWriter'"
-        echo "gcloud projects add-iam-policy-binding $PROJECT_ID \\"
-        echo "    --member='serviceAccount:$COMPUTE_SA' \\"
-        echo "    --role='roles/artifactregistry.repoAdmin'"
-        echo "gcloud projects add-iam-policy-binding $PROJECT_ID \\"
-        echo "    --member='serviceAccount:$COMPUTE_SA' \\"
-        echo "    --role='roles/alloydb.client'"
-        echo "gcloud projects add-iam-policy-binding $PROJECT_ID \\"
-        echo "    --member='serviceAccount:$COMPUTE_SA' \\"
-        echo "    --role='roles/serviceusage.serviceUsageConsumer'"
-        echo "gcloud projects add-iam-policy-binding $PROJECT_ID \\"
-        echo "    --member='serviceAccount:$COMPUTE_SA' \\"
-        echo "    --role='roles/aiplatform.user'"
-        echo "gcloud projects add-iam-policy-binding $PROJECT_ID \\"
-        echo "    --member='serviceAccount:$COMPUTE_SA' \\"
-        echo "    --role='roles/discoveryengine.editor'"
-        echo "gcloud projects add-iam-policy-binding $PROJECT_ID \\"
-        echo "    --member='serviceAccount:$COMPUTE_SA' \\"
-        echo "    --role='roles/storage.objectAdmin'"
-        echo "gcloud projects add-iam-policy-binding $PROJECT_ID \\"
-        echo "    --member='serviceAccount:$COMPUTE_SA' \\"
-        echo "    --role='roles/secretmanager.secretAccessor'"
-
-        echo ""
-        echo "Exiting to prevent build/runtime failure..."
-        exit 1
-    fi
-}
-
-check_permissions
-check_service_account_permissions
-
-# --- ENSURE REPO EXISTS ---
-# Sometimes createOnPush fails even with permissions due to propagation delays.
-# It's safer to ensure the repo exists explicitly.
-echo "🔍 Checking/Creating Artifact Registry repository..."
-# Use a standard Artifact Registry repo in the user's region.
 REPO_NAME="search-app-repo"
-REPO_URI="$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME"
 
-echo "📦 Switching to Artifact Registry: $REPO_URI"
-if ! gcloud artifacts repositories describe $REPO_NAME --location=$REGION >/dev/null 2>&1; then
-    echo "Creating Artifact Registry repository '$REPO_NAME'..."
-    gcloud artifacts repositories create $REPO_NAME \
-        --project=$PROJECT_ID \
-        --repository-format=docker \
-        --location=$REGION \
-        --description="Docker repository for Search App"
-else
-    echo "✅ Repository '$REPO_NAME' already exists."
+# Service Names
+export BACKEND_SERVICE="search-backend"
+export FRONTEND_SERVICE="search-frontend"
+export AGENT_SERVICE="search-agent"
+
+# Service Account
+export SERVICE_ACCOUNT="search-backend-sa@${PROJECT_ID}.iam.gserviceaccount.com"
+
+# Images
+export BACKEND_IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${BACKEND_SERVICE}"
+export FRONTEND_IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${FRONTEND_SERVICE}"
+export AGENT_IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${AGENT_SERVICE}"
+
+export TAG=$(date +%Y%m%d-%H%M%S)
+
+echo "🚀 Starting Deployment..."
+echo "   Project: ${PROJECT_ID}"
+echo "   Region: ${REGION}"
+echo "   Tag: ${TAG}"
+
+# Validation
+if [ -z "${AGENT_CONTEXT_SET_ID_ALLOYDB:-}" ]; then
+    echo "⚠️  AGENT_CONTEXT_SET_ID_ALLOYDB is not set!"
+    echo "   Please set AGENT_CONTEXT_SET_ID_ALLOYDB in backend/.env or export it."
+    exit 1
 fi
 
-# Update Image URIs to use the new Artifact Registry with a unique tag
-TAG=$(date +%Y%m%d-%H%M%S)
-echo "🏷️  Using Image Tag: $TAG"
-BACKEND_IMAGE="$REPO_URI/$BACKEND_SERVICE_NAME:$TAG"
-FRONTEND_IMAGE="$REPO_URI/$FRONTEND_SERVICE_NAME:$TAG"
+# --- 3. SETUP (APIs & IAM) ---
+
+echo "🔧 Verifying APIs..."
+gcloud services enable \
+    alloydb.googleapis.com \
+    geminidataanalytics.googleapis.com \
+    aiplatform.googleapis.com \
+    run.googleapis.com \
+    artifactregistry.googleapis.com \
+    cloudbuild.googleapis.com \
+    secretmanager.googleapis.com \
+    --project "${PROJECT_ID}" >/dev/null
+
+echo "👤 Verifying Service Account: ${SERVICE_ACCOUNT}..."
+if ! gcloud iam service-accounts describe "${SERVICE_ACCOUNT}" --project "${PROJECT_ID}" > /dev/null 2>&1; then
+    echo "⚠️  Service Account ${SERVICE_ACCOUNT} not found. Creating..."
+    gcloud iam service-accounts create search-backend-sa --display-name "Search Backend SA" --project "${PROJECT_ID}"
+fi
+
+# Grant roles (Idempotent)
+ROLES=(
+    "roles/alloydb.client"
+    "roles/alloydb.databaseUser"
+    "roles/cloudaicompanion.user"
+    "roles/aiplatform.user"
+    "roles/serviceusage.serviceUsageConsumer"
+    "roles/logging.logWriter"
+    "roles/secretmanager.secretAccessor"
+    "roles/geminidataanalytics.dataAgentUser"
+    "roles/geminidataanalytics.queryDataUser"
+)
+
+echo "🛡️  Ensuring IAM roles..."
+for role in "${ROLES[@]}"; do
+    gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+        --member="serviceAccount:${SERVICE_ACCOUNT}" \
+        --role="${role}" \
+        --condition=None \
+        --quiet > /dev/null 2>&1 || true
+done
+
+# AlloyDB Service Agent Roles
+PROJECT_NUMBER=$(gcloud projects describe "${PROJECT_ID}" --format="value(projectNumber)")
+ALLOYDB_SA="service-${PROJECT_NUMBER}@gcp-sa-alloydb.iam.gserviceaccount.com"
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+    --member="serviceAccount:${ALLOYDB_SA}" \
+    --role="roles/aiplatform.user" \
+    --condition=None \
+    --quiet > /dev/null 2>&1 || true
+
+# Default Compute SA Roles
+COMPUTE_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+    --member="serviceAccount:${COMPUTE_SA}" \
+    --role="roles/geminidataanalytics.dataAgentUser" \
+    --condition=None \
+    --quiet > /dev/null 2>&1 || true
 
 
-# 1. Build and Push Backend Image
-echo "📦 Building Backend Image..."
-gcloud builds submit backend --tag $BACKEND_IMAGE --project=$PROJECT_ID
+# --- 4. UPDATE SECRETS ---
 
-# 2. Deploy Backend with AlloyDB Auth Proxy Sidecar
-echo "🚀 Deploying Backend..."
-# We use the Dedicated Service Account for the runtime identity
-SERVICE_ACCOUNT="search-backend-sa@${PROJECT_ID}.iam.gserviceaccount.com"
-echo "Using Runtime Service Account: $SERVICE_ACCOUNT"
+echo "🔐 Updating 'tools' secret..."
+if ! gcloud secrets describe tools --project "${PROJECT_ID}" > /dev/null 2>&1; then
+    gcloud secrets create tools --replication-policy="automatic" --project "${PROJECT_ID}"
+fi
 
-# Substitute variables in service.yaml
-# BACKEND_IMAGE is already set to the new AR URI
-export BACKEND_IMAGE
-export SERVICE_ACCOUNT
-export PROJECT_ID
-export REGION
-export DB_USER
-export DB_NAME
-export DB_PASSWORD
-export INSTANCE_CONNECTION_NAME
-export VERTEX_AI_SEARCH_DATA_STORE_ID
+# Generate resolved tools configuration
+envsubst < backend/mcp_server/tools.yaml > backend/mcp_server/tools_resolved.yaml
+
+# Add new version
+gcloud secrets versions add tools --data-file=backend/mcp_server/tools_resolved.yaml --project "${PROJECT_ID}" --quiet > /dev/null
+
+rm -f backend/mcp_server/tools_resolved.yaml
 
 
-envsubst < backend/service.yaml > backend/service.resolved.yaml
+# --- 5. BUILD & PUSH IMAGES (PARALLEL) ---
 
-gcloud run services replace backend/service.resolved.yaml --region $REGION --project=$PROJECT_ID
+echo "📦 Starting Parallel Builds..."
+PIDS=""
 
-# Allow unauthenticated access (for demo purposes)
-# Allow current user access (Org Policy restricts allUsers)
-gcloud run services add-iam-policy-binding $BACKEND_SERVICE_NAME \
-    --region $REGION \
-    --member="allUsers" \
-    --role="roles/run.invoker"
+# Function to handle build errors
+handle_build_error() {
+    echo "❌ Build failed for $1"
+    exit 1
+}
 
-# Get Backend URL
-BACKEND_URL=$(gcloud run services describe $BACKEND_SERVICE_NAME --platform managed --region $REGION --format 'value(status.url)')
-echo "✅ Backend deployed at: $BACKEND_URL"
+# --- AGENT ---
+(
+    echo "📦 [Agent] Building..."
+    gcloud builds submit ./backend/agent --tag "${AGENT_IMAGE}:${TAG}" --project="${PROJECT_ID}" --quiet > /dev/null 2>&1 || handle_build_error "Agent"
+    echo "✅ [Agent] Built"
+) &
+PIDS="$PIDS $!"
 
-# 3. Build and Push Toolbox Image
-echo "📦 Building Toolbox Image..."
-TOOLBOX_SERVICE_NAME="search-toolbox"
-TOOLBOX_IMAGE="$REPO_URI/$TOOLBOX_SERVICE_NAME:$TAG"
-gcloud builds submit backend/mcp_server --tag $TOOLBOX_IMAGE --project=$PROJECT_ID
+# --- BACKEND ---
+(
+    echo "📦 [Backend] Building..."
+    gcloud builds submit ./backend --tag "${BACKEND_IMAGE}:${TAG}" --project="${PROJECT_ID}" --quiet > /dev/null 2>&1 || handle_build_error "Backend"
+    echo "✅ [Backend] Built"
+) &
+PIDS="$PIDS $!"
 
-# 4. Deploy Toolbox
-echo "🚀 Deploying Toolbox..."
-export TOOLBOX_IMAGE
-envsubst < backend/mcp_server/service.yaml > backend/mcp_server/service.resolved.yaml
-gcloud run services replace backend/mcp_server/service.resolved.yaml --region $REGION --project=$PROJECT_ID
+# --- FRONTEND ---
+(
+    echo "📦 [Frontend] Building..."
+    gcloud builds submit ./frontend --tag "${FRONTEND_IMAGE}:${TAG}" --project="${PROJECT_ID}" --quiet > /dev/null 2>&1 || handle_build_error "Frontend"
+    echo "✅ [Frontend] Built"
+) &
+PIDS="$PIDS $!"
 
-# Allow unauthenticated access (internal/demo) - or restrict if needed
-# For simplicity in this demo, we allow unauthenticated so Agent can call it easily without ID token logic
-# Allow current user access
-gcloud run services add-iam-policy-binding $TOOLBOX_SERVICE_NAME \
-    --region $REGION \
-    --member="allUsers" \
-    --role="roles/run.invoker"
+# Wait for all builds
+wait
 
-TOOLBOX_URL=$(gcloud run services describe $TOOLBOX_SERVICE_NAME --platform managed --region $REGION --format 'value(status.url)')
-echo "✅ Toolbox deployed at: $TOOLBOX_URL"
+echo "🎉 All builds completed successfully!"
 
-# 5. Build and Push Agent Image
-echo "📦 Building Agent Image..."
-AGENT_SERVICE_NAME="search-agent"
-AGENT_IMAGE="$REPO_URI/$AGENT_SERVICE_NAME:$TAG"
-gcloud builds submit backend/agent --tag $AGENT_IMAGE --project=$PROJECT_ID
 
-# 6. Deploy Agent
+# --- 6. DEPLOY TO CLOUD RUN ---
+
+# --- DEPLOY AGENT ---
 echo "🚀 Deploying Agent..."
-export AGENT_IMAGE
-export TOOLBOX_URL
-envsubst < backend/agent/service.yaml > backend/agent/service.resolved.yaml
-gcloud run services replace backend/agent/service.resolved.yaml --region $REGION --project=$PROJECT_ID
+envsubst < backend/agent/service.yaml > backend/agent/service_resolved.yaml
 
-gcloud run services add-iam-policy-binding $AGENT_SERVICE_NAME \
-    --region $REGION \
-    --member="allUsers" \
-    --role="roles/run.invoker"
+gcloud run services replace backend/agent/service_resolved.yaml --region "${REGION}" --project="${PROJECT_ID}" --quiet
+gcloud run services add-iam-policy-binding "${AGENT_SERVICE}" --region "${REGION}" --project="${PROJECT_ID}" --member=allUsers --role=roles/run.invoker --quiet > /dev/null
 
-AGENT_URL=$(gcloud run services describe $AGENT_SERVICE_NAME --platform managed --region $REGION --format 'value(status.url)')
-echo "✅ Agent deployed at: $AGENT_URL"
+rm -f backend/agent/service_resolved.yaml
+AGENT_URL=$(gcloud run services describe "${AGENT_SERVICE}" --region "${REGION}" --project="${PROJECT_ID}" --format 'value(status.url)')
+echo "✅ Agent: ${AGENT_URL}"
 
+# --- DEPLOY BACKEND ---
+echo "🚀 Deploying Backend..."
+envsubst < backend/service.yaml > backend/service_resolved.yaml
 
-# 7. Build and Push Frontend Image
-echo "📦 Building Frontend Image..."
-gcloud builds submit frontend --tag $FRONTEND_IMAGE --project=$PROJECT_ID
+gcloud run services replace backend/service_resolved.yaml --region "${REGION}" --project="${PROJECT_ID}" --quiet
+gcloud run services add-iam-policy-binding "${BACKEND_SERVICE}" --region "${REGION}" --project="${PROJECT_ID}" --member=allUsers --role=roles/run.invoker --quiet > /dev/null
 
-# 4. Deploy Frontend
+rm -f backend/service_resolved.yaml
+BACKEND_URL=$(gcloud run services describe "${BACKEND_SERVICE}" --region "${REGION}" --project="${PROJECT_ID}" --format 'value(status.url)')
+echo "✅ Backend: ${BACKEND_URL}"
+
+# --- DEPLOY FRONTEND ---
 echo "🚀 Deploying Frontend..."
-gcloud run deploy $FRONTEND_SERVICE_NAME \
-    --image $FRONTEND_IMAGE \
-    --region $REGION \
+gcloud run deploy "${FRONTEND_SERVICE}" \
+    --image "${FRONTEND_IMAGE}:${TAG}" \
+    --region "${REGION}" \
+    --project="${PROJECT_ID}" \
     --platform managed \
-    --project=$PROJECT_ID \
     --allow-unauthenticated \
-    --set-env-vars BACKEND_URL=$BACKEND_URL,AGENT_URL=$AGENT_URL
+    --timeout=180 \
+    --set-env-vars BACKEND_URL="${BACKEND_URL}",AGENT_URL="${AGENT_URL}" \
+    --quiet > /dev/null
 
-# Get Frontend URL
-FRONTEND_URL=$(gcloud run services describe $FRONTEND_SERVICE_NAME --platform managed --region $REGION --format 'value(status.url)')
+FRONTEND_URL=$(gcloud run services describe "${FRONTEND_SERVICE}" --region "${REGION}" --project="${PROJECT_ID}" --format 'value(status.url)')
+
+echo ""
 echo "🎉 Deployment Complete!"
-echo "Frontend: $FRONTEND_URL"
+echo "---------------------------------------------------"
+echo "Frontend: ${FRONTEND_URL}"
+echo "Backend:  ${BACKEND_URL}"
+echo "Agent:    ${AGENT_URL}"
+echo "---------------------------------------------------"

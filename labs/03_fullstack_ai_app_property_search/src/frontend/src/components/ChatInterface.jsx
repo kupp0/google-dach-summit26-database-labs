@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Loader2, Sparkles, X } from 'lucide-react';
 
 
-const ChatInterface = ({ onClose, onResultsFound }) => {
+const ChatInterface = ({ selectedBackend, onClose, onResultsFound }) => {
     const [messages, setMessages] = useState([
         { role: 'model', text: "Hello! I'm your AI real estate assistant. I can help you find properties using natural language. Try asking 'Find me a modern apartment in Zurich' or 'Show me 3 bedroom houses near the lake'." }
     ]);
@@ -36,7 +36,7 @@ const ChatInterface = ({ onClose, onResultsFound }) => {
             const response = await fetch('/agent/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: userMessage.text, session_id: sessionId }),
+                body: JSON.stringify({ message: userMessage.text, session_id: sessionId, backend: selectedBackend }),
             });
 
             if (!response.ok) {
@@ -77,9 +77,14 @@ const ChatInterface = ({ onClose, onResultsFound }) => {
             const botMessage = { role: 'model', text: responseText, properties };
             setMessages(prev => [...prev, botMessage]);
 
-            // Notify parent component about found properties
-            if (properties.length > 0 && onResultsFound) {
-                onResultsFound(properties, userMessage.text);
+            // Notify parent component about found properties AND system details
+            if (onResultsFound) {
+                // We pass properties (if any), the user message (or better, the USED prompt), and tool details
+                onResultsFound(
+                    properties,
+                    data.used_prompt || userMessage.text, // Use the actual prompt sent to tool if available
+                    data.tool_details // Pass the raw tool output (SQL, explanation, etc.)
+                );
             }
         } catch (error) {
             console.error("Chat error:", error);
@@ -106,7 +111,7 @@ const ChatInterface = ({ onClose, onResultsFound }) => {
                     </div>
                 </div>
                 {onClose && (
-                    <button onClick={onClose} className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors text-slate-500 dark:text-slate-400">
+                    <button onClick={onClose} aria-label="Close chat" className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors text-slate-500 dark:text-slate-400">
                         <X className="w-5 h-5" />
                     </button>
                 )}
@@ -156,12 +161,14 @@ const ChatInterface = ({ onClose, onResultsFound }) => {
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && !isLoading && handleSend()}
                         placeholder="Ask about properties..."
+                        aria-label="Chat message"
                         className="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all dark:text-white placeholder-slate-400"
                         disabled={isLoading}
                     />
                     <button
                         onClick={handleSend}
                         disabled={isLoading || !input.trim()}
+                        aria-label="Send message"
                         className="bg-indigo-600 hover:bg-indigo-700 text-white p-3 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/20"
                     >
                         <Send className="w-5 h-5" />

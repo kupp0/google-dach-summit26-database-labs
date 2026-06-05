@@ -18,7 +18,7 @@ load_dotenv(dotenv_path=dotenv_path)
 # --- CONFIGURATION ---
 PROJECT_ID = os.getenv("GCP_PROJECT_ID") or os.environ.get("GOOGLE_CLOUD_PROJECT")
 LOCATION = os.getenv("GCP_LOCATION", "europe-west1")
-BUCKET_NAME = f"property-images-{PROJECT_ID}" # Matches the bucket you just created
+BUCKET_NAME = f"property-images-data-agent-{PROJECT_ID}" # Matches the bucket created by Terraform
 
 print(f"🚀 Starting Image Bootstrap for Project: {PROJECT_ID}")
 print(f"📂 Target Bucket: {BUCKET_NAME}")

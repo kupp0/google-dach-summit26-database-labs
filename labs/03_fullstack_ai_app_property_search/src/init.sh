@@ -32,7 +32,9 @@ INSTANCE_CONNECTION_NAME=${INSTANCE_CONNECTION_NAME}
 DB_NAME=postgres
 DB_USER=postgres
 DB_PASSWORD=alloydb-hackathon-password
-VERTEX_AI_SEARCH_DATA_STORE_ID=property-listings-ds
+AGENT_CONTEXT_SET_ID_ALLOYDB=property-agent
+ALLOYDB_CLUSTER_ID=search-cluster
+ALLOYDB_INSTANCE_ID=search-primary
 EOF
     echo "✅ backend/.env generated successfully!"
 fi

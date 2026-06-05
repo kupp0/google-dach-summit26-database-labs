@@ -2,10 +2,19 @@
 set -e
 
 # Load environment variables
-# Load environment variables
 if [ -f "backend/.env" ]; then
     echo "📄 Loading configuration from backend/.env..."
-    export $(grep -v '^#' backend/.env | xargs)
+    set -a
+    source backend/.env
+    set +a
+    # Map GCP_PROJECT_ID to PROJECT_ID for envsubst / tools.yaml
+    if [ -n "$GCP_PROJECT_ID" ] && [ -z "$PROJECT_ID" ]; then
+        export PROJECT_ID=$GCP_PROJECT_ID
+    fi
+    # Map GCP_LOCATION to GCP_LOCATION
+    if [ -n "$GCP_LOCATION" ] && [ -z "$GCP_LOCATION" ]; then
+        export GCP_LOCATION=$GCP_LOCATION
+    fi
 else
     echo "❌ backend/.env not found. Please run ./init.sh first."
     exit 1
@@ -13,7 +22,6 @@ fi
 
 PROJECT_ID=${GCP_PROJECT_ID:-$(gcloud config get-value project)}
 REGION=${GCP_LOCATION:-"europe-west1"}
-# In setup_env.sh, INSTANCE_CONNECTION_NAME is the full URI
 INSTANCE_URI="${INSTANCE_CONNECTION_NAME}"
 
 echo "🔧 Setting up local debug environment..."
@@ -39,16 +47,24 @@ gcloud compute ssh $BASTION_NAME --zone $BASTION_ZONE --command "
 echo "   Establishing SSH tunnel and starting remote proxy..."
 gcloud compute ssh $BASTION_NAME --zone $BASTION_ZONE \
     --command "./alloydb-auth-proxy \"$INSTANCE_URI\" --address=127.0.0.1 --port=5432 --debug-logs" \
-    -- -4 -L 5432:127.0.0.1:5432 > proxy.log 2>&1 &
+    -- -4 -L 5432:127.0.0.1:5432 -N -f > proxy.log 2>&1 &
 PROXY_PID=$!
 echo "   Proxy/Tunnel PID: $PROXY_PID"
 
+# 2. Prepare Configuration using envsubst
+echo "🔧 Resolving GDA tools configuration..."
+envsubst < backend/mcp_server/tools.yaml > backend/mcp_server/tools_resolved.yaml
+
+# Prepare credentials with correct permissions for Docker
+cp $HOME/.config/gcloud/application_default_credentials.json /tmp/adc.json
+chmod 644 /tmp/adc.json
 
 # Cleanup function
 cleanup() {
     echo "🧹 Stopping containers and proxy..."
-    sudo docker stop search-backend search-frontend agent-service toolbox-service || true
+    sudo docker stop search-backend search-frontend agent-service toolbox-service 2>/dev/null || true
     kill $PROXY_PID || true
+    pkill -f "ssh.*$BASTION_NAME" || true
 }
 trap cleanup EXIT
 
@@ -57,61 +73,59 @@ echo "🧹 Cleaning up existing containers..."
 sudo docker rm -f search-backend search-frontend agent-service toolbox-service 2>/dev/null || true
 
 # --- BUILD LOCALLY ---
-echo "🔨 Building images locally to avoid auth issues..."
+echo "🔨 Building images locally..."
 sudo docker build -t local-search-backend backend/
 sudo docker build -t local-search-frontend frontend/
+sudo docker build -t local-agent-service backend/agent/
 
-# 2. Run Backend Container
+# 3. Run Backend Container
 echo "📦 Running Backend Container..."
 sudo docker run -d --rm \
     --name search-backend \
     --network host \
     -e PORT=8080 \
-    -e DB_NAME=$DB_NAME \
-    -e DB_USER=$DB_USER \
-    -e DB_PASSWORD=$DB_PASSWORD \
     -e GCP_PROJECT_ID=$PROJECT_ID \
     -e GCP_LOCATION=$REGION \
-    -e INSTANCE_CONNECTION_NAME=$INSTANCE_CONNECTION_NAME \
-    -e VERTEX_AI_SEARCH_DATA_STORE_ID="$VERTEX_AI_SEARCH_DATA_STORE_ID" \
+    -e AGENT_CONTEXT_SET_ID_ALLOYDB=$AGENT_CONTEXT_SET_ID_ALLOYDB \
     -e GOOGLE_APPLICATION_CREDENTIALS=/tmp/keys.json \
-    -v $HOME/.config/gcloud/application_default_credentials.json:/tmp/keys.json:ro \
+    -v /tmp/adc.json:/tmp/keys.json:ro \
     local-search-backend
 
 echo "   Backend running on localhost:8080"
 
-echo "   Backend running on localhost:8080"
-
-# 2.3. Run Toolbox Container
+# 4. Run Toolbox Container (MCP Server)
 echo "📦 Running Toolbox Container..."
 sudo docker run -d --rm \
     --name toolbox-service \
     --network host \
     -e PORT=8085 \
-    -e DB_PASSWORD=$DB_PASSWORD \
-    -v $(pwd)/backend/mcp_server/tools_local.yaml:/secrets/tools.yaml:ro \
+    -e PROJECT_ID=$PROJECT_ID \
+    -e GOOGLE_APPLICATION_CREDENTIALS=/tmp/keys.json \
+    -v /tmp/adc.json:/tmp/keys.json:ro \
+    -v $(pwd)/backend/mcp_server/tools_resolved.yaml:/secrets/tools.yaml:ro \
     us-central1-docker.pkg.dev/database-toolbox/toolbox/toolbox:latest \
     --tools-file=/secrets/tools.yaml --address=0.0.0.0 --port=8085
 
 echo "   Toolbox running on localhost:8085"
+
+# 5. Run Agent Container
 echo "📦 Running Agent Container..."
-sudo docker build -t local-agent-service backend/agent/
 sudo docker run -d --rm \
     --name agent-service \
     --network host \
     -e PORT=8083 \
     -e GOOGLE_CLOUD_PROJECT=$PROJECT_ID \
-    -e GOOGLE_CLOUD_REGION="us-central1" \
+    -e GOOGLE_CLOUD_REGION="$REGION" \
     -e GOOGLE_GENAI_USE_VERTEXAI=true \
-    -e GOOGLE_CLOUD_LOCATION="us-central1" \
+    -e GOOGLE_CLOUD_LOCATION="global" \
     -e TOOLBOX_URL="http://localhost:8085" \
     -e GOOGLE_APPLICATION_CREDENTIALS=/tmp/keys.json \
-    -v $HOME/.config/gcloud/application_default_credentials.json:/tmp/keys.json:ro \
+    -v /tmp/adc.json:/tmp/keys.json:ro \
     local-agent-service
 
 echo "   Agent running on localhost:8083"
 
-# 3. Run Frontend Container
+# 6. Run Frontend Container
 echo "📦 Running Frontend Container..."
 sudo docker run -d --rm \
     --name search-frontend \
@@ -125,8 +139,9 @@ echo "   Frontend running on localhost:8081"
 echo "🎉 Debug environment ready!"
 echo "   Frontend: http://localhost:8081"
 echo "   Backend logs: sudo docker logs -f search-backend"
+echo "   Agent logs: sudo docker logs -f agent-service"
 echo "   Frontend logs: sudo docker logs -f search-frontend"
 echo "   Press Ctrl+C to stop."
 
 # Keep script running to maintain trap
-wait
+while true; do sleep 1; done
