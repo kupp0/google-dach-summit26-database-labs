@@ -81,6 +81,18 @@ GDA uses Context Sets to map table structure to natural language concepts, param
 1. In the Google Cloud Console, search for **Gemini Data Analytics** or **Data Agents**.
 2. Go to the **Context Sets** panel and click **Create Context Set**.
 3. Upload the file `/home/user/lab03_swiss_property_search/alloydb-artefacts/alloydb_context.json`.
+   
+   > [!NOTE]
+   > If you see a warning/error in the console stating: **"To use this feature, enable data_api_access for this instance."**, you can manually enable it by running this command in your Cloud Workstation terminal:
+   > ```bash
+   > curl -X PATCH \
+   >   -H "Authorization: Bearer \$(gcloud auth print-access-token)" \
+   >   -H "Content-Type: application/json" \
+   >   "https://alloydb.googleapis.com/v1alpha/projects/<PROJECT_ID>/locations/<REGION>/clusters/<CLUSTER_ID>/instances/<INSTANCE_ID>?updateMask=dataApiAccess" \
+   >   -d '{"dataApiAccess": "ENABLED"}'
+   > ```
+   > *(Replace `<PROJECT_ID>`, `<REGION>`, `<CLUSTER_ID>`, and `<INSTANCE_ID>` with your project details, e.g. `dach-databases26fra-3901`, `europe-west3`, `search-cluster`, and `search-primary`)*
+
 4. Once created, copy the generated **Context Set ID** (a UUID or string identifier).
 5. Open the environment file `backend/.env` in the workstation editor.
 6. Update the variable `AGENT_CONTEXT_SET_ID_ALLOYDB` with your copied Context Set ID:
