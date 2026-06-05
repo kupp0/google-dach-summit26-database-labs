@@ -1,85 +1,89 @@
-# Lab 3: Swiss Property Search: Fullstack AI App with AlloyDB & Gemini Data Analytics QueryData
+# 🇨🇭 Lab 3: Swiss Property Search — Fullstack AI App with AlloyDB & Gemini Data Analytics
 
-In this lab, you will build and deploy a premium real-estate search application that showcases natural language search capabilities using **AlloyDB** and the **Gemini Data Analytics (GDA) QueryData API**. 
+In this lab, you will build and deploy a premium, high-performance real-estate search application showcasing natural language search capabilities using **AlloyDB** and the **Gemini Data Analytics (GDA) QueryData API**.
 
-The application utilizes a single stateless architecture:
-1. **Search Bar**: Sends natural language queries directly to the GDA `/queryData` API to generate SQL, natural language summaries, and intent explanations.
-2. **AI Agent Chat**: A conversational interface powered by the Google Antigravity (ADK) SDK, loading the `cloud_gda_query_tool_alloydb` tool to allow multi-turn questions and refined searches.
+The application uses a clean, stateless architecture:
+1. **🔍 Search Bar**: Directly connects to the GDA `/queryData` API to generate SQL queries, text summaries, and natural language explanations of search intent.
+2. **💬 AI Agent Chat**: A conversational multi-turn chat interface powered by the **Google Antigravity (ADK) SDK**, using the `cloud_gda_query_tool_alloydb` tool to answer follow-up questions.
 
 > [!NOTE]
 > This lab is based on the reference multi-agent property search demonstration project hosted on GitHub at [multi-db-property-search-data-agents](https://github.com/kupp0/multi-db-property-search-data-agents).
 
 ---
 
-## Objective
-- Set up the database schema and populate sample records in AlloyDB.
-- Generate visual listing images and vectors natively in the workspace environment.
-- Create and register a Gemini Data Analytics (GDA) **Context Set** for AlloyDB schema mapping.
-- Run and debug the stateless backend, frontend, agent, and toolbox containers locally.
-- Deploy the entire system to serverless Google Cloud Run.
+## 🎯 Codelab Objectives
+* **💾 Database Setup**: DDL structure and sample dataset initialization in AlloyDB.
+* **🎨 Asset Bootstrapping**: Generate visual listing imagery and embeddings natively via Vertex AI Imagen.
+* **🧠 Context Mapping**: Register a GDA **Context Set** for translating schema structures to natural language.
+* **💻 Local Sandbox**: Run and verify the stateless backend, frontend, agent, and toolbox stack inside Docker.
+* **☁️ Cloud Deploy**: Deploy your microservices architecture to serverless Google Cloud Run.
 
 ---
 
-## Phase 1: Architecture & Workspace Setup
+## 🏗️ Phase 1: Architecture & Workspace Setup
 
-### 1. Open the Workspace Folder in Cloud Workstations
+### 📂 1. Open the Workspace Folder in Cloud Workstations
 1. In your Cloud Workstation window, select **File** -> **Open Folder**.
 2. Type `/home/user/lab03_swiss_property_search` and click **OK**.
-3. Open a terminal by selecting **Terminal** -> **New Terminal** (or use the shortcut `Ctrl+Shift+C`).
+3. Open a terminal by selecting **Terminal** -> **New Terminal** (or press `Ctrl+Shift+C`).
 
-### 2. Workspace File Architecture
+### 🗺️ 2. Workspace File Architecture
 Your workspace `/home/user/lab03_swiss_property_search` contains:
-* `alloydb-artefacts/`: Database initialization SQL scripts, context JSON mapping, and image bootstrap scripts.
-* `backend/`: FastAPI backend (`main.py`), Agent orchestration, and MCP server configuration files.
-* `frontend/`: React + Vite frontend application source code.
-* `deploy.sh`: Deploys all services (Backend, Frontend, and Agent/Toolbox sidecar) to Cloud Run.
-* `debug_local.sh`: Runs the application stack locally for debugging.
+* **`alloydb-artefacts/`**: SQL scripts, Context mapping JSON, image generation scripts, and database proxies.
+* **`backend/`**: FastAPI backend (`main.py`), Agent definition, and MCP configuration.
+* **`frontend/`**: React + Vite frontend source code.
+* **`deploy.sh`**: Deploys the completed stack to serverless Cloud Run.
+* **`debug_local.sh`**: Compiles and spins up the application stack inside local Docker containers.
 
-### 3. Initialize your Environment and Permissions
-Before executing database scripts or tunnels, run the initialization script to authorize IAP SSH tunneling to the Bastion host:
+### 🔑 3. Initialize Environment & Authorize Access
+Before executing database scripts or proxy tunnels, run the setup initialization script:
 ```bash
 cd ~/lab03_swiss_property_search
 bash init.sh
 ```
-*(This installs base requirements and grants your active user account `roles/iap.tunnelResourceAccessor` permissions on the GCP project).*
+> [!TIP]
+> This script installs baseline dependencies and grants your active user credentials `roles/iap.tunnelResourceAccessor` permissions on the GCP project to enable database access.
 
 ---
 
-## Phase 2: Database Setup & Data Ingestion
+## 🗄️ Phase 2: Database Setup & Data Ingestion
 
-### 1. Database Setup & SQL Initialization
-1. Navigate to **AlloyDB** -> **Clusters** in the Cloud Console.
-2. Select your cluster `search-cluster` and click on primary instance `search-primary`.
-3. In the left panel, click **AlloyDB Studio** and sign in using database `postgres` and password `alloydb-hackathon-password`.
-4. Open a new query tab, copy and run the contents of `alloydb-artefacts/alloydb_setup.sql` to initialize the `property_listings` table.
-5. Open a second query tab, copy and run the contents of `alloydb-artefacts/100 _sample records.sql` to populate sample listings.
-6. Open a third query tab, copy and run the contents of `alloydb-artefacts/alloydb_indexes.sql` to build the vector and ScaNN nearest neighbor indexes.
-7. Run this validation query to verify the records populate successfully (should return ~320):
+### 💾 1. Database Setup & SQL Initialization
+1. In the Google Cloud Console, navigate to **AlloyDB** -> **Clusters**.
+2. Click on your cluster `search-cluster` and select the primary instance `search-primary`.
+3. In the left panel, click **AlloyDB Studio** and sign in:
+   * **Database**: `postgres`
+   * **Password**: `alloydb-hackathon-password`
+4. Open a **new query tab**, copy and run the contents of `alloydb-artefacts/alloydb_setup.sql`.
+5. Open a **second query tab**, copy and run the contents of `alloydb-artefacts/100 _sample records.sql`.
+6. Open a **third query tab**, copy and run the contents of `alloydb-artefacts/alloydb_indexes.sql` to build ScaNN vector indexes.
+7. Run the query below to verify records populated successfully (should return ~320 listings):
    ```sql
    SELECT count(*) as property_count FROM property_listings;
    ```
 
-### 2. Generate Images and Multimodal Embeddings
-Natively generate visual listing images and calculate embeddings using Vertex AI Imagen:
-1. Open a terminal in Cloud Workstations and start the database proxy:
+### 🎨 2. Generate Visual Assets with Vertex AI Imagen
+Generate listing images and calculate visual embeddings using Vertex AI Imagen models:
+1. Start the AlloyDB Auth Proxy tunnel in your workstation terminal:
    ```bash
    cd ~/lab03_swiss_property_search/alloydb-artefacts
    bash run_proxy.sh
    ```
-   *(Keep this terminal open to maintain the database connection tunnel).*
-2. Open a **New Terminal tab/window** in the editor and execute the generator:
+   > [!IMPORTANT]
+   > Keep this terminal open! Stopping the script will close the secure database proxy tunnel.
+2. Open a **new terminal tab** in your editor and execute the generator script:
    ```bash
    cd ~/lab03_swiss_property_search/alloydb-artefacts
    python3 bootstrap_images.py
    ```
-   *(This script connects to AlloyDB, generates visual listings using Imagen, uploads them to your GCS bucket, computes visual embeddings, and updates the database).*
-3. Once completed, return to the first terminal window and stop the proxy by pressing `Ctrl+C`.
+   *(This script connects to AlloyDB, prompts Imagen to generate property visuals, saves them to Cloud Storage, and computes 1408-dimensional visual vectors for database similarity matching).*
+3. Once the generator finishes, go back to the first terminal tab and stop the proxy by pressing `Ctrl+C`.
 
 ---
 
-## Phase 3: Registering Gemini Data Analytics Context Set
+## 🧠 Phase 3: Registering Gemini Data Analytics Context Set
 
-GDA uses Context Sets to map table structure to natural language concepts, parameterize templates, and fuzzy match values (e.g. cities/cantons).
+GDA uses Context Sets to map database schemas to natural language definitions.
 
 1. In the Google Cloud Console, search for **Gemini Data Analytics** or **Data Agents**.
 2. Go to the **Context Sets** panel and click **Create Context Set**.
@@ -100,11 +104,10 @@ GDA uses Context Sets to map table structure to natural language concepts, param
    
    ![AlloyDB Studio Context Set Explorer Panel](src/img/lab3/alloydb-context-set.png)
 
-5. **Test the Context Set in AlloyDB Studio**:
-   You can test your natural language mappings directly inside the Cloud Console! 
-   - Scroll to the bottom of the left **Explorer** panel in AlloyDB Studio to locate **Context sets**.
-   - Click the three vertical dots next to your created context set (or right-click it) and select **Query data using context set**.
-   - This will launch an interactive query window where you can type plain English questions (e.g. *"Show me apartments in Zurich with at least 2 bedrooms"*) and verify SQL translation and output results instantly.
+5. **🔬 Test the Context Set in AlloyDB Studio**:
+   * Scroll to the bottom of the left **Explorer** panel in AlloyDB Studio to locate **Context sets**.
+   * Click the three vertical dots next to your created context set (or right-click it) and select **Query data using context set**.
+   * Type plain English questions (e.g., *"Show me apartments in Zurich with at least 2 bedrooms"*) and verify SQL translation and output results instantly.
 
 6. Open the environment file `backend/.env` in the workstation editor.
 7. Update the variable `AGENT_CONTEXT_SET_ID_ALLOYDB` with your copied Context Set ID:
@@ -115,9 +118,9 @@ GDA uses Context Sets to map table structure to natural language concepts, param
 
 ---
 
-## Phase 4: Deploying and Running the Application
+## 🚀 Phase 4: Deploying & Running the Application
 
-### 1. Run and Debug the Application Locally
+### 💻 1. Run and Debug Locally
 To run and debug the entire application locally in your workstation environment:
 1. In the terminal, run the local debug script:
    ```bash
@@ -128,7 +131,7 @@ To run and debug the entire application locally in your workstation environment:
 2. Copy the local frontend address `http://localhost:8081` (or click on the port 8081 popup in the bottom right of the workstation window) to access the application UI. Verify that **Natural Language Search** and **AI Agent Chat** are functional.
 3. Press `Ctrl+C` in the terminal when you are ready to stop the containers and proxy.
 
-### 2. Deploy to Cloud Run
+### ☁️ 2. Deploy Serverless to Cloud Run
 To push the application live to serverless Cloud Run:
 1. In the terminal, run the deployment shell script:
    ```bash
@@ -140,26 +143,29 @@ To push the application live to serverless Cloud Run:
 
 ---
 
-## Phase 5: Hands-On Agentic Coding Challenges (ADK CLI)
+## 🏆 Phase 5: Hands-On Agentic Coding Challenges
 
 Now use the **ADK CLI (agy)** or your AI Assistant inside the workspace `/home/user/lab03_swiss_property_search` to expand and style the application.
 
-### Challenge 1: Architecture Exploration & UML Generation
-- **Prompt**: *"Analyze this repository, provide a concise directory summary, and visualize the message flow of a search query through the system with a PlantUML sequence diagram. Save the diagram source as PlantUML and render it as a PNG."*
+### 🔮 Challenge 1: Architecture Exploration & UML Generation
+* **Goal**: Analyze the workspace architecture and generate a sequence flow diagram.
+* **Prompt**: *"Analyze this repository, provide a concise directory summary, and visualize the message flow of a search query through the system with a PlantUML sequence diagram. Save the diagram source as PlantUML and render it as a PNG."*
 
-### Challenge 2: Apply Premium Branding (Swiss Red)
-- **Prompt**: *"Please change the color scheme of the frontend application in the repository to Swiss Red. Consider background colors, secondary highlights, button states, dark mode, and light mode. Ensure all modifications conform to vanilla CSS standard styles."*
+### 🍒 Challenge 2: Apply Premium Branding (Swiss Red)
+* **Goal**: Change the color scheme of the frontend application to Swiss Red.
+* **Prompt**: *"Please change the color scheme of the frontend application in the repository to Swiss Red. Consider background colors, secondary highlights, button states, dark mode, and light mode. Ensure all modifications conform to vanilla CSS standard styles."*
 
-### Challenge 3: Flashy Row-Count Success Popup
-- **Prompt**: *"Modify the frontend results-handling logic. Post-QueryData success, extract the exact row count returned in the GDA response. Display an animated 10-second 'flashy' rainbow-colored congratulatory popup celebrating the returned row count."*
+### 🌈 Challenge 3: Flashy Row-Count Success Popup
+* **Goal**: Celebrate successful database queries with a fun row count animation.
+* **Prompt**: *"Modify the frontend results-handling logic. Post-QueryData success, extract the exact row count returned in the GDA response. Display an animated 10-second 'flashy' rainbow-colored congratulatory popup celebrating the returned row count."*
 
 ---
 
-## Troubleshooting
+## 🔧 Troubleshooting & Pro-Tips
 
-* **Ask your AI Assistant (`agy` CLI)**: If you get stuck on any coding challenge, or if you need clarification on how the backend connects to Gemini Data Analytics, you can ask questions directly in your active `agy` CLI session (e.g., *"Explain how the GDA QueryData endpoint works in main.py"* or *"Help me implement the rainbow celebratory popup in App.jsx"*).
+* **🤖 Ask your AI Assistant (`agy` CLI)**: If you get stuck on any coding challenge, or if you need clarification on how the backend connects to Gemini Data Analytics, you can ask questions directly in your active `agy` CLI session (e.g., *"Explain how the GDA QueryData endpoint works in main.py"* or *"Help me implement the rainbow celebratory popup in App.jsx"*).
 
-### IAP Tunneling and Firewall Connectivity Issues
+### 🌐 IAP Tunneling and Firewall Connectivity Issues
 If the Auth Proxy script (`run_proxy.sh`) fails to connect:
 ```bash
 # Allow Ingress TCP traffic from Google's IAP range in the VPC network
