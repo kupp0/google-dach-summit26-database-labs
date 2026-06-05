@@ -159,7 +159,7 @@ handle_build_error() {
 # --- AGENT ---
 (
     echo "📦 [Agent] Building..."
-    gcloud builds submit ./backend/agent --tag "${AGENT_IMAGE}" --project="${PROJECT_ID}" --quiet > /dev/null 2>&1 || handle_build_error "Agent"
+    gcloud builds submit ./backend/agent --tag "${AGENT_IMAGE}" --project="${PROJECT_ID}" --region="${REGION}" --quiet > /dev/null 2>&1 || handle_build_error "Agent"
     echo "✅ [Agent] Built"
 ) &
 PIDS="$PIDS $!"
@@ -167,7 +167,7 @@ PIDS="$PIDS $!"
 # --- BACKEND ---
 (
     echo "📦 [Backend] Building..."
-    gcloud builds submit ./backend --tag "${BACKEND_IMAGE}" --project="${PROJECT_ID}" --quiet > /dev/null 2>&1 || handle_build_error "Backend"
+    gcloud builds submit ./backend --tag "${BACKEND_IMAGE}" --project="${PROJECT_ID}" --region="${REGION}" --quiet > /dev/null 2>&1 || handle_build_error "Backend"
     echo "✅ [Backend] Built"
 ) &
 PIDS="$PIDS $!"
@@ -175,7 +175,7 @@ PIDS="$PIDS $!"
 # --- FRONTEND ---
 (
     echo "📦 [Frontend] Building..."
-    gcloud builds submit ./frontend --tag "${FRONTEND_IMAGE}" --project="${PROJECT_ID}" --quiet > /dev/null 2>&1 || handle_build_error "Frontend"
+    gcloud builds submit ./frontend --tag "${FRONTEND_IMAGE}" --project="${PROJECT_ID}" --region="${REGION}" --quiet > /dev/null 2>&1 || handle_build_error "Frontend"
     echo "✅ [Frontend] Built"
 ) &
 PIDS="$PIDS $!"
