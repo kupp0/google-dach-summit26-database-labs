@@ -6,7 +6,7 @@ import ContextInfoModal from './components/ContextInfoModal';
 
 import dataAgentDiagram from './assets/data_agent_diagram.png';
 import dataAgentContextDiagram from './assets/data_agent_context_infographic.png';
-import alloydbContext from '../../alloydb-artefacts/alloydb_context.json';
+import alloydbContext from './assets/alloydb_context.json';
 
 const contexts = {
     alloydb: alloydbContext
