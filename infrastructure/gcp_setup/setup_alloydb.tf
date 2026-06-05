@@ -94,18 +94,23 @@ resource "google_alloydb_instance" "primary" {
     query_plans_per_minute  = 20
   }
 
-  data_api_config {
-    enabled = true
+  depends_on = [google_alloydb_cluster.default]
+}
+
+#--- 4.5. Enable Data API on AlloyDB primary instance ---
+resource "null_resource" "enable_alloydb_data_api" {
+  provisioner "local-exec" {
+    command = "gcloud beta alloydb instances update ${google_alloydb_instance.primary.instance_id} --cluster=${google_alloydb_cluster.default.cluster_id} --region=${var.region} --project=${var.project_id} --enable-data-api --quiet"
   }
 
-  depends_on = [google_alloydb_cluster.default]
+  depends_on = [google_alloydb_instance.primary]
 }
 
 #--- 5. AlloyDB IAM User Setup ---
 resource "google_alloydb_user" "iam_user" {
   cluster        = google_alloydb_cluster.default.name
   user_id        = replace(var.iap_member, "user:", "")
-  database_user_type = "ALLOYDB_IAM_USER"
+  user_type      = "ALLOYDB_IAM_USER"
   database_roles = ["alloydbsuperuser"]
   
   depends_on = [google_alloydb_cluster.default]
