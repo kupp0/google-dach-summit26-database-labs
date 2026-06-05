@@ -111,7 +111,11 @@ resource "google_alloydb_user" "iam_user" {
   cluster        = google_alloydb_cluster.default.name
   user_id        = replace(var.iap_member, "user:", "")
   user_type      = "ALLOYDB_IAM_USER"
-  database_roles = ["alloydbsuperuser"]
+  database_roles = ["alloydbsuperuser", "alloydbiamuser"]
+
+  lifecycle {
+    ignore_changes = [database_roles]
+  }
   
   depends_on = [google_alloydb_cluster.default]
 }
