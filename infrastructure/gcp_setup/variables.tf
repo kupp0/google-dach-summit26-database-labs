@@ -24,3 +24,8 @@ variable "subnet_id" {
   type        = string
 }
 
+variable "iap_member" {
+  description = "The active user's IAM member string."
+  type        = string
+}
+
