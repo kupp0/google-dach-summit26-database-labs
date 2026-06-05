@@ -6,8 +6,7 @@ from toolbox_core import ToolboxSyncClient
 # Ensure Google Cloud environment variables are set for Vertex AI
 if not os.getenv("GOOGLE_CLOUD_PROJECT") and os.getenv("GCP_PROJECT_ID"):
     os.environ["GOOGLE_CLOUD_PROJECT"] = os.getenv("GCP_PROJECT_ID")
-if not os.getenv("GOOGLE_CLOUD_LOCATION"):
-    os.environ["GOOGLE_CLOUD_LOCATION"] = os.getenv("GCP_LOCATION", "us-central1")
+os.environ["GOOGLE_CLOUD_LOCATION"] = "global"
 if not os.getenv("GOOGLE_GENAI_USE_VERTEXAI"):
     os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "true"
 
@@ -106,7 +105,7 @@ def get_agent(backend: str = "alloydb") -> Agent:
 
     return Agent(
         name=f"property_agent_{backend}",
-        model="gemini-2.5-flash",
+        model="gemini-3.5-flash",
         description=f"Agent to answer questions about properties using natural language search on {backend}.",
         instruction=system_instruction,
         tools=tools,
