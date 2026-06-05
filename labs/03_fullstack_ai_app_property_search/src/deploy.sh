@@ -51,12 +51,12 @@ export AGENT_SERVICE="search-agent"
 # Service Account
 export SERVICE_ACCOUNT="search-backend-sa@${PROJECT_ID}.iam.gserviceaccount.com"
 
-# Images
-export BACKEND_IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${BACKEND_SERVICE}"
-export FRONTEND_IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${FRONTEND_SERVICE}"
-export AGENT_IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${AGENT_SERVICE}"
-
 export TAG=$(date +%Y%m%d-%H%M%S)
+
+# Images
+export BACKEND_IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${BACKEND_SERVICE}:${TAG}"
+export FRONTEND_IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${FRONTEND_SERVICE}:${TAG}"
+export AGENT_IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${AGENT_SERVICE}:${TAG}"
 
 echo "🚀 Starting Deployment..."
 echo "   Project: ${PROJECT_ID}"
@@ -159,7 +159,7 @@ handle_build_error() {
 # --- AGENT ---
 (
     echo "📦 [Agent] Building..."
-    gcloud builds submit ./backend/agent --tag "${AGENT_IMAGE}:${TAG}" --project="${PROJECT_ID}" --quiet > /dev/null 2>&1 || handle_build_error "Agent"
+    gcloud builds submit ./backend/agent --tag "${AGENT_IMAGE}" --project="${PROJECT_ID}" --quiet > /dev/null 2>&1 || handle_build_error "Agent"
     echo "✅ [Agent] Built"
 ) &
 PIDS="$PIDS $!"
@@ -167,7 +167,7 @@ PIDS="$PIDS $!"
 # --- BACKEND ---
 (
     echo "📦 [Backend] Building..."
-    gcloud builds submit ./backend --tag "${BACKEND_IMAGE}:${TAG}" --project="${PROJECT_ID}" --quiet > /dev/null 2>&1 || handle_build_error "Backend"
+    gcloud builds submit ./backend --tag "${BACKEND_IMAGE}" --project="${PROJECT_ID}" --quiet > /dev/null 2>&1 || handle_build_error "Backend"
     echo "✅ [Backend] Built"
 ) &
 PIDS="$PIDS $!"
@@ -175,7 +175,7 @@ PIDS="$PIDS $!"
 # --- FRONTEND ---
 (
     echo "📦 [Frontend] Building..."
-    gcloud builds submit ./frontend --tag "${FRONTEND_IMAGE}:${TAG}" --project="${PROJECT_ID}" --quiet > /dev/null 2>&1 || handle_build_error "Frontend"
+    gcloud builds submit ./frontend --tag "${FRONTEND_IMAGE}" --project="${PROJECT_ID}" --quiet > /dev/null 2>&1 || handle_build_error "Frontend"
     echo "✅ [Frontend] Built"
 ) &
 PIDS="$PIDS $!"
@@ -213,7 +213,7 @@ echo "✅ Backend: ${BACKEND_URL}"
 # --- DEPLOY FRONTEND ---
 echo "🚀 Deploying Frontend..."
 gcloud run deploy "${FRONTEND_SERVICE}" \
-    --image "${FRONTEND_IMAGE}:${TAG}" \
+    --image "${FRONTEND_IMAGE}" \
     --region "${REGION}" \
     --project="${PROJECT_ID}" \
     --platform managed \
