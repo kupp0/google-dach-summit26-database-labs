@@ -94,6 +94,8 @@ GDA uses Context Sets to map table structure to natural language concepts, param
    > *(Replace `<PROJECT_ID>`, `<REGION>`, `<CLUSTER_ID>`, and `<INSTANCE_ID>` with your project details, e.g. `dach-databases26fra-3901`, `europe-west3`, `search-cluster`, and `search-primary`)*
 
 4. Once created, copy the generated **Context Set ID** (a UUID or string identifier).
+   
+   ![AlloyDB Studio Context Set Explorer Panel](src/img/lab3/alloydb-context-set.png)
 5. Open the environment file `backend/.env` in the workstation editor.
 6. Update the variable `AGENT_CONTEXT_SET_ID_ALLOYDB` with your copied Context Set ID:
    ```env
