@@ -102,7 +102,7 @@ GDA uses Context Sets to map database schemas to natural language definitions.
 
 4. Once created, copy the generated **Context Set ID** (a UUID or string identifier).
    
-   ![AlloyDB Studio Context Set Explorer Panel](src/img/lab3/alloydb-context-set.png)
+   <img src="src/img/lab3/alloydb-context-set.png" alt="AlloyDB Studio Context Set Explorer Panel" width="400" />
 
 5. **🔬 Test the Context Set in AlloyDB Studio**:
    * Scroll to the bottom of the left **Explorer** panel in AlloyDB Studio to locate **Context sets**.
