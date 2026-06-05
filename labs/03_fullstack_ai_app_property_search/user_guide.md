@@ -81,14 +81,26 @@ The backend environment configuration file `backend/.env` is generated automatic
 1. Open `/home/user/lab03_swiss_property_search/backend/.env` in Code-OSS to verify its contents.
 2. Confirm that `GCP_PROJECT_ID` and `INSTANCE_CONNECTION_NAME` have been resolved correctly to your project's AlloyDB cluster.
 
-### 2. Deploy to Cloud Run
+### 2. Run and Debug the Application Locally
+To run and debug the entire application locally in your workstation environment:
+1. In the terminal, run the local debug script:
+   ```bash
+   cd ~/lab03_swiss_property_search
+   bash debug_local.sh
+   ```
+   *(This starts the remote proxy tunnel, builds the local docker images, and spins up the backend, frontend, agent, and toolbox containers. Keep this terminal open).*
+2. Copy the local frontend address `http://localhost:8081` (or click on the port 8081 popup in the bottom right of the workstation window) to access the application UI. Verify that **AlloyDB NL** and **Semantic Search** are functional.
+3. Press `Ctrl+C` in the terminal when you are ready to stop the containers and proxy.
+
+### 3. Optional: Deploy to Cloud Run
+To push the application live to serverless Cloud Run:
 1. In the terminal, run the deployment shell script:
    ```bash
    cd ~/lab03_swiss_property_search
    bash deploy.sh
    ```
-   *(This builds Docker images via Cloud Build and deploys 4 services: backend query api, MCP toolbox server, agent engine, and frontend UI to Cloud Run).*
-2. Once the script finishes, copy the output **Frontend URL** and open it in your browser. Verify that **AlloyDB NL** and **Semantic Search** are functional.
+   *(This builds container images via Cloud Build and deploys 4 services: backend, frontend, agent, and toolbox to Cloud Run).*
+2. Once the script finishes, copy the output **Frontend URL** and open it in your browser to verify functionality.
 
 ---
 
