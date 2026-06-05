@@ -39,12 +39,20 @@ bash init.sh
 
 ## Phase 2: Database Setup & Data Ingestion
 
-### 1. Insert Schema & Sample Records
+### 1. Database Setup & SQL Initialization
 1. Navigate to **AlloyDB** -> **Clusters** in the Cloud Console.
 2. Select your cluster `search-cluster` and click on primary instance `search-primary`.
 3. In the left panel, click **AlloyDB Studio** and sign in using database `postgres` and password `alloydb-hackathon-password`.
 4. Open a new query tab, copy and run the contents of `alloydb-artefacts/alloydb_setup.sql` to initialize the `property_listings` table.
 5. Open a second query tab, copy and run the contents of `alloydb-artefacts/100 _sample records.sql` to populate sample listings.
+6. Open a third query tab, copy and run the contents of `alloydb-artefacts/alloydb_ai_nl_setup.sql` to register the natural language query translation interface.
+7. Open a fourth query tab, copy and run the contents of `alloydb-artefacts/alloydb_indexes.sql` to build the vector and ScaNN nearest neighbor indexes.
+8. Run this validation query to verify the records populate successfully (should return ~118):
+   ```sql
+   SELECT count(*) as property_count FROM "search".property_listings;
+   ```
+
+
 
 ### 2. Generate Images and Multimodal Embeddings
 
@@ -65,15 +73,6 @@ Natively generate visual listing images and calculate embeddings using Vertex AI
    ```
    *(This script connects to AlloyDB, generates visual listings using Imagen, uploads them to your GCS bucket, computes visual embeddings, and updates the database. All python dependencies were installed in Phase 1).*
 3. Once completed, return to the first terminal window and stop the proxy by pressing `Ctrl+C`.
-
-### 3. Create Vector Indexes & Natural Language Querying (NLQ)
-1. Return to **AlloyDB Studio**.
-2. Run this query to verify data population (the result should be ~118):
-   ```sql
-   SELECT count(*) as property_count FROM "search".property_listings;
-   ```
-3. Copy and run the contents of `alloydb-artefacts/alloydb_indexes.sql` to build ScaNN approximate nearest neighbor indexes.
-4. Copy and run the contents of `alloydb-artefacts/alloydb_ai_nl_setup.sql` to register the natural language query translation interface.
 
 ---
 
