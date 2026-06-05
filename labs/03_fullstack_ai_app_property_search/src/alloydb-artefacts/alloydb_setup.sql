@@ -86,12 +86,3 @@ COMMENT ON COLUMN "public"."property_listings"."id" IS '<gemini>Examples: [''75'
 COMMENT ON COLUMN "public"."property_listings"."image_gcs_uri" IS '<gemini>Examples: [''https://storage.googleapis.com/property-images-data-agent-ai-powered-search-alloydb-1542/listings/10.jpg''] | Distinct Values: 250 | Null Count: 0 |</gemini>';
 COMMENT ON COLUMN "public"."property_listings"."price" IS '<gemini>Examples: [''11878.00'', ''4869.00'', ''2792.00''] | Distinct Values: 189 | Null Count: 0 |</gemini>';
 COMMENT ON COLUMN "public"."property_listings"."title" IS '<gemini>Examples: [''Rustic Studio in Landquart'', ''Renovated Villa in Herisau'', ''Quiet Home in Appenzell''] | Distinct Values: 248 | Null Count: 0 |</gemini>';
-
-
--- 3.2 PERMISSIONS GRANTS (For GDA / IAM User Access)
--- ===================================================================================
-GRANT USAGE ON SCHEMA public TO public;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO public;
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO public;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO public;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO public;

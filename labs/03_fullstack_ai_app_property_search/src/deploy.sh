@@ -12,7 +12,6 @@ set -euo pipefail
 
 command -v gcloud >/dev/null 2>&1 || { echo "❌ 'gcloud' is required but not installed. Aborting." >&2; exit 1; }
 command -v docker >/dev/null 2>&1 || { echo "❌ 'docker' is required but not installed. Aborting." >&2; exit 1; }
-command -v envsubst >/dev/null 2>&1 || { echo "❌ 'envsubst' is required but not installed. Aborting." >&2; exit 1; }
 
 # Resolve project root
 cd "$(dirname "$0")"
@@ -138,7 +137,7 @@ if ! gcloud secrets describe tools --project "${PROJECT_ID}" > /dev/null 2>&1; t
 fi
 
 # Generate resolved tools configuration
-envsubst < backend/mcp_server/tools.yaml > backend/mcp_server/tools_resolved.yaml
+python3 -c "import os, sys; sys.stdout.write(os.path.expandvars(sys.stdin.read()))" < backend/mcp_server/tools.yaml > backend/mcp_server/tools_resolved.yaml
 
 # Add new version
 gcloud secrets versions add tools --data-file=backend/mcp_server/tools_resolved.yaml --project "${PROJECT_ID}" --quiet > /dev/null
@@ -191,7 +190,7 @@ echo "🎉 All builds completed successfully!"
 
 # --- DEPLOY AGENT ---
 echo "🚀 Deploying Agent..."
-envsubst < backend/agent/service.yaml > backend/agent/service_resolved.yaml
+python3 -c "import os, sys; sys.stdout.write(os.path.expandvars(sys.stdin.read()))" < backend/agent/service.yaml > backend/agent/service_resolved.yaml
 
 gcloud run services replace backend/agent/service_resolved.yaml --region "${REGION}" --project="${PROJECT_ID}" --quiet
 gcloud run services add-iam-policy-binding "${AGENT_SERVICE}" --region "${REGION}" --project="${PROJECT_ID}" --member=allUsers --role=roles/run.invoker --quiet > /dev/null
@@ -202,7 +201,7 @@ echo "✅ Agent: ${AGENT_URL}"
 
 # --- DEPLOY BACKEND ---
 echo "🚀 Deploying Backend..."
-envsubst < backend/service.yaml > backend/service_resolved.yaml
+python3 -c "import os, sys; sys.stdout.write(os.path.expandvars(sys.stdin.read()))" < backend/service.yaml > backend/service_resolved.yaml
 
 gcloud run services replace backend/service_resolved.yaml --region "${REGION}" --project="${PROJECT_ID}" --quiet
 gcloud run services add-iam-policy-binding "${BACKEND_SERVICE}" --region "${REGION}" --project="${PROJECT_ID}" --member=allUsers --role=roles/run.invoker --quiet > /dev/null
