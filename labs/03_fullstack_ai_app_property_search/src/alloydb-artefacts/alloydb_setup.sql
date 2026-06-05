@@ -49,35 +49,6 @@ CREATE EXTENSION IF NOT EXISTS alloydb_ai_nl WITH SCHEMA public CASCADE;
 -- Update extensions to ensure latest versions are active
 ALTER EXTENSION alloydb_ai_nl UPDATE;
 
---Register latest embedding model to AlloyDB
--- Example to register a different embedding model:
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM google_ml.model_info_view WHERE model_id = 'my_gemini_embedding_model') THEN
-        CALL google_ml.create_model(
-            model_id => 'my_gemini_embedding_model',
-            model_provider => 'google',
-            model_qualified_name => 'gemini-embedding-001',
-            model_type => 'text_embedding',
-            model_auth_type => 'alloydb_service_agent_iam'
-        );
-    END IF;
-
-    IF NOT EXISTS (SELECT 1 FROM google_ml.model_info_view WHERE model_id = 'my_gemini_2_5_flash') THEN
-        CALL google_ml.create_model(
-            model_id => 'my_gemini_2_5_flash',
-            model_provider => 'google',
-            model_request_url => 'publishers/google/models/gemini-2.5-flash:generateContent',
-            model_type => 'generic',
-            model_auth_type => 'alloydb_service_agent_iam'
-        );
-    END IF;
-END
-$$;
-
--- Check registered models
-SELECT * FROM google_ml.model_info_view;
-
 
 -- VERIFICATION: Check integration status
 -- Expectation: Should show valid version and model support enabled
