@@ -22,7 +22,7 @@ if PROJECT_ID:
     os.environ["CLOUDSDK_CORE_PROJECT"] = PROJECT_ID
     os.environ["GOOGLE_CLOUD_QUOTA_PROJECT"] = PROJECT_ID
 LOCATION = os.getenv("GCP_LOCATION", "europe-west1")
-BUCKET_NAME = f"property-images-data-agent-{PROJECT_ID}" # Matches the bucket created by Terraform
+BUCKET_NAME = f"{PROJECT_ID}-search-demo-images" # Matches the bucket created by Terraform
 
 print(f"🚀 Starting Image Bootstrap for Project: {PROJECT_ID}")
 print(f"📂 Target Bucket: {BUCKET_NAME}")
