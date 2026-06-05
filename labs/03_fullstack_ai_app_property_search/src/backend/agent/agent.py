@@ -106,7 +106,7 @@ def get_agent(backend: str = "alloydb") -> Agent:
 
     return Agent(
         name=f"property_agent_{backend}",
-        model="gemini-3-flash-preview",
+        model="gemini-2.5-flash",
         description=f"Agent to answer questions about properties using natural language search on {backend}.",
         instruction=system_instruction,
         tools=tools,
