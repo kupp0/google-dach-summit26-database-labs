@@ -10,14 +10,7 @@ During this session, you will build advanced AI-powered database integrations, t
 
 You can choose your focus area or complete all three codelabs sequentially. Each directory contains a standalone user guide to help you navigate the deployment.
 
-```mermaid
-graph TD
-    subgraph Lab Tracks
-        L1[Lab 1: AlloyDB Vectors] -->|pgvector & ScaNN| A1[Scale Embeddings & Hybrid Search]
-        L2[Lab 2: Spanner Disneyland] -->|Federated BQ Bridge| S1[Real-Time Data Agent]
-        L3[Lab 3: Swiss Property Search] -->|Vibe-Coded App| F1[Semantic Real-Estate Finder]
-    end
-```
+![Lab Tracks Overview](assets/overview.jpg)
 
 ---
 
