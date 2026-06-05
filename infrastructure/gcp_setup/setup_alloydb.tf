@@ -21,6 +21,7 @@ resource "google_project_service" "alloydb_apis" {
     "developerknowledge.googleapis.com",
     "run.googleapis.com",
     "discoveryengine.googleapis.com",
+    "geminidataanalytics.googleapis.com",
     "iam.googleapis.com",
     "orgpolicy.googleapis.com",
     "monitoring.googleapis.com",
