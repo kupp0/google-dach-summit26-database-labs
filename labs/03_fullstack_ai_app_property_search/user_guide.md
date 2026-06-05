@@ -47,6 +47,10 @@ bash init.sh
 5. Open a second query tab, copy and run the contents of `alloydb-artefacts/100 _sample records.sql` to populate sample listings.
 
 ### 2. Generate Images and Multimodal Embeddings
+
+> [!TIP]
+> **Time Saver**: If you need to save time during the hackathon, you can skip this step. The application will still function, but it won't display generated property images in the frontend UI.
+
 Natively generate visual listing images and calculate embeddings using Vertex AI Imagen:
 1. Open a terminal in Cloud Workstations and start the database proxy:
    ```bash
