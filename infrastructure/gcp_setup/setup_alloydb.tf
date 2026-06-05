@@ -73,8 +73,8 @@ resource "google_alloydb_instance" "primary" {
   machine_config {
     cpu_count = 2
   }
-
   database_flags = {
+    "alloydb.iam_authentication"                               = "on"
     "google_ml_integration.enable_model_support"               = "on"
     "google_ml_integration.enable_faster_embedding_generation" = "on"
     "alloydb_ai_nl.enabled"                                    = "on"
