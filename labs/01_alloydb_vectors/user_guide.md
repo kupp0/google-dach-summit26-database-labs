@@ -1,25 +1,25 @@
-# Lab 1: One Million Vectors, Zero Loops: Generating Embeddings at Scale with AlloyDB
+# 🧪 Lab 1: One Million Vectors, Zero Loops — Generating Embeddings at Scale with AlloyDB
 
-In this lab, you will build a scalable Knowledge Base search database application. Instead of managing a complex ETL pipeline with custom Python scripts and loops to generate vector embeddings, you will use **AlloyDB AI** to handle embedding generation natively within the database using a single SQL command.
-
----
-
-## Objective
-- Provision an AlloyDB Cluster and enable AI extensions.
-- Generate a high-scale synthetic dataset (100,000+ rows) instantly using SQL.
-- Backfill vector embeddings for the entire dataset using **Batch Processing**.
-- Set up **Real-Time Incremental Triggers** to auto-embed new data as it is inserted.
-- Perform a **Hybrid Search** combining semantic vector lookups with SQL filters.
+In this lab, you will build a high-performance Knowledge Base search database application. Instead of managing a complex ETL pipeline with custom Python scripts and loops to generate vector embeddings, you will use **AlloyDB AI** to handle embedding generation natively within the database using a single SQL command.
 
 ---
 
-## Phase 1: Verify Database Flags
+## 🎯 Objective
+* **⚙️ Cluster Provisioning**: Verify AlloyDB AI instance flags and enable database extensions.
+* **📊 Synthetic Generation**: Generate a high-scale dataset (100,000+ rows) instantly using SQL.
+* **💥 Bulk Backfill**: Generate vector embeddings for the entire dataset using **Batch Processing**.
+* **📡 Real-Time Triggers**: Set up incremental database triggers to auto-embed new records as they are inserted.
+* **🔍 Hybrid Search**: Perform semantic vector lookups combined with structured SQL filters.
+
+---
+
+## 🔍 Phase 1: Verify Database Flags
 
 AlloyDB AI integration requires specific database flags to be enabled on the primary instance. In this summit environment, these flags have been **pre-configured** via Terraform during the infrastructure deployment. 
 
 Before proceeding, let's verify that the flags are active.
 
-### Verification via SQL (AlloyDB Studio)
+### 🔐 Verification via SQL (AlloyDB Studio)
 
 > [!NOTE]
 > **AlloyDB Studio Login Credentials**:
@@ -31,9 +31,7 @@ Before proceeding, let's verify that the flags are active.
 > 
 > <img src="assets/alloydb_studio_login.png" alt="AlloyDB Studio Login Example" width="350" />
 
-
 Connect to your database cluster inside the **AlloyDB Studio** and execute these commands to verify the configurations:
-
 
 ```sql
 -- Check that Google ML Model support is active
@@ -54,10 +52,9 @@ SHOW google_ml_integration.enable_faster_embedding_generation;
 >   --database-flags=google_ml_integration.enable_model_support=on,google_ml_integration.enable_faster_embedding_generation=on
 > ```
 
-
 ---
 
-## Phase 2: Schema Setup & Extension Activation
+## 🏗️ Phase 2: Schema Setup & Extension Activation
 
 Log into your **AlloyDB Studio** using the database credentials (default user: `postgres`). Run the following DDL commands to register the required PostgreSQL extensions:
 
@@ -68,7 +65,7 @@ CREATE EXTENSION IF NOT EXISTS vector;
 CREATE EXTENSION IF NOT EXISTS alloydb_scann CASCADE;
 ```
 
-### Verify Extension Version
+### 🔎 Verify Extension Version
 Ensure that `google_ml_integration` is at version **1.5.2 or higher**:
 ```sql
 SELECT extversion FROM pg_extension WHERE extname = 'google_ml_integration';
@@ -79,7 +76,7 @@ SELECT extversion FROM pg_extension WHERE extname = 'google_ml_integration';
 
 ---
 
-## Phase 3: Generate Synthetic Data at Scale
+## 📊 Phase 3: Generate Synthetic Data at Scale
 
 Instead of loading a heavy CSV, generate 50,000 rows of synthetic customer support articles instantly using SQL:
 
@@ -94,7 +91,7 @@ CREATE TABLE help_articles (
     embedding vector(768) -- 768 dimension for text-embedding-005
 );
 
--- 2. Generate 50,000 rows of synthetic data
+-- 2. Generate 100,000 rows of synthetic data
 INSERT INTO help_articles (title, category, product_version, content_body)
 SELECT
     'Help Article ' || i,
@@ -124,7 +121,7 @@ SELECT count(*) FROM help_articles;
 
 ---
 
-## Phase 4: Zero-Loop "One-Shot" Vector Generation 💥🔥
+## 💥 Phase 4: Zero-Loop "One-Shot" Vector Generation
 
 Now, perform a bulk generation of embeddings for all 100,000 rows natively in the database. This process completely eliminates the need for complex, fragile external ETL loops, Kafka queues, or Python background workers!
 
@@ -136,13 +133,13 @@ Now, perform a bulk generation of embeddings for all 100,000 rows natively in th
 
 By leveraging database-native automatic embedding generation, you eliminate external scheduler loops and background pipeline infrastructure, drastically reducing code maintenance debt. AlloyDB natively manages optimal batch sizes and automatically recovers from transient model quota limit errors, reducing API token overhead and guaranteeing transactional data remains continuously in sync.
 
-### 1. Grant Progress Management Permissions
+### 🔑 1. Grant Progress Management Permissions
 ```sql
 GRANT INSERT, UPDATE, DELETE ON google_ml.embed_gen_progress TO postgres;
 GRANT EXECUTE ON FUNCTION embedding TO postgres;
 ```
 
-### 2. Initialize Embeddings Call
+### 🚀 2. Initialize Embeddings Call
 Run the native bulk initialization using an optimized batch size of **100** to maximize throughput:
 ```sql
 CALL ai.initialize_embeddings(
@@ -151,16 +148,16 @@ CALL ai.initialize_embeddings(
   content_column => 'content_body',
   embedding_column => 'embedding',
   incremental_refresh_mode => 'transactional',
-  batch_size => 100 -- Bulk optimization: groups 100 rows per Gemini Agent Platform (formerly VertexAI) API call
+  batch_size => 100 -- Bulk optimization: groups 100 rows per Vertex AI API call
 );
 ```
 
 > [!NOTE]
 > **Tuning Batch Size & Payload Limits**: 
 > By default, AlloyDB uses a batch size of 50. While increasing the batch size to 100 delivers up to a 2.5x speedup (running in 90.7s), it increases request sizes.
-> If your text columns contain extremely large text blocks, large batch sizes can hit Gemini Agent Platform (formerly VertexAI)'s maximum payload limit, resulting in the error: `AutoEmbeddingGeneration: Request size is greater than 4MB`. In those scenarios, you can optimize performance by scaling down the `batch_size` (e.g. to `25` or `50`) to stay under the 4MB limit.
+> If your text columns contain extremely large text blocks, large batch sizes can hit Vertex AI's maximum payload limit, resulting in the error: `AutoEmbeddingGeneration: Request size is greater than 4MB`. In those scenarios, you can optimize performance by scaling down the `batch_size` (e.g. to `25` or `50`) to stay under the 4MB limit.
 
-### 3. Monitor Real-Time Embedding Progress
+### 📈 3. Monitor Real-Time Embedding Progress
 Since backfilling 100,000 rows is a large operational task, you can monitor the real-time progress, elapsed time, and estimated completion time of the bulk generation by querying the built-in **`ai.embedding_progress_view`**:
 
 ```sql
@@ -168,7 +165,7 @@ SELECT * FROM ai.embedding_progress_view;
 ```
 *This returns columns detailing percentage completed, total rows processed, success rates, and any transient errors encountered.*
 
-### 4. Verify Population
+### 🧪 4. Verify Population
 Confirm the embeddings are fully populated once the monitoring progress reaches 100%:
 ```sql
 SELECT id, left(content_body, 30), substring(embedding::text, 1, 30) AS vector_partial 
@@ -178,7 +175,7 @@ LIMIT 5;
 
 ---
 
-## Phase 5: Verify Real-Time Triggers
+## 📡 Phase 5: Verify Real-Time Triggers
 
 Because `incremental_refresh_mode` was set to `'transactional'`, AlloyDB automatically configures internal triggers to auto-embed new records immediately.
 
@@ -196,7 +193,7 @@ WHERE title = 'New Scaling Guide';
 
 ---
 
-## Phase 6: Flexing Context / Hybrid Search
+## 🔍 Phase 6: Flexing Context / Hybrid Search
 
 We will perform a **Hybrid Search** that combines semantic context understanding (vector similarity) with structured relational logic (SQL filters).
 
@@ -216,19 +213,19 @@ LIMIT 5;
 
 ---
 
-## Phase 7: High-Scale Optimization with ScaNN Index (Cloud Next 2026)
+## ⚡ Phase 7: High-Scale Optimization with ScaNN Index
 
 While traditional indexes (like `HNSW` or `IVFFlat`) are standard, AlloyDB AI introduces native support for Google's state-of-the-art **ScaNN (Scalable Nearest Neighbors)** index. ScaNN is built specifically for ultra-fast vector search at massive scale (millions of rows), delivering up to **double the Queries Per Second (QPS)** and higher recall accuracy.
 
-### 1. Understand Distance Metrics
+### 📐 1. Understand Distance Metrics
 Before creating an index, it is essential to understand the 3 core vector distance functions supported by pgvector and ScaNN:
 
-- **L2 Distance (`l2` / `<->`)**: Measures the straight physical distance between two vector coordinate points. *Best used when vector magnitude is significant (e.g., image pixel comparison).*
-- **Dot Product (`dot_product` / `<#>`)**: Measures the angle and direction of vectors. *Best used when vectors are pre-normalized to unit length, offering the fastest mathematical execution.*
-- **Cosine Distance (`cosine` / `<=>`)**: Measures solely the angle difference between vectors, completely ignoring vector length/magnitude. *The industry standard for text similarity and RAG, ensuring word repetition or document length differences do not skew the search results.*
+* **L2 Distance (`l2` / `<->`)**: Measures the straight physical distance between two vector coordinate points. *Best used when vector magnitude is significant (e.g., image pixel comparison).*
+* **Dot Product (`dot_product` / `<#>`)**: Measures the angle and direction of vectors. *Best used when vectors are pre-normalized to unit length, offering the fastest mathematical execution.*
+* **Cosine Distance (`cosine` / `<=>`)**: Measures solely the angle difference between vectors, completely ignoring vector length/magnitude. *The industry standard for text similarity and RAG, ensuring word repetition or document length differences do not skew the search results.*
 
-### 2. Create an Auto-Tuned ScaNN Index
-Instead of manually calculating leaves and quantization clusters (which is mathematically complex and hard to maintain as data scales), AlloyDB AI introduces **Automatically-Tuned ScaNN indexes** (MODE='AUTO').
+### 🎛️ 2. Create an Auto-Tuned ScaNN Index
+Instead of manually calculating leaves and quantization clusters (which is mathematically complex and hard to maintain as data scales), AlloyDB AI introduces **Automatically-Tuned ScaNN indexes** (`mode='AUTO'`).
 
 AlloyDB continuously analyzes the table row counts and vector dimensionality, dynamically re-tuning leaves and index trees behind the scenes to ensure optimal Queries Per Second (QPS) and recall performance.
 
@@ -241,12 +238,12 @@ WITH (mode='AUTO',
       auto_maintenance=true);
 ```
 > [!NOTE]
-> `mode='AUTO'` - The optimal configuration for the ScaNN index is automatically chosen based on the number of rows in the table. 
-> `auto_maintenance=true` - The index will be automatically maintained by AlloyDB, including periodic rebalancing and optimization.
+> * `mode='AUTO'` - The optimal configuration for the ScaNN index is automatically chosen based on the number of rows in the table. 
+> * `auto_maintenance=true` - The index will be automatically maintained by AlloyDB, including periodic rebalancing and optimization.
 
 ---
 
-## Verification & Troubleshooting
+## 🔬 Verification & Troubleshooting
 
 > [!IMPORTANT]
 > **Prerequisite for ScaNN Index Queries**: 
@@ -281,9 +278,9 @@ WITH (mode='AUTO',
 You have successfully completed **Lab 1: One Million Vectors, Zero Loops**! 
 
 ### What you've achieved:
-- Automated bulk and transactional database-native vector embedding generation via AlloyDB AI and Gemini Agent Platform (formerly VertexAI).
-- Set up and verified dynamic pre-filtering semantic search queries.
-- Built an automatically-tuned Google ScaNN index to authorize sub-millisecond high-scale approximate nearest neighbor searches.
+* Automated bulk and transactional database-native vector embedding generation via AlloyDB AI and Vertex AI.
+* Set up and verified dynamic pre-filtering semantic search queries.
+* Built an automatically-tuned Google ScaNN index to authorize sub-millisecond high-scale approximate nearest neighbor searches.
 
 ### Next Steps:
 You are now invited to continue with the second track:

@@ -1,24 +1,24 @@
-# Lab 2: Disneyland Agentic Codelab with Cloud Spanner & BigQuery
+# 🎡 Lab 2: Disneyland Agentic Codelab with Cloud Spanner & BigQuery
 
-In this lab, you will build a zero-copy federated analytical "bridge" linking **Cloud Spanner** and **BigQuery**. This allows real-time analytic queries across transactional and warehouse data. Then, you'll deploy the **MCP Toolbox** to grant agentic AI tools the ability to query your transactional database in real-time.
-
----
-
-## Objective
-- Establish an external dataset mapping to automatically federate Cloud Spanner tables into BigQuery.
-- Inject a rich Disneyland attraction dataset containing vector embeddings via Spanner Studio.
-- Configure and verify the **MCP Toolbox** for agentic AI integration.
-- Run verification federated queries in BigQuery Studio.
+In this codelab, you will build a zero-copy federated analytical "bridge" linking **Cloud Spanner** and **BigQuery**. This allows real-time analytic queries across transactional and warehouse data. Then, you'll deploy the **MCP Toolbox** to grant agentic AI tools the ability to query your transactional database in real-time.
 
 ---
 
-## Phase 1: Infrastructure Provisioning (Terraform)
+## 🎯 Objective
+* **🌉 Data Federation**: Establish an external dataset mapping to automatically federate Cloud Spanner tables into BigQuery.
+* **🎡 Graph Data Setup**: Inject a rich Disneyland attraction dataset containing vector embeddings via Spanner Studio.
+* **🧰 Agent Integration**: Configure and verify the **MCP Toolbox** for database-native AI agent connectivity.
+* **🔎 Federated Analytics**: Run cross-system analytical queries in BigQuery Studio.
+
+---
+
+## 🏗️ Phase 1: Infrastructure Provisioning (Terraform)
 
 The infrastructure is already deployed, if you are interested in the terraform code, you can find it in the [infrastructure](../../infrastructure) directory.
 
 ---
 
-## Phase 2: Schema Creation & Data Injection
+## 🗄️ Phase 2: Schema Creation & Data Ingestion
 
 Populate Spanner database **`agent-lab`** with tables and data.
 
@@ -249,7 +249,7 @@ INSERT INTO Path (SourceAttractionID, TargetAttractionID, DistanceMeters) VALUES
 
 ---
 
-## Phase 3: Real-Time Bridge Verification Query
+## 🌉 Phase 3: Real-Time Bridge Verification Query
 
 Verify the zero-copy federated bridge by querying Spanner tables directly from BigQuery Studio:
 
@@ -265,13 +265,13 @@ LIMIT 5;
 
 ---
 
-## Phase 4: Model Context Protocol (MCP) Agent Registry Verification
+## 🎛️ Phase 4: Model Context Protocol (MCP) Agent Registry Verification
 
 Spanner is automatically registered as a Google-managed MCP Server in the Gemini Agent Platform (formerly VertexAI) **Agent Registry** once active.
 
 To verify the registry connection:
-- Check [Managed MCP Servers](https://console.cloud.google.com/agent-platform/agent-registry/mcp-servers) in the Cloud Console.
-- Or run this gcloud command in your terminal:
+* Check [Managed MCP Servers](https://console.cloud.google.com/agent-platform/agent-registry/mcp-servers) in the Cloud Console.
+* Or run this gcloud command in your terminal:
   ```bash
   gcloud alpha agent-registry mcp-servers list \
     --location=global \
@@ -281,11 +281,11 @@ To verify the registry connection:
 
 ---
 
-## Phase 5: Building the Agentic Application
+## 🚀 Phase 5: Building the Agentic Application
 
 Use the **Antigravity CLI (agy)** in your Cloud Workstation to generate a complete web app (FastAPI backend and HTML5 frontend) that leverages **Spanner Graph** pathfinding.
 
-### 1. Open the Home Folder & Terminal in Cloud Workstations
+### 📂 1. Open the Home Folder & Terminal in Cloud Workstations
 
 1. Launch your workstation instance from the Cloud Workstations page.
 2. In the editor, select **File** -> **Open Folder**, enter `/home/user/`, and click **OK**.
@@ -295,7 +295,7 @@ Use the **Antigravity CLI (agy)** in your Cloud Workstation to generate a comple
 
 ---
 
-### 2. Authenticate the Terminal
+### 🔑 2. Authenticate the Terminal
 
 Authenticate both the `gcloud` CLI and Application Default Credentials (ADC) to authorize model and database access:
 
@@ -306,7 +306,7 @@ gcloud auth login --update-adc
 
 ---
 
-### 3. Initialize the Antigravity CLI
+### ⚙️ 3. Initialize the Antigravity CLI
 
 Navigate to the project workspace and launch the CLI:
 ```bash
@@ -320,11 +320,11 @@ Complete the first-time setup flow:
 3. **Location & Theme**: Choose `global` location and select a theme. Trust the workspace folder if prompted.
 4. **Terms**: Accept the Terms and Conditions.
 5. **Enable Auto-Approve**: Open settings with `/settings` and set:
-   - **Tool Permission**: `always-proceed`
-   - **Artifact Review**: `agent decides`
+   * **Tool Permission**: `always-proceed`
+   * **Artifact Review**: `agent decides`
 6. **Verify Connection**: Type `/mcp` to ensure the Google-managed Spanner MCP server shows a green connected status.
 
-#### Useful CLI Commands
+#### 🛠️ Useful CLI Commands
 * `/settings`: Configure model parameters and auto-approve settings.
 * `/mcp`: Check active MCP servers and connection health.
 * `/list-sessions`: View past session activity.
@@ -333,12 +333,12 @@ Complete the first-time setup flow:
 
 ---
 
-### 5. 🚀 Prompting Antigravity to Generate the Agentic Application
+### 🎯 4. Prompting Antigravity to Generate the Agentic Application
 
 Paste the following developer prompt into the active `agy` CLI interactive chat session to initiate code generation:
 
 > [!NOTE]
-> **Generation Duration**: The generation process runs autonomously and will take approximately **10-20 minutes** to complete. Make sure to monitor your active `agy` CLI session closely, as it will perform a codebase research phase first, generate the `implementation_plan.md` file, and then pause to wait for your review and approval before proceeding to the code execution phase.
+> **Generation Duration**: The generation process runs autonomously and will take approximately **10-20 minutes** to complete. Monitor your active `agy` CLI session closely, as it will perform a codebase research phase first, generate the `implementation_plan.md` file, and then pause to wait for your review and approval before proceeding to the code execution phase.
 
 ```text
 Goal: Build a high-performance, beautiful Disneyland Paris Navigator application in 10 minutes.
@@ -369,7 +369,7 @@ Instructions:
 
 ---
 
-### 5. Understanding the `agy` CLI Development Workflow
+### 🧩 5. Understanding the `agy` CLI Development Workflow
 
 The agent operates in three distinct phases:
 1. **Planning (Implementation Plan)**: The agent creates an architecture plan (`implementation_plan.md`) for your review. If auto-approve is off, type `yes` to proceed.
@@ -382,7 +382,7 @@ The agent operates in three distinct phases:
 
 ---
 
-### 6. Run and Explore the Application
+### 💻 6. Run and Explore the Application
 
 Once the agent completes the code generation:
 
@@ -398,7 +398,7 @@ Once the agent completes the code generation:
 
 ---
 
-### 7. Deep Dive: Spanner Graph Queries under the Hood
+### 🧭 7. Deep Dive: Spanner Graph Queries under the Hood
 
 The agent uses native **Spanner Graph** queries (via the `GRAPH_TABLE` function) to traverse the property graph. For example:
 
@@ -418,18 +418,18 @@ This zero-copy graph traversal avoids the overhead of syncing data to a separate
 
 ---
 
-## Phase 6: Troubleshooting & Pro-Tips
+## 🔧 Phase 6: Troubleshooting & Pro-Tips
 
 * **📊 Architecture Visualization (PlantUML)**: Ask the `agy` CLI to generate a PlantUML diagram of the generated app (e.g., *"Generate a PlantUML sequence diagram showing request flow from frontend to Spanner"*). Paste the output markup into a PlantUML visualization tool or Gemini to render it.
 * **🪄 Vibe-Coding Inspiration**: Use the `agy` CLI to add creative custom features to your app:
-  - 🎢 **Churro-Metric Navigation**: Calculate path distances in terms of average Disneyland churros consumed.
-  - 🐭 **Mickey Voice Mode**: Instruct the AI guide to chat in the optimistic, squeaky voice of Mickey Mouse.
-  - 🚀 **Warp-Speed Effects**: Trigger interactive CSS animation/particle effects when Space Mountain is clicked.
-  - 🔍 **Semantic Search**: Use Spanner's vector embeddings (`Embedding ARRAY<FLOAT32>`) on the `Attraction` table to implement semantic attraction searches.
+  * 🎢 **Churro-Metric Navigation**: Calculate path distances in terms of average Disneyland churros consumed.
+  * 🐭 **Mickey Voice Mode**: Instruct the AI guide to chat in the optimistic, squeaky voice of Mickey Mouse.
+  * 🚀 **Warp-Speed Effects**: Trigger interactive CSS animation/particle effects when Space Mountain is clicked.
+  * 🔍 **Semantic Search**: Use Spanner's vector embeddings (`Embedding ARRAY<FLOAT32>`) on the `Attraction` table to implement semantic attraction searches.
 
 ---
 
-## Clean Up
+## 🧹 Clean Up
 
 > [!WARNING]
 > **Ongoing Costs**: If running in your own GCP project, destroy all resources when finished to avoid charges:
