@@ -96,12 +96,19 @@ GDA uses Context Sets to map table structure to natural language concepts, param
 4. Once created, copy the generated **Context Set ID** (a UUID or string identifier).
    
    ![AlloyDB Studio Context Set Explorer Panel](src/img/lab3/alloydb-context-set.png)
-5. Open the environment file `backend/.env` in the workstation editor.
-6. Update the variable `AGENT_CONTEXT_SET_ID_ALLOYDB` with your copied Context Set ID:
+
+5. **Test the Context Set in AlloyDB Studio**:
+   You can test your natural language mappings directly inside the Cloud Console! 
+   - Scroll to the bottom of the left **Explorer** panel in AlloyDB Studio to locate **Context sets**.
+   - Click the three vertical dots next to your created context set (or right-click it) and select **Query data using context set**.
+   - This will launch an interactive query window where you can type plain English questions (e.g. *"Show me apartments in Zurich with at least 2 bedrooms"*) and verify SQL translation and output results instantly.
+
+6. Open the environment file `backend/.env` in the workstation editor.
+7. Update the variable `AGENT_CONTEXT_SET_ID_ALLOYDB` with your copied Context Set ID:
    ```env
    AGENT_CONTEXT_SET_ID_ALLOYDB=your_copied_context_set_id
    ```
-7. Save the file.
+8. Save the file.
 
 ---
 
