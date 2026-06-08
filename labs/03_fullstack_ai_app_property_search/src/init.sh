@@ -174,6 +174,24 @@ EOF
     echo "✅ backend/.env generated successfully!"
 fi
 
+# 5. Create AlloyDB IAM User for active gcloud user
+ACTIVE_USER=$(gcloud config get-value account 2>/dev/null || echo "")
+if [ -n "$ACTIVE_USER" ]; then
+    echo "👤 Configuring AlloyDB IAM user for ${ACTIVE_USER}..."
+    if ! gcloud alloydb users list --cluster=search-cluster --region="${GCP_LOCATION}" --project="${GCP_PROJECT_ID}" --format="value(name)" 2>/dev/null | grep -q "${ACTIVE_USER}"; then
+        echo "➕ Creating AlloyDB IAM user ${ACTIVE_USER}..."
+        gcloud alloydb users create "${ACTIVE_USER}" \
+            --cluster=search-cluster \
+            --region="${GCP_LOCATION}" \
+            --type=IAM_BASED \
+            --db-roles=alloydbsuperuser,alloydbiamuser \
+            --project="${GCP_PROJECT_ID}" \
+            --quiet
+    else
+        echo "✅ AlloyDB IAM user ${ACTIVE_USER} already exists."
+    fi
+fi
+
 echo "✅ Environment initialization completed successfully!"
 
 
