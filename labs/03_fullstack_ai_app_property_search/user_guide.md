@@ -36,7 +36,7 @@ Your workspace `/home/user/lab03_swiss_property_search` contains:
 * **`debug_local.sh`**: Compiles and spins up the application stack inside local Docker containers.
 
 ### 🔑 3. Initialize Environment & Authorize Access
-Before executing database scripts or proxy tunnels, ensure your active project is set and run the setup initialization script:
+Before executing database scripts or proxy tunnels, ensure your active project is set and run the setup initialization script (this will take about 2-3 minutes to provision GCP resources and install dependencies):
 ```bash
 gcloud config set project <YOUR_PROJECT_ID>
 cd ~/lab03_swiss_property_search
