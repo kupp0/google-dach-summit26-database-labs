@@ -279,6 +279,9 @@ To verify the registry connection:
   ```
   *(Confirm a Spanner entry is present in the output).*
 
+> [!NOTE]
+> If prompted in either the console or terminal to enable the **Agent Registry API** (`agentregistry.googleapis.com`), proceed and enable it.
+
 ---
 
 ## 🚀 Phase 5: Building the Agentic Application
