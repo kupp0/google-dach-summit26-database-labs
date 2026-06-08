@@ -54,8 +54,10 @@ bash init.sh
 1. In the Google Cloud Console, navigate to **AlloyDB** -> **Clusters**.
 2. Click on your cluster `search-cluster` and select the primary instance `search-primary`.
 3. In the left panel, click **AlloyDB Studio** and sign in:
+   * **Authentication Method**: `IAM Database Authentication` (or `IAM`)
    * **Database**: `postgres`
-   * **Password**: `alloydb-hackathon-password`
+   * **Username**: Enter your Google Cloud account email (e.g. `devstar3904@gcplab.me`)
+   * *(Note: Signing in with IAM is a prerequisite for the Query Data Tool to generate context sets in a later step).*
 4. Open a **new query tab**, copy and run the contents of `alloydb-artefacts/alloydb_setup.sql`.
 5. Open a **second query tab**, copy and run the contents of `alloydb-artefacts/100 _sample records.sql`.
 6. Open a **third query tab**, copy and run the contents of `alloydb-artefacts/alloydb_indexes.sql` to build ScaNN vector indexes.
