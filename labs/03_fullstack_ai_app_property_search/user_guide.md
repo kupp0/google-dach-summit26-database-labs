@@ -36,14 +36,14 @@ Your workspace `/home/user/lab03_swiss_property_search` contains:
 * **`debug_local.sh`**: Compiles and spins up the application stack inside local Docker containers.
 
 ### 🔑 3. Initialize Environment & Authorize Access
-Before executing database scripts or proxy tunnels, ensure your active project is set and run the setup initialization script (this will take about 2-3 minutes to provision GCP resources and install dependencies):
+Before executing database scripts or proxy tunnels, ensure your active project is set and run the setup initialization script:
 ```bash
 gcloud config set project <YOUR_PROJECT_ID>
 cd ~/lab03_swiss_property_search
 bash init.sh
 ```
 > [!TIP]
-> This script installs baseline dependencies and grants your active user credentials `roles/iap.tunnelResourceAccessor` permissions on the GCP project to enable database access.
+> This script takes about **2-3 minutes** to provision GCP resources (bastion host, storage bucket, registry repository) and install baseline dependencies. It also automatically grants your active user credentials `roles/iap.tunnelResourceAccessor` permissions on the GCP project to enable database access.
 > (Replace `<YOUR_PROJECT_ID>` with your assigned project ID, e.g. `dach-databases26fra-3904`).
 
 ---
