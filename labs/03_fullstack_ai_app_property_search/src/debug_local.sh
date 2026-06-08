@@ -34,7 +34,7 @@ BASTION_ZONE="${REGION}-b"
 
 # Ensure proxy binary exists on Bastion (download directly via Cloud NAT)
 echo "   Ensuring fresh alloydb-auth-proxy is installed on Bastion..."
-gcloud compute ssh $BASTION_NAME --zone $BASTION_ZONE --command "
+gcloud compute ssh $BASTION_NAME --zone $BASTION_ZONE --tunnel-through-iap --command "
   killall alloydb-auth-proxy || true
   rm -f alloydb-auth-proxy
   echo 'Downloading alloydb-auth-proxy on Bastion...'
@@ -45,7 +45,7 @@ gcloud compute ssh $BASTION_NAME --zone $BASTION_ZONE --command "
 # Start Proxy on Bastion and Tunnel
 # We tunnel local 5432 -> Bastion 5432 (where proxy listens)
 echo "   Establishing SSH tunnel and starting remote proxy..."
-gcloud compute ssh $BASTION_NAME --zone $BASTION_ZONE \
+gcloud compute ssh $BASTION_NAME --zone $BASTION_ZONE --tunnel-through-iap \
     --command "./alloydb-auth-proxy \"$INSTANCE_URI\" --address=127.0.0.1 --port=5432 --debug-logs" \
     -- -4 -L 5432:127.0.0.1:5432 -N -f > proxy.log 2>&1 &
 PROXY_PID=$!
