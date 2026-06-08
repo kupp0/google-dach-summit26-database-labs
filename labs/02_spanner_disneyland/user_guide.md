@@ -295,14 +295,15 @@ Use the **Antigravity CLI (agy)** in your Cloud Workstation to generate a comple
 
 ---
 
-### 🔑 2. Authenticate the Terminal
+### 🔑 2. Authenticate the Terminal & Set Active Project
 
-Authenticate both the `gcloud` CLI and Application Default Credentials (ADC) to authorize model and database access:
+Authenticate both the `gcloud` CLI and Application Default Credentials (ADC), and set your active project:
 
 ```bash
 gcloud auth login --update-adc
+gcloud config set project <YOUR_PROJECT_ID>
 ```
-*(Sign in using your Devstar credentials and paste the authorization code into the terminal if prompted).*
+*(Sign in using your Google account and paste the authorization code into the terminal if prompted. Replace `<YOUR_PROJECT_ID>` with your assigned project ID, e.g. `dach-databases26fra-3904`).*
 
 ---
 
@@ -315,7 +316,7 @@ agy
 ```
 
 Complete the first-time setup flow:
-1. **OAuth Link**: Click the link in the terminal, authenticate with Devstar, and paste the authorization code back.
+1. **Google Cloud Project Login**: Click the link in the terminal, authenticate with your Google account, and paste the authorization code back.
 2. **Project ID**: Enter your active GCP Project ID.
 3. **Location & Theme**: Choose `global` location and select a theme. Trust the workspace folder if prompted.
 4. **Terms**: Accept the Terms and Conditions.

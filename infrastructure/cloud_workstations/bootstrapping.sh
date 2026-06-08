@@ -52,7 +52,7 @@ fi
 
 # 4. Ensure proper file ownership for Code-OSS user execution
 echo "Fixing file permissions for Code-OSS workspace directories..."
-chown -R 1000:1000 /home/user/lab02_disneyland_navigator /home/user/lab03_swiss_property_search /home/user/.gemini 2>/dev/null
+chown -R 1000:1000 /home/user 2>/dev/null
 
 # 5. Clean up the cloned repository to keep workspace clean
 echo "Removing cloned template repository..."

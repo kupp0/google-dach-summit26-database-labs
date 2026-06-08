@@ -13,16 +13,151 @@ gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
     --member="user:$(gcloud config get-value account)" \
     --role="roles/iap.tunnelResourceAccessor"
 
+# Fetch project and location details
+GCP_PROJECT_ID=$(gcloud config get-value project 2>/dev/null || echo "")
+if [ -z "$GCP_PROJECT_ID" ]; then
+    echo "❌ Error: No active gcloud project set. Please set it using 'gcloud config set project <PROJECT_ID>'." >&2
+    exit 1
+fi
+PROJECT_NUMBER=$(gcloud projects describe "${GCP_PROJECT_ID}" --format="value(projectNumber)" 2>/dev/null)
+GCP_LOCATION=$(gcloud alloydb instances list --cluster=search-cluster --format="value(location)" --limit=1 2>/dev/null || echo "")
+if [ -z "$GCP_LOCATION" ]; then
+    GCP_LOCATION="europe-west3"
+fi
+
+echo "🚀 Bootstrapping shared services, IAM, and bastion configuration..."
+
+# 1. Search Backend Service Account & IAM Roles
+SA_EMAIL="search-backend-sa@${GCP_PROJECT_ID}.iam.gserviceaccount.com"
+if ! gcloud iam service-accounts describe "${SA_EMAIL}" --project="${GCP_PROJECT_ID}" &>/dev/null; then
+    echo "🤖 Creating search-backend-sa service account..."
+    gcloud iam service-accounts create search-backend-sa \
+        --display-name="Search Backend Service Account" \
+        --project="${GCP_PROJECT_ID}"
+else
+    echo "✅ Service account search-backend-sa already exists."
+fi
+
+echo "🔑 Assigning roles to search-backend-sa..."
+for role in \
+    roles/alloydb.client \
+    roles/logging.logWriter \
+    roles/artifactregistry.repoAdmin \
+    roles/serviceusage.serviceUsageConsumer \
+    roles/aiplatform.user \
+    roles/discoveryengine.editor \
+    roles/storage.objectAdmin \
+    roles/secretmanager.secretAccessor; do
+    gcloud projects add-iam-policy-binding "${GCP_PROJECT_ID}" \
+        --member="serviceAccount:${SA_EMAIL}" \
+        --role="${role}" \
+        --condition=none &>/dev/null || true
+done
+
+# 2. Cloud Build & Compute service identity and roles
+echo "🔌 Ensuring Cloud Build API is enabled..."
+gcloud services enable cloudbuild.googleapis.com --project="${GCP_PROJECT_ID}" --quiet
+
+echo "🛠️ Creating service identity for Cloud Build..."
+gcloud services identity create --service=cloudbuild.googleapis.com --project="${GCP_PROJECT_ID}" --quiet &>/dev/null || true
+
+echo "🔑 Assigning roles to Cloud Build service account..."
+gcloud projects add-iam-policy-binding "${GCP_PROJECT_ID}" \
+    --member="serviceAccount:service-${PROJECT_NUMBER}@gcp-sa-cloudbuild.iam.gserviceaccount.com" \
+    --role="roles/artifactregistry.repoAdmin" \
+    --condition=none --quiet &>/dev/null || true
+
+echo "🔑 Assigning roles to Default Compute service account..."
+for role in \
+    roles/storage.objectViewer \
+    roles/artifactregistry.repoAdmin \
+    roles/logging.logWriter; do
+    gcloud projects add-iam-policy-binding "${GCP_PROJECT_ID}" \
+        --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+        --role="${role}" \
+        --condition=none &>/dev/null || true
+done
+
+# 3. Bastion Host Configuration
+BASTION_SA_EMAIL="bastion-sa@${GCP_PROJECT_ID}.iam.gserviceaccount.com"
+if ! gcloud iam service-accounts describe "${BASTION_SA_EMAIL}" --project="${GCP_PROJECT_ID}" &>/dev/null; then
+    echo "🤖 Creating bastion-sa service account..."
+    gcloud iam service-accounts create bastion-sa \
+        --display-name="Bastion Service Account" \
+        --project="${GCP_PROJECT_ID}"
+else
+    echo "✅ Service account bastion-sa already exists."
+fi
+
+echo "🔑 Assigning roles to bastion-sa..."
+for role in \
+    roles/alloydb.client \
+    roles/logging.logWriter \
+    roles/serviceusage.serviceUsageConsumer; do
+    gcloud projects add-iam-policy-binding "${GCP_PROJECT_ID}" \
+        --member="serviceAccount:${BASTION_SA_EMAIL}" \
+        --role="${role}" \
+        --condition=none &>/dev/null || true
+done
+
+# Detect VPC network and subnetwork
+if gcloud compute networks describe workstation-network --project="${GCP_PROJECT_ID}" &>/dev/null; then
+    VPC_ID="workstation-network"
+    SUBNET_ID="workstation-subnet"
+else
+    VPC_ID="default"
+    SUBNET_ID="default"
+fi
+
+BASTION_ZONE="${GCP_LOCATION}-b"
+if ! gcloud compute instances describe search-demo-bastion --zone="${BASTION_ZONE}" --project="${GCP_PROJECT_ID}" &>/dev/null; then
+    echo "🖥️ Creating bastion VM (search-demo-bastion) in zone ${BASTION_ZONE}..."
+    gcloud compute instances create search-demo-bastion \
+        --machine-type=e2-micro \
+        --zone="${BASTION_ZONE}" \
+        --image-family=debian-11 \
+        --image-project=debian-cloud \
+        --network="${VPC_ID}" \
+        --subnet="${SUBNET_ID}" \
+        --service-account="${BASTION_SA_EMAIL}" \
+        --scopes=cloud-platform \
+        --metadata=enable-oslogin=TRUE \
+        --shielded-secure-boot \
+        --tags=bastion,allow-iap-ssh \
+        --project="${GCP_PROJECT_ID}" \
+        --quiet
+else
+    echo "✅ Bastion VM search-demo-bastion already exists."
+fi
+
+# 4. Artifact Registry & Storage Buckets
+if ! gcloud artifacts repositories describe search-demo --location="${GCP_LOCATION}" --project="${GCP_PROJECT_ID}" &>/dev/null; then
+    echo "📦 Creating Artifact Registry repository search-demo..."
+    gcloud artifacts repositories create search-demo \
+        --repository-format=docker \
+        --location="${GCP_LOCATION}" \
+        --description="Search Demo Docker Repository" \
+        --project="${GCP_PROJECT_ID}" \
+        --quiet
+else
+    echo "✅ Artifact Registry repository search-demo already exists."
+fi
+
+BUCKET_NAME="${GCP_PROJECT_ID}-search-demo-images"
+if ! gcloud storage buckets describe "gs://${BUCKET_NAME}" &>/dev/null; then
+    echo "🪣 Creating Storage Bucket gs://${BUCKET_NAME}..."
+    gcloud storage buckets create "gs://${BUCKET_NAME}" \
+        --location="${GCP_LOCATION}" \
+        --uniform-bucket-level-access \
+        --project="${GCP_PROJECT_ID}"
+else
+    echo "✅ Storage bucket gs://${BUCKET_NAME} already exists."
+fi
+
 # Generate backend/.env dynamically
 ENV_FILE="backend/.env"
 if [ ! -f "$ENV_FILE" ]; then
     echo "Creating backend/.env configuration..."
-    GCP_PROJECT_ID=$(gcloud config get-value project 2>/dev/null || echo "")
-    GCP_LOCATION=$(gcloud alloydb instances list --cluster=search-cluster --format="value(location)" --limit=1 2>/dev/null || echo "")
-    
-    if [ -z "$GCP_LOCATION" ]; then
-        GCP_LOCATION="europe-west3"
-    fi
     INSTANCE_CONNECTION_NAME="projects/${GCP_PROJECT_ID}/locations/${GCP_LOCATION}/clusters/search-cluster/instances/search-primary"
     
     cat << EOF > "$ENV_FILE"
