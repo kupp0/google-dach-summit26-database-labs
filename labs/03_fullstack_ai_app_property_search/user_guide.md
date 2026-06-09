@@ -66,6 +66,9 @@ bash init.sh
    ```
 
 ### 🎨 2. Generate Visual Assets with Vertex AI Imagen
+> [!NOTE]
+> To save time, you can skip this step and the application will run without images in the app.
+
 Generate listing images and calculate visual embeddings using Vertex AI Imagen models:
 1. Open a **new dedicated terminal session/tab** in your workstation and start the AlloyDB Auth Proxy tunnel:
    ```bash
