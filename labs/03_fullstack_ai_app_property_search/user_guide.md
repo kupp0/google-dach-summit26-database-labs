@@ -46,8 +46,6 @@ bash init.sh
 > This script takes about **2-3 minutes** to provision GCP resources (bastion host, storage bucket, registry repository) and install baseline dependencies. It also automatically grants your active user credentials `roles/iap.tunnelResourceAccessor` permissions on the GCP project to enable database access.
 > (Replace `<YOUR_PROJECT_ID>` with your assigned project ID, e.g. `dach-databases26fra-3904`).
 
----
-
 ## 🗄️ Phase 2: Database Setup & Data Ingestion
 
 ### 💾 1. Database Setup & SQL Initialization
@@ -58,32 +56,31 @@ bash init.sh
    * **Username**: Enter your Google Cloud account email (e.g. `devstar39xx@gcplab.me`)
    * *(Note: Signing in with IAM is a prerequisite for the Query Data Tool to generate context sets in a later step).*
 4. Open a **new query tab**, copy and run the contents of `alloydb-artefacts/alloydb_setup.sql`.
-5. Open a **second query tab**, copy and run the contents of `alloydb-artefacts/100 _sample records.sql`.
-6. Open a **third query tab**, copy and run the contents of `alloydb-artefacts/alloydb_indexes.sql` to build ScaNN vector indexes.
-7. Run the query below to verify records populated successfully (should return ~320 listings):
+5. Open a **second query tab**, copy and run the contents of `alloydb-artefacts/insert_listings.sql` to ingest all listing records with pre-computed image paths and image embeddings.
+6. Open a **third query tab**, and run the database-native batch embedding backfill to calculate description embeddings:
+   ```sql
+   CALL ai.initialize_embeddings(
+     model_id => 'gemini-embedding-001',
+     table_name => 'property_listings',
+     content_column => 'description',
+     embedding_column => 'description_embedding',
+     incremental_refresh_mode => 'transactional',
+     batch_size => 50
+   );
+   ```
+   *(This procedure runs natively inside the database, calling the Gemini embedding model in batches of 50 to avoid rate limits. It also configures real-time triggers for future inserts).*
+   
+   To monitor the backfill progress, you can run:
+   ```sql
+   SELECT * FROM ai.embedding_progress_view;
+   ```
+7. Open a **fourth query tab**, copy and run the contents of `alloydb-artefacts/alloydb_indexes.sql` to build the ScaNN vector search indexes.
+8. Run the query below to verify records populated successfully (should return 232 listings):
    ```sql
    SELECT count(*) as property_count FROM property_listings;
    ```
 
-### 🎨 2. Generate Visual Assets with Vertex AI Imagen
-> [!NOTE]
-> To save time, you can skip this step and the application will run without images in the app.
 
-Generate listing images and calculate visual embeddings using Vertex AI Imagen models:
-1. Open a **new dedicated terminal session/tab** in your workstation and start the AlloyDB Auth Proxy tunnel:
-   ```bash
-   cd ~/lab03_swiss_property_search/alloydb-artefacts
-   ./run_proxy.sh
-   ```
-   > [!WARNING]
-   > **Separate Terminal Session Required**: The Auth Proxy runs as a foreground process to maintain the database connection. You MUST keep this terminal open and running. Do not run other commands in this session.
-2. Open another **separate terminal session/tab** and execute the generator script:
-   ```bash
-   cd ~/lab03_swiss_property_search/alloydb-artefacts
-   python3 bootstrap_images.py
-   ```
-   *(This script connects to AlloyDB via the proxy tunnel, prompts Imagen to generate property visuals, saves them to Cloud Storage, and computes 1408-dimensional visual vectors for database similarity matching).*
-3. Once the generator finishes, go back to the first terminal tab and stop the proxy by pressing `Ctrl+C`.
 
 ---
 

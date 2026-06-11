@@ -69,9 +69,7 @@ CREATE TABLE "public"."property_listings" (
     "country" VARCHAR(100) DEFAULT 'Switzerland',
     "canton" VARCHAR(100),
     -- COLUMN A: Text Embeddings (Managed by Database)
-    "description_embedding" VECTOR(3072) GENERATED ALWAYS AS (
-      "google_ml"."embedding"('gemini-embedding-001', "description")
-    ) STORED,
+    "description_embedding" VECTOR(3072),
     -- COLUMN B: Image Embeddings (Managed by Application)
     "image_embedding" VECTOR(1408) 
 );

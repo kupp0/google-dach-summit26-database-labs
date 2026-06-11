@@ -1,55 +1,44 @@
-# AlloyDB Artifacts & Bootstrap
+# AlloyDB Database Setup & Seeding (Lab 3)
 
-This directory contains SQL scripts for setting up AlloyDB and a Python script `bootstrap_images.py` to generate images and embeddings for property listings.
+This directory contains the SQL files required to set up and seed the AlloyDB database for the Swiss Property Search application. 
 
-## How to run `bootstrap_images.py`
+By utilizing pre-built frontend images and pre-computed visual embeddings, you bypass the need for external python image-generation scripts.
 
-This script generates AI images for listings using Imagen, creates embeddings, uploads images to GCS, and updates the AlloyDB database.
+## Database Seeding Workflow
 
-### Prerequisites
+To set up your database, execute the following SQL scripts in order using **AlloyDB Studio** or your preferred SQL client:
 
-1.  **Environment Variables**:
-    The script loads environment variables from `../backend/.env`.
-    Ensure this file exists and is populated. You can generate it using Terraform outputs:
-    ```bash
-    cd ../terraform
-    ./generate_env.sh
-    ```
-    Or manually create it based on `../example.env`. The /setup_env.sh script also helps you setting up all required environment variables.
+### 1. 🏗️ Table Schema & DDL
+Execute the schema creation file:
+* **File**: [alloydb_setup.sql](alloydb_setup.sql)
+* **What it does**: Enables the `google_ml_integration`, `vector`, and `alloydb_scann` extensions, and creates the `property_listings` table.
 
-2.  **AlloyDB Auth Proxy**:
-    The script connects to AlloyDB via `127.0.0.1:5432`. You must have the Auth Proxy running.
-    A helper script is provided to start the proxy via the Bastion host:
-    ```bash
-    ./run_proxy.sh
-    ```
-    *This will establish an SSH tunnel and start the proxy on the Bastion host.*
+### 2. 📥 Ingest Listing Records
+Ingest the property records containing pre-computed image listings and visual vectors:
+* **File**: [insert_listings.sql](insert_listings.sql)
+* **What it does**: Seeds the database with 232 property records, including their titles, prices, local image paths (`/listings/{id}.jpg`), and pre-computed 1408-dimensional visual embeddings (`image_embedding`).
 
-3.  **Python Environment**:
-    Ensure you have Python installed and the required dependencies.
-    It is recommended to use a virtual environment.
+### 3. 💥 Bulk Backfill Text Embeddings
+Generate the text embeddings for the property descriptions natively using AlloyDB AI's batch backfill procedure:
+* **Query**:
+  ```sql
+  CALL ai.initialize_embeddings(
+    model_id => 'gemini-embedding-001',
+    table_name => 'property_listings',
+    content_column => 'description',
+    embedding_column => 'description_embedding',
+    incremental_refresh_mode => 'transactional',
+    batch_size => 50
+  );
+  ```
+* **What it does**: Automatically generates 3072-dimensional text embeddings (`description_embedding`) for all 232 records in bulk using Vertex AI. The `incremental_refresh_mode => 'transactional'` parameter also configures live database triggers, ensuring any future inserts or updates are auto-vectorized in real time.
 
-    ```bash
-    # Create and activate virtual env
-    python3 -m venv venv
-    source venv/bin/activate
-
-    # Install dependencies
-    pip install -r requirements.txt
-    ```
-
-### Running the Script
-
-Once the proxy is running and environment is set:
-
-```bash
-python bootstrap_images.py
+You can monitor the batch progress by running:
+```sql
+SELECT * FROM ai.embedding_progress_view;
 ```
 
-### What it does
-1.  Connects to AlloyDB via localhost:5432.
-2.  Finds listings with `image_gcs_uri IS NULL`.
-3.  Generates an image using Vertex AI Imagen.
-4.  Uploads the image to the GCS bucket (`property-images-{PROJECT_ID}`).
-5.  Generates a multimodal embedding for the image.
-6.  Updates the `property_listings` table with the GCS URI and embedding.
+### ⚡ 4. Create Vector Indexes
+Execute the index creation script:
+* **File**: [alloydb_indexes.sql](alloydb_indexes.sql)
+* **What it does**: Registers the ScaNN vector search indexes for both text-based (`description_embedding`) and visual-based (`image_embedding`) cosine similarity lookups.
