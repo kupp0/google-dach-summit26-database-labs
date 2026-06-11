@@ -27,3 +27,5 @@ spec:
           value: "${AGENT_CONTEXT_SET_ID_ALLOYDB}"
         - name: PYTHONUNBUFFERED
           value: "1"
+        - name: ALLOWED_GCS_BUCKET
+          value: "${PROJECT_ID}-search-demo-images"

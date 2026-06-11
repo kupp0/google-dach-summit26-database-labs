@@ -154,6 +154,18 @@ else
     echo "✅ Storage bucket gs://${BUCKET_NAME} already exists."
 fi
 
+# Upload listing images to GCS
+if [ -d "listings" ]; then
+    echo "🪣 Uploading listing images to GCS gs://${BUCKET_NAME}/listings/..."
+    gcloud storage cp -r ./listings/* "gs://${BUCKET_NAME}/listings/"
+fi
+
+# Substitute PROJECT_ID in insert_listings.sql
+if [ -f "alloydb-artefacts/insert_listings.sql" ]; then
+    echo "✍️ Substituting PROJECT_ID in alloydb-artefacts/insert_listings.sql..."
+    sed -i "s/PROJECT_ID_PLACEHOLDER/${GCP_PROJECT_ID}/g" "alloydb-artefacts/insert_listings.sql"
+fi
+
 # Generate backend/.env dynamically
 ENV_FILE="backend/.env"
 if [ ! -f "$ENV_FILE" ]; then
@@ -170,6 +182,7 @@ DB_PASSWORD=alloydb-hackathon-password
 AGENT_CONTEXT_SET_ID_ALLOYDB=property-agent
 ALLOYDB_CLUSTER_ID=search-cluster
 ALLOYDB_INSTANCE_ID=search-primary
+ALLOWED_GCS_BUCKET=${GCP_PROJECT_ID}-search-demo-images
 EOF
     echo "✅ backend/.env generated successfully!"
 fi
