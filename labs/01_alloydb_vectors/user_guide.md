@@ -21,6 +21,13 @@ Before proceeding, let's verify that the flags are active.
 
 ### 🔐 Verification via SQL (AlloyDB Studio)
 
+To access the query editor:
+1. Navigate to [AlloyDB Clusters](https://console.cloud.google.com/alloydb/clusters) in the Google Cloud Console.
+2. Select your cluster (e.g., `search-cluster`).
+3. Click **AlloyDB Studio** in the left navigation menu.
+
+<img src="assets/alloydb_studio_menu.png" alt="AlloyDB Studio Menu Navigation" width="280" />
+
 > [!NOTE]
 > **AlloyDB Studio Login Credentials**:
 > When logging in to the **AlloyDB Studio**, use the following connection parameters:

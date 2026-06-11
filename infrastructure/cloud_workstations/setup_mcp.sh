@@ -58,6 +58,18 @@ PLUGIN_CONTENT=$(cat <<EOF
 EOF
 )
 
+# Define general Antigravity config
+CLI_CONFIG_CONTENT=$(cat <<EOF
+{
+  "project": "$PROJECT_ID",
+  "project_id": "$PROJECT_ID",
+  "location": "global",
+  "theme": "dark",
+  "terms_accepted": true
+}
+EOF
+)
+
 # Target directory paths
 DIR1="/home/user/.gemini/config"
 DIR2="/home/user/.gemini/antigravity-cli"
@@ -71,9 +83,13 @@ echo "Writing configuration files..."
 echo "$MCP_CONFIG_CONTENT" > "$DIR1/mcp_config.json"
 echo "$MCP_CONFIG_CONTENT" > "$DIR2/mcp_config.json"
 echo "$PLUGIN_CONTENT" > "$DIR3/google-managed-spanner.json"
+echo "$CLI_CONFIG_CONTENT" > "$DIR1/config.json"
+echo "$CLI_CONFIG_CONTENT" > "$DIR2/config.json"
 
-echo "MCP Server configuration successfully generated!"
+echo "MCP Server and Antigravity CLI configuration successfully generated!"
 echo "Target files updated:"
 echo " - $DIR1/mcp_config.json"
 echo " - $DIR2/mcp_config.json"
 echo " - $DIR3/google-managed-spanner.json"
+echo " - $DIR1/config.json"
+echo " - $DIR2/config.json"

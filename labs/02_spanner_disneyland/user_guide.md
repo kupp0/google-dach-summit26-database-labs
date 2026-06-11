@@ -318,15 +318,13 @@ cd ~/lab02_disneyland_navigator
 agy
 ```
 
-Complete the first-time setup flow:
-1. **Google Cloud Project Login**: Click the link in the terminal, authenticate with your Google account, and paste the authorization code back.
-2. **Project ID**: Enter your active GCP Project ID.
-3. **Location & Theme**: Choose `global` location and select a theme. Trust the workspace folder if prompted.
-4. **Terms**: Accept the Terms and Conditions.
-5. **Enable Auto-Approve**: Open settings with `/settings` and set:
+*(Because you already authenticated the terminal and active project in Step 2, the `agy` CLI will automatically load your credentials and skip the first-time setup login/project prompts).*
+
+1. **Workspace Trust**: Trust the workspace folder if prompted by Code-OSS.
+2. **Enable Auto-Approve**: Open settings with `/settings` and set:
    * **Tool Permission**: `always-proceed`
    * **Artifact Review**: `agent decides`
-6. **Verify Connection**: Type `/mcp` to ensure the Google-managed Spanner MCP server shows a green connected status.
+3. **Verify Connection**: Type `/mcp` to ensure the Google-managed Spanner MCP server shows a green connected status.
 
 #### 🛠️ Useful CLI Commands
 * `/settings`: Configure model parameters and auto-approve settings.
