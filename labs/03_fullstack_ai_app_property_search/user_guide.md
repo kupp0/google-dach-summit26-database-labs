@@ -30,7 +30,15 @@ Your workspace `/home/user/lab03_swiss_property_search` contains:
 * **`debug_local.sh`**: Compiles and spins up the application stack inside local Docker containers.
 
 ### 🔑 3. Initialize Environment & Authorize Access
-Before executing database scripts or proxy tunnels, ensure your active project is set (if it wasn't pre-configured automatically by the workstation bootstrap):
+First, authenticate both the `gcloud` CLI and Application Default Credentials (ADC) if they are not already set:
+
+```bash
+# Checks if authenticated; if not, triggers the login flow
+if [ -z "$(gcloud config get-value account 2>/dev/null)" ] || [ ! -f ~/.config/gcloud/application_default_credentials.json ]; then gcloud auth login --update-adc; fi
+```
+*(If prompted, sign in using your Google account and paste the authorization code into the terminal).*
+
+Then, ensure your active project is set (if it wasn't pre-configured automatically by the workstation bootstrap):
 
 ```bash
 gcloud config set project <YOUR_PROJECT_ID>
