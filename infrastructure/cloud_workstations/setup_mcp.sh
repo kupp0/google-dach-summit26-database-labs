@@ -107,6 +107,31 @@ cat <<EOF > "$GCLOUD_CONFIG_DIR/config_default"
 project = $PROJECT_ID
 EOF
 
+# Add active project config and auth reminder to user's .bashrc
+BASHRC="/home/user/.bashrc"
+if ! grep -q "GCP_WORKSPACE_SETUP" "$BASHRC" 2>/dev/null; then
+    echo "Configuring user .bashrc for GCP workspace..."
+    cat <<'EOF' >> "$BASHRC"
+
+# >>> GCP_WORKSPACE_SETUP >>>
+# Set the default project automatically if needed
+if [ "$(gcloud config get-value project 2>/dev/null)" = "CURRENT_PROJECT" ] || [ -z "$(gcloud config get-value project 2>/dev/null)" ]; then
+    DET_PROJECT_ID=$(jq -r '.project // empty' /home/user/.gemini/config/config.json 2>/dev/null)
+    if [ -n "$DET_PROJECT_ID" ]; then
+        gcloud config set project "$DET_PROJECT_ID" &>/dev/null
+    fi
+fi
+
+# Remind user to authenticate if not already done
+if [ -z "$(gcloud config get-value account 2>/dev/null)" ] || [ ! -f ~/.config/gcloud/application_default_credentials.json ]; then
+    echo ""
+    echo "🔑 Welcome! Please run this command to authenticate your Google Cloud SDK & Application Default Credentials (ADC):"
+    echo "    gcloud auth login --update-adc"
+    echo ""
+fi
+# <<< GCP_WORKSPACE_SETUP <<<
+EOF
+fi
 
 echo "MCP Server and Antigravity CLI configuration successfully generated!"
 echo "Target files updated:"
@@ -115,3 +140,4 @@ echo " - $DIR2/mcp_config.json"
 echo " - $DIR3/google-managed-spanner.json"
 echo " - $DIR1/config.json"
 echo " - $DIR2/config.json"
+
