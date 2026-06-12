@@ -5,7 +5,7 @@ In this codelab, you will build a zero-copy federated analytical "bridge" linkin
 ---
 
 ## 🎯 Lab Objectives
-* **🏗️ Infrastructure Provisioning**: Deploy base VPC network, Cloud Workstations, and Cloud Spanner instances using Terraform.
+* **🏗️ Infrastructure Review**: Review the pre-provisioned VPC network, Cloud Workstations config, and Cloud Spanner architecture.
 * **🎡 Schema & Graph Setup**: Initialize relational tables, ingest Disneyland attractions datasets, and define Spanner Property Graphs.
 * **🌉 Data Federation**: Configure external datasets to run real-time federated queries in BigQuery Studio on live Spanner transactional data.
 * **🤖 MCP & Agent Integration**: Establish and test the Google-managed Spanner MCP connection in the active Agent Registry.
