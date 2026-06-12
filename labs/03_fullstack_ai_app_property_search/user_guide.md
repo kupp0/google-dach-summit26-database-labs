@@ -11,7 +11,7 @@ The application uses a clean, stateless architecture:
 
 ---
 
-## 🎯 Codelab Objectives
+## 🎯 Lab Objectives
 * **💾 Database Setup**: Set up DDL schemas, ingest listings, and backfill vector embeddings natively in AlloyDB.
 * **🧠 Context Mapping**: Register a Gemini Data Analytics **Context Set** for natural language schema mapping.
 * **💻 Application execution**: Spin up the microservices stack using the local Docker sandbox (with an optional Cloud Run deployment phase).

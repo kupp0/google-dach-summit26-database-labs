@@ -4,11 +4,12 @@ In this codelab, you will build a zero-copy federated analytical "bridge" linkin
 
 ---
 
-## 🎯 Objective
-* **🌉 Data Federation**: Establish an external dataset mapping to automatically federate Cloud Spanner tables into BigQuery.
-* **🎡 Graph Data Setup**: Inject a rich Disneyland attraction dataset containing vector embeddings via Spanner Studio.
-* **🧰 Agent Integration**: Configure and verify the **MCP Toolbox** for database-native AI agent connectivity.
-* **🔎 Federated Analytics**: Run cross-system analytical queries in BigQuery Studio.
+## 🎯 Lab Objectives
+* **🏗️ Infrastructure Provisioning**: Deploy base VPC network, Cloud Workstations, and Cloud Spanner instances using Terraform.
+* **🎡 Schema & Graph Setup**: Initialize relational tables, ingest Disneyland attractions datasets, and define Spanner Property Graphs.
+* **🌉 Data Federation**: Configure external datasets to run real-time federated queries in BigQuery Studio on live Spanner transactional data.
+* **🤖 MCP & Agent Integration**: Establish and test the Google-managed Spanner MCP connection in the active Agent Registry.
+* **🚀 Agentic Application Building**: Deploy the **Antigravity CLI (agy)** to automatically generate and execute a complete FastAPI and HTML5 pathfinding application using native Spanner Graph queries.
 
 ---
 
