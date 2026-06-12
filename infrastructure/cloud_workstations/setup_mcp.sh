@@ -3,22 +3,34 @@
 # Auto-detect GCP Project ID
 PROJECT_ID=""
 
+sanitize_project_id() {
+    local pid="$1"
+    if [[ -z "$pid" || "$pid" == "CURRENT_PROJECT" || "$pid" == "current_project" || "$pid" == "current-project" ]]; then
+        echo ""
+    else
+        echo "$pid"
+    fi
+}
+
 # 1. Check gcloud config billing quota project
 PROJECT_ID=$(gcloud config get-value billing/quota_project 2>/dev/null)
+PROJECT_ID=$(sanitize_project_id "$PROJECT_ID")
 
 # 2. Check application default credentials JSON file
 if [ -z "$PROJECT_ID" ] && [ -f "/home/user/.config/gcloud/application_default_credentials.json" ]; then
     PROJECT_ID=$(jq -r '.quota_project_id // empty' "/home/user/.config/gcloud/application_default_credentials.json" 2>/dev/null)
+    PROJECT_ID=$(sanitize_project_id "$PROJECT_ID")
 fi
 
 # 3. Check environment variable GOOGLE_CLOUD_PROJECT
 if [ -z "$PROJECT_ID" ]; then
-    PROJECT_ID="$GOOGLE_CLOUD_PROJECT"
+    PROJECT_ID=$(sanitize_project_id "$GOOGLE_CLOUD_PROJECT")
 fi
 
 # 4. Fallback to active gcloud project
 if [ -z "$PROJECT_ID" ]; then
     PROJECT_ID=$(gcloud config get-value project 2>/dev/null)
+    PROJECT_ID=$(sanitize_project_id "$PROJECT_ID")
 fi
 
 # If still not found, ask user or error
@@ -29,6 +41,7 @@ if [ -z "$PROJECT_ID" ]; then
 fi
 
 echo "Detected GCP Project ID: $PROJECT_ID"
+
 
 INSTANCE_ID="disneyland"
 DATABASE_ID="agent-lab"
