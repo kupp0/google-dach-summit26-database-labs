@@ -29,5 +29,5 @@ Build a zero-copy federated analytical "bridge" between a transactional database
 ### 3. [Lab 3: Swiss Property Search (Fullstack AI App & Gemini Data Analytics)](labs/03_fullstack_ai_app_property_search/user_guide.md)
 Build and deploy a premium fullstack real-estate search application leveraging natural language queries via Gemini Data Analytics.
 - **Key Tech**: AlloyDB, Gemini Data Analytics (GDA) QueryData API, Google Antigravity (ADK) SDK, and Model Context Protocol (MCP) Toolbox.
-- **Highlights**: Provisioning database structures, generating visual assets natively via Vertex AI Imagen, registering a GDA Context Set for schema mapping, running a local stateless backend container stack, and building multi-turn conversational chat agents using the ADK SDK.
+- **Highlights**: Provisioning database structures, registering a GDA Context Set for schema mapping, executing the microservices stack in a local Docker sandbox (optional Cloud Run deploy), and customizing the application with the agentic Antigravity CLI.
 

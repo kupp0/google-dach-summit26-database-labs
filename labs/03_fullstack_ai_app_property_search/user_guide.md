@@ -12,11 +12,10 @@ The application uses a clean, stateless architecture:
 ---
 
 ## 🎯 Codelab Objectives
-* **💾 Database Setup**: DDL structure and sample dataset initialization in AlloyDB.
-* **🎨 Asset Bootstrapping**: Generate visual listing imagery and embeddings natively via Vertex AI Imagen.
-* **🧠 Context Mapping**: Register a GDA **Context Set** for translating schema structures to natural language.
-* **💻 Local Sandbox**: Run and verify the stateless backend, frontend, agent, and toolbox stack inside Docker.
-* **☁️ Cloud Deploy**: Deploy your microservices architecture to serverless Google Cloud Run.
+* **💾 Database Setup**: Set up DDL schemas, ingest listings, and backfill vector embeddings natively in AlloyDB.
+* **🧠 Context Mapping**: Register a Gemini Data Analytics **Context Set** for natural language schema mapping.
+* **💻 Application execution**: Spin up the microservices stack using the local Docker sandbox (with an optional Cloud Run deployment phase).
+* **🤖 Agentic Customization**: Explore and enhance the application codebase autonomously using the **Antigravity CLI (agy)**.
 
 ---
 
@@ -29,7 +28,7 @@ The application uses a clean, stateless architecture:
 
 ### 🗺️ 2. Workspace File Architecture
 Your workspace `/home/user/lab03_swiss_property_search` contains:
-* **`alloydb-artefacts/`**: SQL scripts, Context mapping JSON, image generation scripts, and database proxies.
+* **`alloydb-artefacts/`**: SQL scripts, Context mapping JSON, pre-configured database assets, and database proxies.
 * **`backend/`**: FastAPI backend (`main.py`), Agent definition, and MCP configuration.
 * **`frontend/`**: React + Vite frontend source code.
 * **`deploy.sh`**: Deploys the completed stack to serverless Cloud Run.
@@ -134,8 +133,8 @@ To run and debug the entire application locally in your workstation environment:
 2. Copy the local frontend address `http://localhost:8081` (or click on the port 8081 popup in the bottom right of the workstation window) to access the application UI. Verify that **Natural Language Search** and **AI Agent Chat** are functional.
 3. Press `Ctrl+C` in the terminal when you are ready to stop the containers and proxy.
 
-### ☁️ 2. Deploy Serverless to Cloud Run
-To push the application live to serverless Cloud Run:
+### ☁️ 2. (Optional) Deploy Serverless to Cloud Run
+To optionally push the application live to serverless Cloud Run:
 1. In the terminal, run the deployment shell script:
    ```bash
    cd ~/lab03_swiss_property_search
