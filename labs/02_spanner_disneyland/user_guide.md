@@ -1,15 +1,17 @@
 # 🎡 Lab 2: Disneyland Agentic Codelab with Cloud Spanner & BigQuery
 
-In this codelab, you will build a zero-copy federated analytical "bridge" linking **Cloud Spanner** and **BigQuery**. This allows real-time analytic queries across transactional and warehouse data. Then, you'll deploy the **MCP Toolbox** to grant agentic AI tools the ability to query your transactional database in real-time.
+Welcome, Theme Park Architects! 🎢
+
+Navigating Disneyland is serious business. In this codelab, you will build a zero-copy federated analytical "bridge" linking the transactional speed of **Cloud Spanner** with the analytical power of **BigQuery**—enabling real-time lookups on live rides and visitor queues. Then, you'll deploy the **MCP Toolbox** and unleash the **Antigravity CLI (agy)** to build a fully functional, AI-powered pathfinding guide so that visitors never get lost between Space Mountain and Big Thunder Mountain!
 
 ---
 
 ## 🎯 Lab Objectives
-* **🏗️ Infrastructure Review**: Review the pre-provisioned VPC network, Cloud Workstations config, and Cloud Spanner architecture.
-* **🎡 Schema & Graph Setup**: Initialize relational tables, ingest Disneyland attractions datasets, and define Spanner Property Graphs.
-* **🌉 Data Federation**: Configure external datasets to run real-time federated queries in BigQuery Studio on live Spanner transactional data.
-* **🤖 MCP & Agent Integration**: Establish and test the Google-managed Spanner MCP connection in the active Agent Registry.
-* **🚀 Agentic Application Building**: Deploy the **Antigravity CLI (agy)** to automatically generate and execute a complete FastAPI and HTML5 pathfinding application using native Spanner Graph queries.
+* **🏗️ Infrastructure Review**: Peer behind the curtain at the pre-provisioned VPC network, Cloud Workstations, and Cloud Spanner architecture.
+* **🎡 Schema & Graph Setup**: Populate Disneyland attractions, connect path routes, and define a native Spanner Property Graph.
+* **🌉 Data Federation**: Bridge Spanner with BigQuery to run real-time analytical queries on live ride queues without copy-pasting data.
+* **🤖 MCP & Agent Integration**: Hook up the Google-managed Spanner MCP server to provide real-time graph data to your agents.
+* **🚀 Agentic Application Building**: Launch the **Antigravity CLI (agy)** to autonomously generate and run a FastAPI + HTML5 pathfinding web app.
 
 ---
 

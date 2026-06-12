@@ -1,21 +1,16 @@
 # 🇨🇭 Lab 3: Swiss Property Search — Fullstack AI App with AlloyDB & Gemini Data Analytics
 
-In this lab, you will build and deploy a premium, high-performance real-estate search application showcasing natural language search capabilities using **AlloyDB** and the **Gemini Data Analytics (GDA) QueryData API**.
+Welcome, Future Real Estate Moguls! 🏰
 
-The application uses a clean, stateless architecture:
-1. **🔍 Search Bar**: Directly connects to the GDA `/queryData` API to generate SQL queries, text summaries, and natural language explanations of search intent.
-2. **💬 AI Agent Chat**: A conversational multi-turn chat interface powered by the **Google Antigravity (ADK) SDK**, using the `cloud_gda_query_tool_alloydb` tool to answer follow-up questions.
-
-> [!NOTE]
-> This lab is based on the reference multi-agent property search demonstration project hosted on GitHub at [multi-db-property-search-data-agents](https://github.com/kupp0/multi-db-property-search-data-agents).
+Who doesn't dream of owning a cozy chalet in the Swiss Alps? In this lab, you will build and deploy a premium, high-performance real-estate search application leveraging the state-of-the-art **Gemini Data Analytics (GDA) QueryData API** alongside **AlloyDB**. We'll hook up a beautiful natural language search engine and deploy a multi-turn AI chat agent powered by the **Google Antigravity SDK**. Let's build a search experience so slick and premium that Swiss private bankers would be jealous!
 
 ---
 
 ## 🎯 Lab Objectives
-* **💾 Database Setup**: Set up DDL schemas, ingest listings, and backfill vector embeddings natively in AlloyDB.
-* **🧠 Context Mapping**: Register a Gemini Data Analytics **Context Set** for natural language schema mapping.
-* **💻 Application execution**: Spin up the microservices stack using the local Docker sandbox (with an optional Cloud Run deployment phase).
-* **🤖 Agentic Customization**: Explore and enhance the application codebase autonomously using the **Antigravity CLI (agy)**.
+* **💾 Database Setup**: Ingest property listings and backfill vector embeddings natively in AlloyDB (no loops, purely database-driven).
+* **🧠 Context Mapping**: Register a GDA **Context Set** so the model learns to map natural language queries directly to SQL structures.
+* **💻 Sandbox Stack Execution**: Spin up the microservices architecture locally via Docker containers (with an optional Cloud Run deploy).
+* **🤖 Agentic Customization**: Deploy the **Antigravity CLI (agy)** to customize and style your application codebase autonomously!
 
 ---
 
