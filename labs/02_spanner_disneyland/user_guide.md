@@ -314,6 +314,14 @@ gcloud config set project <YOUR_PROJECT_ID>
 
 ---
 
+> [!IMPORTANT]
+> **Understanding the Two Different Logins**:
+> During this lab, you will perform **two distinct authentication flows**:
+> 1. **Google Cloud SDK & ADC Login (`gcloud auth login --update-adc`)**: Authenticates your terminal environment so python scripts and MCP tools can read/write to your Spanner database and Vertex AI.
+> 2. **Antigravity CLI Login (`agy`)**: Authenticates your terminal session with the Antigravity developer backend platform. When you first launch `agy`, it will open a separate browser window asking you to authenticate and copy a different auth code. 
+> 
+> Both logins are required, and both are saved permanently in your persistent `/home/user/` directory once completed. Do not confuse the two auth codes!
+
 ### ⚙️ 3. Initialize the Antigravity CLI
 
 Navigate to the project workspace and launch the CLI:
@@ -322,7 +330,7 @@ cd ~/lab02_disneyland_navigator
 agy
 ```
 
-*(Because you already authenticated the terminal and active project in Step 2, the `agy` CLI will automatically load your credentials and skip the first-time setup login/project prompts).*
+*(When running the `agy` CLI for the first time, you will be prompted with an authentication link. Open the link, log in, and paste the code back. Once done, subsequent launches will automatically load your credentials and skip these prompts).*
 
 1. **Workspace Trust**: Trust the workspace folder if prompted by Code-OSS.
 2. **Enable Auto-Approve**: Open settings with `/settings` and set:

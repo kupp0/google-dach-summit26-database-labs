@@ -147,7 +147,17 @@ To optionally push the application live to serverless Cloud Run:
 
 ## 🏆 Phase 5: Hands-On Agentic Coding Challenges
 
-Now use the **ADK CLI (agy)** or your AI Assistant inside the workspace `/home/user/lab03_swiss_property_search` to expand and style the application.
+Now use the **Antigravity CLI (agy)** or your AI Assistant inside the workspace `/home/user/lab03_swiss_property_search` to expand and style the application.
+
+> [!NOTE]
+> **Antigravity CLI Launch**:
+> Launch the interactive terminal agent in your workspace:
+> ```bash
+> cd ~/lab03_swiss_property_search
+> agy
+> ```
+> *(If you have not run the `agy` CLI in a previous lab, you will be prompted with an authentication link. Open it, sign in, and paste the code back. This is separate from your `gcloud` GCP account authentication).*
+
 
 ### 🔮 Challenge 1: Architecture Exploration & UML Generation
 * **Goal**: Analyze the workspace architecture and generate a sequence flow diagram.
