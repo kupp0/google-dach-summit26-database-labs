@@ -7,6 +7,15 @@ if [ -f "requirements.txt" ]; then
     pip install --break-system-packages -r requirements.txt
 fi
 
+# Ensure user is authenticated
+if [ -z "$(gcloud config get-value account 2>/dev/null)" ] || [ ! -f ~/.config/gcloud/application_default_credentials.json ]; then
+    echo "🔑 Authenticating Google Cloud SDK and Application Default Credentials..."
+    gcloud auth login --update-adc
+else
+    echo "✅ Already authenticated as $(gcloud config get-value account 2>/dev/null)"
+fi
+
+
 # Assign IAP Tunnel Access permission to the active user account
 echo "🔑 Assigning IAP Tunnel Access permissions to your gcloud account..."
 gcloud projects add-iam-policy-binding $(gcloud config get-value project) \

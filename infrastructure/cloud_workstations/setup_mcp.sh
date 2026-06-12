@@ -86,6 +86,15 @@ echo "$PLUGIN_CONTENT" > "$DIR3/google-managed-spanner.json"
 echo "$CLI_CONFIG_CONTENT" > "$DIR1/config.json"
 echo "$CLI_CONFIG_CONTENT" > "$DIR2/config.json"
 
+# Pre-configure gcloud active project
+GCLOUD_CONFIG_DIR="/home/user/.config/gcloud/configurations"
+mkdir -p "$GCLOUD_CONFIG_DIR"
+cat <<EOF > "$GCLOUD_CONFIG_DIR/config_default"
+[core]
+project = $PROJECT_ID
+EOF
+
+
 echo "MCP Server and Antigravity CLI configuration successfully generated!"
 echo "Target files updated:"
 echo " - $DIR1/mcp_config.json"
