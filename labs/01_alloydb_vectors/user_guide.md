@@ -4,8 +4,8 @@ In this lab, you will build a high-performance Knowledge Base search database ap
 
 ---
 
-## 🎯 Objective
-* **⚙️ Cluster Provisioning**: Verify AlloyDB AI instance flags and enable database extensions.
+## 🎯 Lab Objectives
+* **⚙️ Instance Verification**: Verify AlloyDB AI instance flags and enable database extensions.
 * **📊 Synthetic Generation**: Generate a high-scale dataset (100,000+ rows) instantly using SQL.
 * **💥 Bulk Backfill**: Generate vector embeddings for the entire dataset using **Batch Processing**.
 * **📡 Real-Time Triggers**: Set up incremental database triggers to auto-embed new records as they are inserted.

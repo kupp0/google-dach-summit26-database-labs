@@ -24,7 +24,7 @@ Learn to manage vector embeddings at scale without complex ETL pipelines or cust
 ### 2. [Lab 2: Disneyland Agentic Codelab (Spanner & BigQuery)](labs/02_spanner_disneyland/user_guide.md)
 Build a zero-copy federated analytical "bridge" between a transactional database and your data warehouse.
 - **Key Tech**: Cloud Spanner, BigQuery connection objects, and the **MCP Toolbox** for agentic AI tooling.
-- **Highlights**: Infrastructure provisioning using Terraform, injecting live Disneyland datasets into Spanner, running real-time BigQuery federated analytical lookups on transactional data, and configuring AI integrations.
+- **Highlights**: Reviewing pre-provisioned Terraform infrastructure, injecting live Disneyland datasets into Spanner, running real-time BigQuery federated analytical queries on transactional data, verifying MCP connections, and building a pathfinding app with the Antigravity CLI.
 
 ### 3. [Lab 3: Swiss Property Search (Fullstack AI App & Gemini Data Analytics)](labs/03_fullstack_ai_app_property_search/user_guide.md)
 Build and deploy a premium fullstack real-estate search application leveraging natural language queries via Gemini Data Analytics.
