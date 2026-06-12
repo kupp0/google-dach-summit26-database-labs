@@ -54,6 +54,8 @@ resource "google_project_iam_member" "default_compute_sa_roles" {
   project = var.project_id
   role    = each.key
   member  = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
+
+  depends_on = [google_project_service.alloydb_apis]
 }
 
 #--- 3. GCE Bastion Host configuration for private connectivity ---
