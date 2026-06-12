@@ -125,8 +125,11 @@ fi
 # Remind user to authenticate if not already done
 if [ -z "$(gcloud config get-value account 2>/dev/null)" ] || [ ! -f ~/.config/gcloud/application_default_credentials.json ]; then
     echo ""
-    echo "🔑 Welcome! Please run this command to authenticate your Google Cloud SDK & Application Default Credentials (ADC):"
+    echo "🚀 Welcome to the Agentic Data Cloud Hackathon! 🚀"
+    echo "You're in the right spot. Let's wire things up so you can build some database magic."
+    echo "Run this command to unlock your Google Cloud authentication gateway:"
     echo "    gcloud auth login --update-adc"
+    echo "Go ahead, you've got this! 💪"
     echo ""
 fi
 # <<< GCP_WORKSPACE_SETUP <<<
