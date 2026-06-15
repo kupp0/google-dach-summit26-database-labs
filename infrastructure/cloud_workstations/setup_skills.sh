@@ -69,17 +69,19 @@ VALUES ({START_ID}, {END_ID}, {WEIGHT_VALUE});
 
 ## 3. Native Graph Traversals & Pathfinding (GQL)
 
-When building query layers, API endpoints, or supplying commands to Model Context Protocol (MCP) data tools, format all lookup requests inside a `GRAPH {GRAPH_NAME}` block using native ISO GQL syntax patterns:
+When building query layers, API endpoints, or supplying commands to Model Context Protocol (MCP) data tools, format all lookup requests inside a `GRAPH_TABLE` table-valued function within standard SQL queries:
 
 ### Pattern A: 1-Hop Neighbor Discovery (Direct Connections)
 
 Use this structure to find direct dependencies, adjacent rides, or direct connections:
 
 ```sql
-GRAPH {GRAPH_NAME}
-MATCH (src:{NODE_LABEL_NAME})-[e:{EDGE_LABEL_NAME}]->(dst:{NODE_LABEL_NAME})
-WHERE src.{ATTRIBUTE_NAME} = '{FILTER_VALUE}'
-RETURN dst.{ATTRIBUTE_NAME} AS connected_node, e.{WEIGHT_ATTRIBUTE} AS edge_metric;
+SELECT dst.{ATTRIBUTE_NAME} AS connected_node, e.{WEIGHT_ATTRIBUTE} AS edge_metric
+FROM GRAPH_TABLE({GRAPH_NAME}
+  MATCH (src:{NODE_LABEL_NAME})-[e:{EDGE_LABEL_NAME}]->(dst:{NODE_LABEL_NAME})
+  WHERE src.{ATTRIBUTE_NAME} = '{FILTER_VALUE}'
+  RETURN dst.{ATTRIBUTE_NAME}, e.{WEIGHT_ATTRIBUTE}
+);
 ```
 
 ### Pattern B: Variable-Length Pathfinding (Degrees of Separation / Routes)
@@ -87,13 +89,15 @@ RETURN dst.{ATTRIBUTE_NAME} AS connected_node, e.{WEIGHT_ATTRIBUTE} AS edge_metr
 Use this structure when navigating multi-hop networks, computing routing paths, or finding structural pipelines from point A to point B:
 
 ```sql
-GRAPH {GRAPH_NAME}
-MATCH p = (src:{NODE_LABEL_NAME})-[:{EDGE_LABEL_NAME}]->{1,{MAX_HOPS}}(dst:{NODE_LABEL_NAME})
-WHERE src.{ATTRIBUTE_NAME} = '{START_VALUE}' AND dst.{ATTRIBUTE_NAME} = '{END_VALUE}'
-RETURN 
-  src.{ATTRIBUTE_NAME} AS origin, 
-  dst.{ATTRIBUTE_NAME} AS destination, 
-  ARRAY(SELECT n.{ATTRIBUTE_NAME} FROM UNNEST(nodes(p)) AS n) AS path_nodes;
+SELECT origin, destination, path_nodes
+FROM GRAPH_TABLE({GRAPH_NAME}
+  MATCH p = (src:{NODE_LABEL_NAME})-[:{EDGE_LABEL_NAME}]->{1,{MAX_HOPS}}(dst:{NODE_LABEL_NAME})
+  WHERE src.{ATTRIBUTE_NAME} = '{START_VALUE}' AND dst.{ATTRIBUTE_NAME} = '{END_VALUE}'
+  RETURN 
+    src.{ATTRIBUTE_NAME} AS origin, 
+    dst.{ATTRIBUTE_NAME} AS destination, 
+    ARRAY(SELECT n.{ATTRIBUTE_NAME} FROM UNNEST(nodes(p)) AS n) AS path_nodes
+);
 ```
 
 ### Pattern C: Topologically Sorted Neighbors by Distance/Weight
@@ -101,12 +105,16 @@ RETURN
 Use this structure to sort neighbors dynamically by physical proximity or edge cost:
 
 ```sql
-GRAPH {GRAPH_NAME}
-MATCH (src:{NODE_LABEL_NAME})-[e:{EDGE_LABEL_NAME}]->(dst:{NODE_LABEL_NAME})
-WHERE src.{ATTRIBUTE_NAME} = '{FILTER_VALUE}'
-ORDER BY e.{WEIGHT_ATTRIBUTE} ASC
-LIMIT {LIMIT_COUNT};
+SELECT dst.{ATTRIBUTE_NAME} AS connected_node, e.{WEIGHT_ATTRIBUTE} AS edge_metric
+FROM GRAPH_TABLE({GRAPH_NAME}
+  MATCH (src:{NODE_LABEL_NAME})-[e:{EDGE_LABEL_NAME}]->(dst:{NODE_LABEL_NAME})
+  WHERE src.{ATTRIBUTE_NAME} = '{FILTER_VALUE}'
+  RETURN dst.{ATTRIBUTE_NAME}, e.{WEIGHT_ATTRIBUTE}
+  ORDER BY e.{WEIGHT_ATTRIBUTE} ASC
+  LIMIT {LIMIT_COUNT}
+);
 ```
+
 
 ---
 
@@ -129,13 +137,12 @@ cat << 'EOF' > "$VERTEXT_SKILL_DIR/SKILL.md"
 # Skill: GCP Vertex AI Model & Credentials Configuration
 
 ## Description
-Provides explicit, verified guidelines for configuring `google-antigravity` agents to connect to Google Cloud Vertex AI APIs, resolve project/credential discrepancies, and select active models under the DACH Summit workshop sandbox.
+Provides explicit, verified guidelines for configuring `google-adk` agents to connect to Google Cloud Vertex AI APIs, resolve project/credential dependencies, and select active models under the DACH Summit workshop sandbox.
 
 ---
 
 ## 1. Vertex AI Initialization & Project Resolution
-In standard VM environments (e.g., Cloud Workstations), multiple project IDs might exist (e.g., quota project vs. resource project). 
-To ensure the agent has authorization to make Vertex AI API calls, always initialize the `LocalAgentConfig` by programmatically resolving the active Google Cloud project and setting the region:
+To ensure the agent has authorization to make Vertex AI API calls, programmatically resolve the active Google Cloud project ID and set the environment variables required by the Google Gen AI SDK.
 
 ```python
 import os
@@ -143,7 +150,7 @@ import subprocess
 
 def get_active_project_id():
     # 1. Check environment variable
-    project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
+    project_id = os.environ.get("GOOGLE_CLOUD_PROJECT") or os.environ.get("GCP_PROJECT_ID")
     if project_id:
         return project_id
     # 2. Fallback to active gcloud configuration
@@ -158,53 +165,47 @@ def get_active_project_id():
     except Exception:
         return None
 
-# Resolve credentials context
+# Resolve and set credentials context
 PROJECT_ID = get_active_project_id()
-LOCATION = "global" # Primary Vertex AI API region for gemini-3.5-flash
+if PROJECT_ID:
+    os.environ["GOOGLE_CLOUD_PROJECT"] = PROJECT_ID
+
+# Set Gen AI SDK routing variables
+os.environ["GOOGLE_CLOUD_LOCATION"] = "global"
+os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "true"
 ```
 
 ---
 
 ## 2. Verified Model Selection
-When running in GCP Vertex AI mode, use this active model identifier. Avoid guessing or trying external AI Studio formats:
+When running in GCP Vertex AI mode, use this active model identifier:
 
-- **Primary Model (Strong agentic capabilities, high speed & value):** `gemini-3.5-flash`
+- **Primary Model:** `gemini-3.5-flash`
 
 ---
 
-## 3. Agent Setup Scaffold (FastAPI Backend integration)
-Implement the `LocalAgentConfig` inside `app.py` using this verified pattern:
+## 3. Agent Setup Scaffold
+Implement the `Agent` configuration inside the backend Python application using the `google.adk` SDK:
 
 ```python
-from google.antigravity import Agent, LocalAgentConfig
+from google.adk.agents import Agent
 
-config = LocalAgentConfig(
-    model="gemini-3.5-flash", # Verified Vertex AI model name
-    project=PROJECT_ID,        # Dynamically resolved active sandbox project
-    location="global",    # Vertex AI endpoint location
+agent = Agent(
+    name="property_agent",
+    model="gemini-3.5-flash",  # Verified Vertex AI model name
+    description="Agent configured to answer database questions.",
+    instruction=system_instruction,
+    tools=tools,               # List of loaded MCP tools
 )
 ```
 
 ---
 
-## 4. GCP Billing & Routing Projects (403 Forbidden Workaround)
-In shared GCP sandbox environments, user credentials can reside in a default quota project that differs from the actual resource project (e.g., where Spanner is hosted).
-To bypass `403 Forbidden` errors during tool or model executions, explicitly pass the active `PROJECT_ID` inside the `X-Goog-User-Project` and `Google-Cloud-Project` headers in your HTTP client requests to the Spanner MCP server:
+## 4. MCP Connection & Session Lifecycle Management
+To avoid validation collisions, `TaskGroup` sub-exceptions, or connection issues:
+- Always instantiate fresh client sessions/MCP stream servers for distinct agent runs.
+- Never reuse a closed `McpStreamableHttpServer` or client instance across sequential runner lifecycles.
 
-```python
-headers = {
-    "X-Goog-User-Project": PROJECT_ID,
-    "Google-Cloud-Project": PROJECT_ID,
-    "Authorization": f"Bearer {OAUTH_TOKEN}"
-}
-```
-
----
-
-## 5. MCP Connection & Session Lifecycle Management
-To avoid Pydantic validation collisions, `TaskGroup` sub-exceptions, or `Connection closed` errors across multiple client threads or fallbacks:
-- Always instantiate **fresh, separate client sessions** or MCP stream servers for distinct model calls or fallback runs.
-- Never reuse the same closed `McpStreamableHttpServer` or client instance across sequential Agent lifecycles.
 ```
 EOF
 
