@@ -159,14 +159,19 @@ To optionally push the application live to serverless Cloud Run:
 
 Now use the **Antigravity CLI (agy)** or your AI Assistant inside the workspace `/home/user/lab03_swiss_property_search` to expand and style the application.
 
-> [!NOTE]
+> [!IMPORTANT]
 > **Antigravity CLI Launch**:
 > Launch the interactive terminal agent in your workspace:
 > ```bash
 > cd ~/lab03_swiss_property_search
 > agy
 > ```
-> *(If you have not run the `agy` CLI in a previous lab, you will be prompted with an authentication link. Open it, sign in, and paste the code back. This is separate from your `gcloud` GCP account authentication).*
+> When running `agy` for the first time, you will be prompted with login choices. Select **2. Use a Google Cloud project** as the login method:
+> 
+> ![Select 'Use a Google Cloud project' as login method](../../assets/agy_login_cloud_project.png)
+> 
+> Use the arrow keys to navigate and press **Enter** to select. Then, provide the active Google Cloud project ID (e.g. `hackathon-prep-499508`).
+
 
 
 ### 🔮 Challenge 1: Architecture Exploration & UML Generation
