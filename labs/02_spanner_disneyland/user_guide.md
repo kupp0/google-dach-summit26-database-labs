@@ -381,16 +381,18 @@ Use the existing Spanner schema and property graph defined as follows:
     NODE TABLES (Attraction)
     EDGE TABLES (Path SOURCE KEY (SourceAttractionID) REFERENCES Attraction (AttractionID) DESTINATION KEY (TargetAttractionID) REFERENCES Attraction (AttractionID));
 
-Agent & Integration Model: Integrate the AI Agent using the Google Antigravity (google-antigravity) Python SDK, utilizing the pre-installed custom skills available in your workspace (`skills/spanner-graph` and `skills/vertex-config`) to resolve model names, active GCP Project/credentials context, and Spanner GQL queries. Connect the agent to the Google-managed Spanner Model Context Protocol (MCP) Server registered under the Gemini Agent Platform (formerly VertexAI) Agent Registry (location: global).
+Agent & Integration Model: Integrate the AI Agent using the Google Antigravity (google-adk) Python SDK, utilizing the pre-installed custom skills available in your workspace (`skills/spanner-graph` and `skills/vertex-config`) to resolve model names, active GCP Project/credentials context, and Spanner GQL queries. Connect the agent to the Google-managed Spanner Model Context Protocol (MCP) Server registered under the Gemini Agent Platform (formerly VertexAI) Agent Registry (location: global).
 Instructions:
 - Show the planning phase of development first. Create the implementation plan inside the project directory and open it in OSS code after creation.
 - Backend (app.py): Use FastAPI to expose endpoints.
-  - Endpoint /api/chat: Uses the google-antigravity SDK Agent (configured with the Spanner MCP server) to handle conversational database querying dynamically. Use gemini-3.5-flash model with location global.
+  - Endpoint /api/chat: Uses the google-adk SDK Agent (configured with the Spanner MCP server) to handle conversational database querying dynamically. Use gemini-3.5-flash model with location global.
   - Endpoint /api/navigate: Executes custom Spanner Graph MATCH queries on the "DisneylandGraph" property graph to find optimized routes. Expose the executed Spanner SQL and Graph GQL queries in the API responses.
+  - Endpoint /api/paths: Queries all paths (edges) from the Spanner 'Path' table and serves them to feed the frontend network visualization.
 - Frontend (index.html): Create a premium, immersive Disneyland-themed user interface (glassmorphic cards, deep navy and sparkling royal gold colors, hover micro-animations).
-  - Features: Interactive pathfinder (source -> target attraction displaying path nodes and total distance), visualize the attraction graph in a Graphviz graph visualization, search filter, and a terminal-style Chat component connected to /api/chat.
+  - Features: Interactive pathfinder (source -> target attraction displaying path nodes and total distance), search filter, and a terminal-style Chat component connected to /api/chat.
+  - Graph Visualization: Build an interactive graph network (e.g. using Vis.js) that loads real attraction nodes from /api/attractions and real walkways/edges from /api/paths in parallel, rather than using mock frontend rings/heuristics. When a route is calculated, style the path nodes and path edges with high-contrast glowing gold/emerald/pink colors, and fade/dim the rest of the network nodes and edges (using dataset updates) so the correct path stands out cleanly without default selection highlighting noise.
   - Add a "View Queries" button/panel to the top of the UI to allow users to inspect the exact Spanner SQL/GQL queries executed by the Agent and backend.
-- Startup Script (setup.sh): For local debugging, create an automated startup shell script that initializes a Python virtual environment, installs fastapi, uvicorn, google-antigravity, runs app.py, and opens the dashboard in the browser.
+- Startup Script (setup.sh): For local debugging, create an automated startup shell script that initializes a Python virtual environment, installs fastapi, uvicorn, google-adk, runs app.py, and opens the dashboard in the browser.
 ```
 
 ---
@@ -419,7 +421,7 @@ Once the agent completes the code generation:
    > Code-OSS will automatically detect the open port and show a popup in the bottom right corner. Click **Open in Browser** to launch the live dashboard.
 
 2. **Check Spanner Graph**: Explore the generated property graph schema in the Google Cloud Console under **Cloud Spanner Studio**.
-3. **Inspect the Code**: Open `app.py` in Code-OSS to review how the backend queries Spanner and uses the `google-antigravity` SDK.
+3. **Inspect the Code**: Open `app.py` in Code-OSS to review how the backend queries Spanner and uses the `google-adk` SDK.
 4. **Ask for Clarification**: You can ask questions about the generated code directly in your active `agy` CLI session (e.g., *"Explain how the pathfinding endpoint works"*).
 
 ---
